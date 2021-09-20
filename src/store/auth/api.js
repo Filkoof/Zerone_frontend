@@ -1,5 +1,8 @@
 import axios from 'axios'
 import router from '../../router'
+import {
+  url
+} from '@/utils/url.js';
 
 export default {
   namespaced: true,
@@ -27,7 +30,7 @@ export default {
       dispatch
     }, user) {
       await axios({
-        url: 'account/register',
+        url: url + 'api/v1/account/register',
         data: user,
         method: 'POST'
       }).then(async response => {
@@ -56,7 +59,7 @@ export default {
       dispatch
     }, user) {
       await axios({
-        url: 'account/register/confirm',
+        url: url + 'account/register/confirm',
         data: user,
         method: 'POST'
       }).then(async response => {
@@ -109,7 +112,7 @@ export default {
       dispatch
     }) {
       await axios({
-        url: 'auth/logout',
+        url: url + 'auth/logout',
         method: 'POST'
       }).then(() => {
         commit('setToken', '')
