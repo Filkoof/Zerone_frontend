@@ -89,7 +89,7 @@ export default {
     }, user) {
       commit('setStatus', 'loading')
       await axios({
-        url: 'auth/login',
+        url: url + 'api/v1/auth/login',
         data: user,
         method: 'POST'
       }).then(response => {
@@ -106,13 +106,12 @@ export default {
         localStorage.removeItem('user-token')
       })
     },
-
     async logout({
       commit,
       dispatch
     }) {
       await axios({
-        url: url + 'auth/logout',
+        url: url + 'api/v1/auth/logout',
         method: 'POST'
       }).then(() => {
         commit('setToken', '')
