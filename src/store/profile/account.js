@@ -1,4 +1,8 @@
 import axios from 'axios'
+import {
+  url
+} from '@/utils/url.js';
+
 
 export default {
   namespaced: true,
@@ -77,7 +81,7 @@ export default {
   actions: {
     async passwordRecovery({}, email) {
       await axios({
-        url: 'account/password/recovery',
+        url: url + '/api/v1/account/password/recovery',
         method: 'PUT',
         data: email
       }).then(response => {}).catch(error => {})
@@ -91,14 +95,14 @@ export default {
       }
       console.log(value)
       await axios({
-        url: 'account/password/set',
+        url: '/api/v1/account/password/set',
         method: 'PUT',
         data
       }).then(response => {}).catch(error => {})
     },
     async changeEmail({}, email) {
       await axios({
-        url: '/api/v1/account/email',
+        url: url + '/api/v1/account/email',
         method: 'PUT',
         data: {
           email
@@ -121,7 +125,7 @@ export default {
       dispatch
     }, data) {
       axios({
-        url: 'account/notifications',
+        url: '/api/v1/account/notifications',
         method: 'PUT',
         data
       }).then(response => {
@@ -138,7 +142,7 @@ export default {
       commit
     }) {
       await axios({
-        url: 'account/notifications',
+        url: url + '/api/v1/account/notifications',
         method: 'GET'
       }).then(response => {
         console.log(response.data.data)
