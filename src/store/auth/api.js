@@ -112,7 +112,7 @@ export default {
     }) {
       await axios({
         url: url + 'api/v1/auth/logout',
-        method: 'POST'
+        method: 'GET'
       }).then(() => {
         commit('setToken', '')
         commit('setStatus', 'logout')

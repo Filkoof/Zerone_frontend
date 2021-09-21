@@ -4,8 +4,7 @@ export default {
   namespaced: true,
   state: {
     notifications: {
-      ru: [
-        {
+      ru: [{
           icon: 'comments',
           name: 'О новых комментариях к моим публикациям',
           type: 'POST_COMMENT',
@@ -36,8 +35,7 @@ export default {
           enable: false
         }
       ],
-      en: [
-        {
+      en: [{
           icon: 'comments',
           name: 'About new comments to my publications',
           type: 'POST_COMMENT',
@@ -100,10 +98,24 @@ export default {
     },
     async changeEmail({}, email) {
       await axios({
-        url: 'account/email',
+        url: '/api/v1/account/email',
         method: 'PUT',
-        data: { email }
-      }).then(response => {}).catch(error => {})
+        data: {
+          email
+        }
+      }).then(() => {
+        commit('setToken', '')
+        commit('setStatus', 'logout')
+        dispatch('global/alert/setAlert', {
+          status: 'success',
+          text: 'Вы вышли из системы'
+        }, {
+          root: true
+        })
+        localStorage.removeItem('user-token')
+        delete axios.defaults.headers.common['Authorization']
+        window.location.reload()
+      }).catch(error => {})
     },
     changeNotifications({
       dispatch
