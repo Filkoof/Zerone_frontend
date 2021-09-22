@@ -30,7 +30,7 @@ export default {
       dispatch
     }, user) {
       await axios({
-        url: url + 'api/v1/account/register',
+        url: 'account/register',
         data: user,
         method: 'POST'
       }).then(async response => {
@@ -43,23 +43,25 @@ export default {
         router.push({
           name: 'RegisterLetter'
         });
-      }).catch(error => {
+      }).catch(async error => {
+        console.log(123)
         dispatch('global/alert/setAlert', {
           status: 'error',
           text: 'Не удалось зарегистрироваться'
         }, {
           root: true
-        })
-        router.push({
+
+        }), router.push({
           name: 'RegisterFailed'
         });
+
       })
     },
     async confirmRegistration({
       dispatch
     }, user) {
       await axios({
-        url: url + 'account/register/confirm',
+        url: 'account/register/confirm',
         data: user,
         method: 'POST'
       }).then(async response => {
@@ -73,6 +75,7 @@ export default {
           name: 'RegisterSuccess'
         });
       }).catch(async error => {
+        console.log(error);
         dispatch('global/alert/setAlert', {
           status: 'error',
           text: 'Не удалось подтвердить регистрацию'
@@ -89,7 +92,7 @@ export default {
     }, user) {
       commit('setStatus', 'loading')
       await axios({
-        url: url + 'api/v1/auth/login',
+        url: 'auth/login',
         data: user,
         method: 'POST'
       }).then(response => {
@@ -111,7 +114,7 @@ export default {
       dispatch
     }) {
       await axios({
-        url: url + 'api/v1/auth/logout',
+        url: 'auth/logout',
         method: 'GET'
       }).then(() => {
         commit('setToken', '')

@@ -1,6 +1,9 @@
 import axios from 'axios'
 import store from '@/store'
 import moment from 'moment';
+import {
+  url
+} from '@/utils/url.js';
 
 const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 
@@ -8,13 +11,16 @@ axios.defaults.headers['content-type'] = 'application/json';
 axios.defaults.withCredentials = true;
 switch (NODE_ENV) {
   case 'development':
-    axios.defaults.baseURL =  'http://127.0.0.1:8086/api/v1/';
+    axios.defaults.baseURL = url + 'api/v1/';
     break;
   case 'production':
-    axios.defaults.baseURL =  'http://localhost:8086/api/v1/';
+    axios.defaults.baseURL = url + 'api/v1/';
+    break;
+  case 'build':
+    axios.defaults.baseURL = url + 'api/v1/';
     break;
   default:
-    axios.defaults.baseURL =  'https://virtserver.swaggerhub.com/andrewleykin/social/1.0.4/api/v1/';
+    axios.defaults.baseURL = 'https://virtserver.swaggerhub.com/andrewleykin/social/1.0.4/api/v1/';
 }
 
 const token = localStorage.getItem('user-token')

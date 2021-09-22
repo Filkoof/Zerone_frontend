@@ -81,7 +81,7 @@ export default {
   actions: {
     async passwordRecovery({}, email) {
       await axios({
-        url: url + '/api/v1/account/password/recovery',
+        url: 'account/password/recovery',
         method: 'PUT',
         data: email
       }).then(response => {}).catch(error => {})
@@ -95,14 +95,14 @@ export default {
       }
       console.log(value)
       await axios({
-        url: '/api/v1/account/password/set',
+        url: 'account/password/set',
         method: 'PUT',
         data
       }).then(response => {}).catch(error => {})
     },
     async changeEmail({}, email) {
       await axios({
-        url: url + '/api/v1/account/email',
+        url: 'account/email',
         method: 'PUT',
         data: {
           email
@@ -125,7 +125,7 @@ export default {
       dispatch
     }, data) {
       axios({
-        url: '/api/v1/account/notifications',
+        url: 'account/notifications',
         method: 'PUT',
         data
       }).then(response => {
@@ -142,7 +142,7 @@ export default {
       commit
     }) {
       await axios({
-        url: url + '/api/v1/account/notifications',
+        url: 'account/notifications',
         method: 'GET'
       }).then(response => {
         console.log(response.data.data)

@@ -24,8 +24,8 @@ export default {
     setAlert({
       commit,
       state
-    }, value) {      
-      commit('setInfo', value)      
+    }, value) {
+      commit('setInfo', value)
       commit('toggleShow')
       setTimeout(() => {
         commit('toggleShow')
