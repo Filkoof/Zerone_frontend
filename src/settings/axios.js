@@ -2,7 +2,8 @@ import axios from 'axios'
 import store from '@/store'
 import moment from 'moment';
 import {
-  url
+  url,
+  urlLocal
 } from '@/utils/url.js';
 
 const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
@@ -17,7 +18,7 @@ switch (NODE_ENV) {
     axios.defaults.baseURL = url + 'api/v1/';
     break;
   case 'build':
-    axios.defaults.baseURL = url + 'api/v1/';
+    axios.defaults.baseURL = urlLocal + 'api/v1/';
     break;
   default:
     axios.defaults.baseURL = 'https://virtserver.swaggerhub.com/andrewleykin/social/1.0.4/api/v1/';

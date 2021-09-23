@@ -35,8 +35,8 @@ export default {
     methods: {
         ...mapActions('auth/api', ['login']),
         ...mapActions('profile/info', ['apiInfo']),
+
         submitHandler() {
-            console.log(this.redirectUrl)
             if (this.$v.$invalid) {
                 this.$v.$touch()
                 return

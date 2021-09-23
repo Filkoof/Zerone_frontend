@@ -35,7 +35,10 @@ export default {
     }),
     methods: {
         ...mapActions('profile/account', ['passwordSet']),
-        submitHandler() {
+
+        submitHandler(e) {
+            e.preventDefault()
+
             if (this.$v.$invalid) {
                 this.$v.$touch()
                 return
