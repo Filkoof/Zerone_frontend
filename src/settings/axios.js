@@ -12,10 +12,10 @@ axios.defaults.headers['content-type'] = 'application/json';
 axios.defaults.withCredentials = true;
 switch (NODE_ENV) {
   case 'development':
-    axios.defaults.baseURL = url + 'api/v1/';
+    axios.defaults.baseURL = urlLocal + 'api/v1/';
     break;
   case 'production':
-    axios.defaults.baseURL = url + 'api/v1/';
+    axios.defaults.baseURL = urlLocal + 'api/v1/';
     break;
   case 'build':
     axios.defaults.baseURL = urlLocal + 'api/v1/';
