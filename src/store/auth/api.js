@@ -122,7 +122,7 @@ export default {
         })
         localStorage.removeItem('user-token')
         delete axios.defaults.headers.common['Authorization']
-        window.location.reload()
+        // window.location.reload()
       }).catch(error => {})
     },
     async modalOff({

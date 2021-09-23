@@ -35,10 +35,7 @@ export default {
     }),
     methods: {
         ...mapActions('profile/account', ['passwordSet']),
-
-        submitHandler(e) {
-            e.preventDefault()
-
+        submitHandler() {
             if (this.$v.$invalid) {
                 this.$v.$touch()
                 return
@@ -46,12 +43,13 @@ export default {
 
             this.passwordSet({
                 password: this.passwordTwo,
-                token: this.$store.state.auth.api.token,
+                token: this.$route.query.token,
             }).then(() => {
                 this.$router.push({ name: 'ChangePasswordSuccess' })
             })
         },
     },
+
     validations: {
         password: { required, minLength: minLength(8) },
         passwordTwo: { required, sameAsPassword: sameAs('password') },

@@ -93,40 +93,17 @@ export default {
         url: 'account/password/set',
         method: 'PUT',
         data
-      }).then(() => {
-        commit('setToken', '')
-        commit('setStatus', 'logout')
-        dispatch('global/alert/setAlert', {
-          status: 'success',
-          text: 'Вы вышли из системы'
-        }, {
-          root: true
-        })
-        localStorage.removeItem('user-token')
-        delete axios.defaults.headers.common['Authorization']
-        window.location.reload()
-      }).catch(error => {})
+      }).then(response => {}).catch(error => {})
     },
-    async changeEmail({}, email) {
+
+    async changeEmail(email) {
       await axios({
         url: 'account/email',
         method: 'PUT',
         data: {
           email
         }
-      }).then(() => {
-        commit('setToken', '')
-        commit('setStatus', 'logout')
-        dispatch('global/alert/setAlert', {
-          status: 'success',
-          text: 'Вы вышли из системы'
-        }, {
-          root: true
-        })
-        localStorage.removeItem('user-token')
-        delete axios.defaults.headers.common['Authorization']
-        window.location.reload()
-      }).catch(error => {})
+      }).then(() => {}).catch(error => {})
     },
     changeNotifications({
       dispatch

@@ -36,6 +36,8 @@ export default {
         passwordTwo: '',
     }),
     methods: {
+        ...mapActions('profile/info', ['deleteInfo']),
+        ...mapActions('auth/api', ['logout']),
         ...mapActions('profile/account', ['passwordSet']),
         submitHandler() {
             if (this.$v.$invalid) {
@@ -46,7 +48,11 @@ export default {
                 password: this.passwordTwo,
                 token: this.$store.state.auth.api.token,
             }).then(() => {
-                this.$router.push({ name: 'Login' })
+                this.deleteInfo().then(() => {
+                    this.logout().then(() => {
+                        this.$router.push({ name: 'Login' })
+                    })
+                })
             })
         },
     },
