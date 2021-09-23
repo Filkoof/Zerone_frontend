@@ -93,13 +93,19 @@ export default {
         url: 'account/password/set',
         method: 'PUT',
         data
-      }).then(response => {
+      }).then(() => {
+        commit('setToken', '')
+        commit('setStatus', 'logout')
+        dispatch('global/alert/setAlert', {
+          status: 'success',
+          text: 'Вы вышли из системы'
+        }, {
+          root: true
+        })
         localStorage.removeItem('user-token')
         delete axios.defaults.headers.common['Authorization']
         window.location.reload()
-      }).catch(error => {
-        console.log(error)
-      })
+      }).catch(error => {})
     },
     async changeEmail({}, email) {
       await axios({
