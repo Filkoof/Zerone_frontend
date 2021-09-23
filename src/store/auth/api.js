@@ -1,8 +1,5 @@
 import axios from 'axios'
 import router from '../../router'
-import {
-  url
-} from '@/utils/url.js';
 
 export default {
   namespaced: true,
@@ -44,7 +41,6 @@ export default {
           name: 'RegisterLetter'
         });
       }).catch(async error => {
-        console.log(123)
         dispatch('global/alert/setAlert', {
           status: 'error',
           text: 'Не удалось зарегистрироваться'
@@ -54,7 +50,6 @@ export default {
         }), router.push({
           name: 'RegisterFailed'
         });
-
       })
     },
     async confirmRegistration({

@@ -1,8 +1,4 @@
 import axios from 'axios'
-import {
-  url
-} from '@/utils/url.js';
-
 
 export default {
   namespaced: true,
@@ -93,12 +89,17 @@ export default {
         token: value.token,
         password: value.password
       }
-      console.log(value)
       await axios({
         url: 'account/password/set',
         method: 'PUT',
         data
-      }).then(response => {}).catch(error => {})
+      }).then(response => {
+        localStorage.removeItem('user-token')
+        delete axios.defaults.headers.common['Authorization']
+        window.location.reload()
+      }).catch(error => {
+        console.log(error)
+      })
     },
     async changeEmail({}, email) {
       await axios({
