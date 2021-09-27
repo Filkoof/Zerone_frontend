@@ -11,7 +11,7 @@
           :edit="getInfo.id === feed.author_id" 
           :deleted="getInfo.id === feed.author_id"
         )
-      div.load-block
+      div.load-block(ref="observer")
     .inner-page__aside
       friends-request
       br
@@ -31,7 +31,6 @@ export default {
     data: () => ({
         offset: 0,
         itemPerPage: 5,
-        posts: this.apiFeeds(),
     }),
     computed: {
         ...mapGetters('profile/feeds', ['getFeeds']),
@@ -42,6 +41,20 @@ export default {
     },
     mounted() {
         this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage })
+
+        const options = {
+            rootMargin: '0px',
+            threshold: 1.0,
+        }
+        const callback = (entries, observer) => {
+            if (entries[0].isIntersecting) {
+                this.offset = this.offset + this.itemPerPage
+
+                this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage })
+            }
+        }
+        const observer = new IntersectionObserver(callback, options)
+        observer.observe(this.$refs.observer)
     },
 }
 </script>
