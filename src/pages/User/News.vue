@@ -11,10 +11,12 @@
           :edit="getInfo.id === feed.author_id" 
           :deleted="getInfo.id === feed.author_id"
         )
+      div.load-block
     .inner-page__aside
       friends-request
       br
       friends-possible
+  
  </template>
 
 <script>
@@ -24,20 +26,23 @@ import FriendsRequest from '@/components/Friends/Request'
 import NewsBlock from '@/components/News/Block'
 import NewsAdd from '@/components/News/Add'
 export default {
-  name: 'News',
-  components: { FriendsPossible, FriendsRequest, NewsBlock, NewsAdd },
-  computed: {
-    ...mapGetters('profile/feeds', ['getFeeds']),
-    ...mapGetters('profile/info', ['getInfo'])
-  },
-  methods: {
-    ...mapActions('profile/feeds', ['apiFeeds'])
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.apiFeeds()
-    })
-  }
+    name: 'News',
+    components: { FriendsPossible, FriendsRequest, NewsBlock, NewsAdd },
+    data: () => ({
+        offset: 0,
+        itemPerPage: 5,
+        posts: this.apiFeeds(),
+    }),
+    computed: {
+        ...mapGetters('profile/feeds', ['getFeeds']),
+        ...mapGetters('profile/info', ['getInfo']),
+    },
+    methods: {
+        ...mapActions('profile/feeds', ['apiFeeds']),
+    },
+    mounted() {
+        this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage })
+    },
 }
 </script>
 
@@ -45,6 +50,14 @@ export default {
 @import '../../assets/stylus/base/vars.styl';
 
 .news__add {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.load-block {
+    display: block;
+    width: 100%;
+    height: 10px;
+    position: relative;
+    z-index: -1;
 }
 </style>
