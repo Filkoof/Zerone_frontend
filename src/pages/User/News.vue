@@ -46,6 +46,7 @@ export default {
             rootMargin: '0px',
             threshold: 1.0,
         }
+
         const callback = (entries, observer) => {
             if (entries[0].isIntersecting) {
                 this.offset = this.offset + this.itemPerPage
