@@ -3,7 +3,6 @@ import store from '@/store'
 import moment from 'moment';
 import {
   url,
-  url2,
   urlLocal
 } from '@/utils/url.js';
 
@@ -13,13 +12,13 @@ axios.defaults.headers['content-type'] = 'application/json';
 axios.defaults.withCredentials = true;
 switch (NODE_ENV) {
   case 'development':
-    axios.defaults.baseURL = url2 + 'api/v1/';
+    axios.defaults.baseURL = url + 'api/v1/';
     break;
   case 'production':
-    axios.defaults.baseURL = url2 + 'api/v1/';
+    axios.defaults.baseURL = url + 'api/v1/';
     break;
   case 'build':
-    axios.defaults.baseURL = url2 + 'api/v1/';
+    axios.defaults.baseURL = url + 'api/v1/';
     break;
   default:
     axios.defaults.baseURL = 'https://virtserver.swaggerhub.com/andrewleykin/social/1.0.4/api/v1/';
