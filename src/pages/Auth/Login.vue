@@ -7,9 +7,6 @@
         .login__action
             button-hover(tag='button', type='submit', variant='white') {{ $t("login") }}
             router-link.login__link(:to='{ name: "Forgot" }') {{ $t("forgot") }}
-
-            //- временный вход
-            router-link.login__link(:to='{ name: "Forgot" }') тыкни сюда
 </template>
 
 <script>
