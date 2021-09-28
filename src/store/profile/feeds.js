@@ -8,36 +8,12 @@ export default {
   getters: {
     getFeeds(state) {
       return state.feeds
-      // if (!state.feeds) return
-      // let result = [
-      //   ...state.feeds
-      // ]
-
-      // result.forEach(el => {
-      //   el.comments.forEach(comment => {
-      //     comment.photo = el.photo || '../static/img/user/default_avatar.svg'
-      //     comment.my_like = comment.my_like || false
-      //     comment.is_deleted = comment.is_deleted || false
-      //     comment.sub_comments = comment.sub_comments || []
-
-      //     if (comment.parent_id !== 0) {
-      //       el.comments.find(res => res.id === comment.parent_id).sub_comments.push(comment)
-      //     }
-      //   })
-      //   el.my_like = el.my_like || false
-      //   el.comments = el.comments.filter(comment => !comment.parent_id)
-      // el.tags = el.tags || ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5', 'Tag6']
-      //})
-
-      //return result
     },
   },
   mutations: {
     setFeeds: (s, feeds) => s.feeds = feeds,
     setCommentsById: (s, payload) => {
       s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments = payload.value
-      // s.feeds.push('dog-nail')
-      // s.feeds.splice(-1,1)
     },
     setFeedsById: (s, payload) => s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.id))] = payload
   },
@@ -54,7 +30,6 @@ export default {
         url: `feeds?${query.join('&')}`,
         method: 'GET'
       }).then(response => {
-        console.log("TCL: apiFeeds -> response", response.data.data)
         const previousPost = getters.getFeeds;
         const post = response.data.data;
         const newsPost = [...previousPost, ...post];

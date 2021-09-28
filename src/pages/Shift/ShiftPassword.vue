@@ -39,6 +39,7 @@ export default {
         ...mapActions('profile/info', ['deleteInfo']),
         ...mapActions('auth/api', ['logout']),
         ...mapActions('profile/account', ['passwordSet']),
+
         submitHandler() {
             if (this.$v.$invalid) {
                 this.$v.$touch()

@@ -31,7 +31,7 @@ export default {
         url: 'users/me',
         method: 'GET'
       }).then(async response => {
-        commit('setInfo', response.data)
+        commit('setInfo', response.data.data)
       }).catch(error => {})
     },
     async apiChangeInfo({
@@ -51,7 +51,7 @@ export default {
         }, {
           root: true
         })
-        commit('setInfo', response.data)
+        commit('setInfo', response.data.data)
       }).catch(error => {})
     },
     async deleteInfo() {

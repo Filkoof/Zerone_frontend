@@ -36,7 +36,7 @@ export default {
                 this.$v.$touch()
                 return
             }
-            this.changeEmail(this.email).then(() => {
+            this.changeEmail({ email: this.email }).then(() => {
                 this.deleteInfo().then(() => {
                     this.logout().then(() => {
                         this.$router.push({ name: 'Login' })

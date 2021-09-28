@@ -95,15 +95,15 @@ export default {
         data
       }).then(response => {}).catch(error => {})
     },
+    async changeEmail({
+      rootState
+    }, value) {
 
-    async changeEmail(email) {
       await axios({
         url: 'account/email',
         method: 'PUT',
-        data: {
-          email
-        }
-      }).then(() => {}).catch(error => {})
+        data: value
+      }).then(resp => {}).catch(error => {})
     },
     changeNotifications({
       dispatch

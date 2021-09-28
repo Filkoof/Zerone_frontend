@@ -47,16 +47,16 @@ export default {
       result.forEach(el => {
         el.comments.forEach(comment => {
           comment.photo = el.photo || '../static/img/user/default_avatar.svg'
-          comment.my_like =  comment.my_like || false
+          comment.my_like = comment.my_like || false
           comment.is_deleted = comment.is_deleted || false
-          comment.sub_comments =  comment.sub_comments || []
+          comment.sub_comments = comment.sub_comments || []
 
           if (comment.parent_id !== 0) {
             el.comments.find(res => res.id === comment.parent_id).sub_comments.push(comment)
           }
         })
 
-        el.my_like =  el.my_like || false
+        el.my_like = el.my_like || false
         el.comments = el.comments.filter(comment => !comment.parent_id)
         // el.tags = el.tags || ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5', 'Tag6']
       })
@@ -74,9 +74,9 @@ export default {
     setCommentsById: (s, payload) => {
       s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))].comments = payload.value
       s.wall.push('dog-nail')
-      s.wall.splice(-1,1)
+      s.wall.splice(-1, 1)
     },
-    setUsersInfo: (s,info) => {
+    setUsersInfo: (s, info) => {
       return s.users = info
     }
   },
@@ -93,7 +93,11 @@ export default {
     },
     async apiWall({
       commit
-    }, {id, offset, itemPerPage}) {
+    }, {
+      id,
+      offset,
+      itemPerPage
+    }) {
       console.log('fetch wall', id)
       await axios({
         url: `users/${id}/wall${offset ? '?offset='+offset : ''}${itemPerPage ? '&itemPerPage='+itemPerPage : ''}`,
@@ -126,14 +130,17 @@ export default {
       }).catch(error => {})
     },
     async userInfoId({
-      commit, dispatch
+      commit,
+      dispatch
     }, id) {
       await axios({
         url: `users/${id}`,
         method: 'GET'
       }).then(async response => {
-        await dispatch('apiWall', {id})
-        commit('setUsersInfo', response.data)
+        await dispatch('apiWall', {
+          id
+        })
+        commit('setUsersInfo', response.data.data)
       }).catch(error => {})
     }
   }

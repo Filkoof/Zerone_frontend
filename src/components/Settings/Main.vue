@@ -172,7 +172,7 @@ export default {
                         photo_id: this.getStorage && this.getStorage.id,
                         first_name: this.name,
                         last_name: this.lastName,
-                        birth_date: moment([this.year, this.month.val - 1, this.day]).format(),
+                        birth_date: moment([this.year, this.month.val, this.day]).format(),
                         phone: this.phoneNumber,
                         about: this.about,
                         country: this.country,
@@ -183,7 +183,7 @@ export default {
                 this.apiChangeInfo({
                     first_name: this.name,
                     last_name: this.lastName,
-                    birth_date: moment([this.year, this.month.val - 1, this.day]).format(),
+                    birth_date: moment([this.year, this.month.val, this.day]).format(),
                     phone: this.phoneNumber,
                     about: this.about,
                     country: this.country,
