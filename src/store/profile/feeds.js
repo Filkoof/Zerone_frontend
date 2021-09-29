@@ -32,10 +32,12 @@ export default {
       }).then(response => {
         const previousPost = getters.getFeeds;
         const post = response.data.data;
+        //влив подгруженых постов + существующих
         const newsPost = [...previousPost, ...post];
-        const chechDoblePost = newsPost.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i);
+        //удаление повторяющихся постов
+        const chechcDoblePost = newsPost.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i);
 
-        commit('setFeeds', chechDoblePost)
+        commit('setFeeds', chechcDoblePost);
       }).catch(() => {})
     },
     async apiFeedsById({

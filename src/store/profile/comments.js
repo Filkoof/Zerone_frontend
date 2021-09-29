@@ -75,9 +75,10 @@ export default {
     async commentActions({
       dispatch
     }, payload) {
-      payload.edit
-        ? await dispatch('editComment', payload)
-        : await dispatch('newComment', payload)
+      console.log(payload)
+      payload.edit ?
+        await dispatch('editComment', payload) :
+        await dispatch('newComment', payload)
     }
   }
 }

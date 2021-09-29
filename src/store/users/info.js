@@ -91,6 +91,7 @@ export default {
         commit('setInfo', response.data.data)
       }).catch(error => {})
     },
+
     async apiWall({
       commit
     }, {
@@ -106,6 +107,7 @@ export default {
         commit('setWall', response.data.data)
       }).catch(error => {})
     },
+
     async apiWallById({
       commit
     }, id) {
@@ -119,6 +121,7 @@ export default {
         })
       }).catch(error => {})
     },
+
     async apiCommentsById({
       commit
     }, id) {
@@ -129,6 +132,7 @@ export default {
         commit('setCommentsById', response.data.data)
       }).catch(error => {})
     },
+
     async userInfoId({
       commit,
       dispatch
