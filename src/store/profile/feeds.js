@@ -33,8 +33,9 @@ export default {
         const previousPost = getters.getFeeds;
         const post = response.data.data;
         const newsPost = [...previousPost, ...post];
+        const chechDoblePost = newsPost.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i);
 
-        commit('setFeeds', newsPost)
+        commit('setFeeds', chechDoblePost)
       }).catch(() => {})
     },
     async apiFeedsById({

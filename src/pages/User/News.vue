@@ -20,7 +20,7 @@
  </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import FriendsPossible from '@/components/Friends/Possible'
 import FriendsRequest from '@/components/Friends/Request'
 import NewsBlock from '@/components/News/Block'
@@ -38,8 +38,10 @@ export default {
     },
     methods: {
         ...mapActions('profile/feeds', ['apiFeeds']),
+        ...mapMutations('profile/feeds', ['setFeeds']),
     },
     mounted() {
+        this.setFeeds([])
         this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage })
 
         const options = {
