@@ -28,12 +28,12 @@ export default {
     },
     async apiCities({
       commit
-    }) {
+    }, id) {
       await axios({
         url: 'platform/cities',
         method: 'GET',
         params: {
-          'countryId': '1'
+          'countryId': id
         }
       }).then(response => {
         commit('setCities', response.data.data)

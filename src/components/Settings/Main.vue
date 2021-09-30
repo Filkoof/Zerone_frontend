@@ -194,7 +194,7 @@ export default {
     methods: {
         ...mapActions('global/storage', ['apiStorage']),
         ...mapActions('profile/info', ['apiChangeInfo']),
-        ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities']),
+        ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities', 'apiCities']),
 
         submitHandler() {
             if (this.src !== this.getInfo.photo && this.src !== '') {
@@ -267,6 +267,10 @@ export default {
                 this.isCountryShow = false
             }
             this.isCountriesShow = false
+
+            if (this.getCountries[0].id) {
+                this.apiCities(this.getCountries[0].id)
+            }
         },
         setCountry(value) {
             this.country = value
