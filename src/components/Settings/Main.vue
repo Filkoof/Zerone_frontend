@@ -304,11 +304,7 @@ export default {
         },
     },
     mounted() {
-        if (this.getInfo) {
-            this.setInfo()
-        } else {
-            this.month = this.months[0]
-        }
+        this.getInfo ? this.setInfo() : (this.month = this.months[0])
 
         this.apiCountries()
     },

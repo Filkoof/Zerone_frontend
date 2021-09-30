@@ -31,6 +31,7 @@ export default {
         url: 'users/me',
         method: 'GET'
       }).then(async response => {
+        console.log(response)
         commit('setInfo', response.data.data)
       }).catch(error => {})
     },

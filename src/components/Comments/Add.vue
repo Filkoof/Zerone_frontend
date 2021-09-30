@@ -16,7 +16,6 @@ export default {
     props: {
         value: String,
         id: [Number, String],
-        parentId: Number,
     },
     computed: {
         ...mapGetters('profile/info', ['getInfo']),

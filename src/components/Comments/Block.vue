@@ -38,7 +38,6 @@
                 v-if='!admin',
                 ref='addComment',
                 :id='info.post_id',
-                :parent-id='info.parent_id',
                 v-model='commentText',
                 @submited='onSubmitComment'
             )
@@ -110,12 +109,11 @@ export default {
             this.onAnswerSub()
         },
         onSubmitComment() {
-            console.log(this.commentEdit)
             if (this.commentText === '') return
             this.commentActions({
                 edit: this.commentEdit,
                 post_id: this.info.post_id,
-                parent_id: this.commentEdit ? this.commentEditParentId : this.commentEditId,
+                parent_id: this.info.id,
                 text: this.commentText,
                 id: this.commentEditId,
             }).then(() => {
