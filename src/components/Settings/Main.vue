@@ -37,11 +37,11 @@
             ul.countries__list(v-if='cities && cities.length > 0 && isCitiesShow')
                 li.countries__item(
                     v-for='item in cities',
-                    :key='item.countryId',
+                    :key='item.id',
                     @click='setCity(item)',
                     @keyup.enter='setCity(item)',
                     tabindex=0
-                ) {{ item.country }}
+                ) {{ item.title }}
 
     .user-info-form__block
         span.user-info-form__label {{ $t("birthDay") }}
@@ -194,7 +194,7 @@ export default {
     methods: {
         ...mapActions('global/storage', ['apiStorage']),
         ...mapActions('profile/info', ['apiChangeInfo']),
-        ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities', 'apiCities']),
+        ...mapActions('profile/country_city', ['apiCountries', 'apiCities']),
 
         submitHandler() {
             if (this.src !== this.getInfo.photo && this.src !== '') {
@@ -267,14 +267,14 @@ export default {
                 this.isCountryShow = false
             }
             this.isCountriesShow = false
-
-            if (this.getCountries[0].id) {
-                this.apiCities(this.getCountries[0].id)
-            }
         },
         setCountry(value) {
             this.country = value
             this.countriesClose()
+
+            if (this.countries[0].id && this.countries.length == 1) {
+                this.apiCities(this.countries[0].id)
+            }
         },
         citiesOpen() {
             this.isCitiesShow = true
@@ -293,8 +293,7 @@ export default {
                 this.isCountryShow = true
                 return
             }
-            this.city = value.country
-            if (this.country !== value.city) this.country = value.city
+            this.city = value.title
             this.citiesClose()
         },
     },
@@ -302,9 +301,6 @@ export default {
         getInfo(value) {
             if (!value) return
             this.setInfo()
-        },
-        setData(val) {
-            console.log(val)
         },
     },
     mounted() {
@@ -315,7 +311,6 @@ export default {
         }
 
         this.apiCountries()
-        this.apiAllCities()
     },
     directives: {
         ClickOutside,

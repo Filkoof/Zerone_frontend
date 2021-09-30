@@ -36,7 +36,7 @@ export default {
           'countryId': id
         }
       }).then(response => {
-        commit('setCities', response.data.data)
+        commit('setCities', response.data)
       }).catch(() => {})
     },
     async apiAllCities({
