@@ -127,7 +127,6 @@ export default {
         years() {
             return Array.from({ length: 60 }, (value, index) => 1970 + index)
         },
-
         months() {
             if (localStorage.getItem('lang') === 'en') {
                 return [
@@ -161,7 +160,6 @@ export default {
                 { val: 11, text: 'Декабря' },
             ]
         },
-
         days() {
             switch (this.month.val) {
                 case 0:
@@ -251,13 +249,13 @@ export default {
             this.name = this.getInfo.first_name
             this.lastName = this.getInfo.last_name
             this.src = this.getInfo.photo
-            this.phone = this.getInfo.phone ? this.getInfo.phone.replace(/^[+]?[78]/, '') : ''
+            this.phone = this.getInfo.phone !== null ? this.getInfo.phone.replace(/^[+]?[78]/, '') : ''
             if (this.getInfo.birth_date) {
                 this.setBritishData()
             }
             this.about = this.getInfo.about
-            this.country = this.getInfo.country !== undefined ? this.getInfo.country : ''
-            this.city = this.getInfo.city.title !== null ? this.getInfo.city : ''
+            this.country = this.getInfo.country !== null ? this.getInfo.country : ''
+            this.city = this.getInfo.city !== null ? this.getInfo.city : ''
         },
         countriesOpen() {
             this.isCountriesShow = true
