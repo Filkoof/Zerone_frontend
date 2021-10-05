@@ -1,18 +1,24 @@
 <template lang="pug">
 .comments(:class='{ open: isOpenComments, "comments--admin": admin }')
     h4.comments__title
-        span {{ $t("title") }} ({{ commentsLength }})
-        a.comments__show(@click.prevent='showComments', href='#', v-if='info.length > 1') {{ showText }}
+        span {{ $t("title") }} ({{ info.total }})
+        a.comments__show(@click.prevent='showComments', href='#', v-if='info.data.length > 1') {{ showText }}
     .comments__list(v-if='getInfo')
         comment-block(
             :admin='admin',
-            v-for='i in info',
+            v-for='i in info.data',
             :key='i.id',
             :info='i',
             :edit='getInfo.id === i.author_id',
             :deleted='getInfo.id === i.author_id',
             @edit-comment='onEditMain'
         )
+        .div(v-if='isOpenComments && commentOffset + commentPerPage <= info.total') 
+            button.btn-load-comments-text(type='button', v-if='!isLoad', @click.prevent='loadComments') Показать следующие комментарии
+            .btn-load-comments-container(v-else)
+                span.btn-load-comments-container_icon
+                span.btn-load-comments-container_icon
+                span.btn-load-comments-container_icon
         .comments__add(v-if='!admin')
             comment-add(ref='addComment', :id='id', v-model='commentText', @submited='onSubmitComment')
 </template>
@@ -25,7 +31,7 @@ export default {
     name: 'Comments',
     props: {
         admin: Boolean,
-        info: Array,
+        info: Object,
         id: Number,
         edit: Boolean,
         deleted: Boolean,
@@ -36,6 +42,9 @@ export default {
         commentText: '',
         commentEdit: false,
         commentEditInfo: null,
+        isLoad: false,
+        commentOffset: 0,
+        commentPerPage: 5,
     }),
     computed: {
         ...mapGetters('profile/info', ['getInfo']),
@@ -45,20 +54,10 @@ export default {
             }
             return this.isOpenComments ? 'скрыть' : 'показать'
         },
-        commentsLength() {
-            let result = 0
-            this.info.map((el) => {
-                !el.is_deleted && result++
-                el.sub_comments &&
-                    el.sub_comments.map((subEl) => {
-                        !subEl.is_deleted && result++
-                    })
-            })
-            return result
-        },
     },
     methods: {
         ...mapActions('profile/comments', ['commentActions']),
+        ...mapActions('profile/comments', ['addCommentsById']),
         showComments() {
             this.isOpenComments = !this.isOpenComments
         },
@@ -81,6 +80,20 @@ export default {
                 this.commentEdit = false
                 this.commentEditInfo = null
             })
+        },
+        loadComments() {
+            if (this.commentOffset < this.info.total) {
+                this.isLoad = true
+                const data = {
+                    post_id: this.id,
+                    offset: this.commentOffset + this.commentPerPage,
+                    perPage: this.commentPerPage,
+                }
+                this.addCommentsById(data).then(() => {
+                    this.commentOffset += this.commentPerPage
+                    this.isLoad = false
+                })
+            }
         },
     },
     i18n: {
@@ -154,5 +167,62 @@ export default {
 .comments__list {
     width: 100%;
     max-width: 580px;
+}
+
+.btn-load-comments-text {
+    color: #21a45d;
+    font-size: 13px;
+    font-weight: 600;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.btn-load-comments-container {
+    display: grid;
+    grid-template-columns: repeat(3, 10px);
+    grid-column-gap: 4px;
+
+    &_icon {
+        display: block;
+        width: 100%;
+        height: 5px;
+        background-color: #21a45d;
+        opacity: 0.3;
+        transition: opacity 0.3s;
+        animation-name: loadAnimations;
+        animation-duration: 3s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+
+        &:nth-child(1) {
+            -webkit-animation-delay: 0.5s;
+        }
+
+        &:nth-child(2) {
+            -webkit-animation-delay: 1s;
+        }
+
+        &:nth-child(3) {
+            -webkit-animation-delay: 1.5s;
+        }
+    }
+}
+
+@keyframes loadAnimations {
+    0% {
+        opacity: 0.3;
+        transition: opacity 0.3s;
+    }
+
+    66% {
+        opacity: 1;
+        transition: opacity 0.3s;
+    }
 }
 </style>

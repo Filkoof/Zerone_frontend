@@ -91,7 +91,7 @@ export default {
         ...mapGetters('profile/info', ['getInfo']),
         commentsLength() {
             let result = 0
-            this.info.comments.map((el) => {
+            this.info.comments.data.map((el) => {
                 !el.is_deleted && result++
                 el.sub_comments &&
                     el.sub_comments.map((subEl) => {

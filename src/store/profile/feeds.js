@@ -13,7 +13,8 @@ export default {
   mutations: {
     setFeeds: (s, feeds) => s.feeds = feeds,
     setCommentsById: (s, payload) => {
-      s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments = payload.value
+
+      s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data.push(...payload.value);
     },
     setFeedsById: (s, payload) => s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.id))] = payload
   },

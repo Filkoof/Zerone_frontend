@@ -72,7 +72,7 @@ export default {
     setWall: (s, wall) => s.wall = wall,
     setWallById: (s, payload) => s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.id))] = payload.value,
     setCommentsById: (s, payload) => {
-      s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))].comments = payload.value
+      s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))].comments.data.push(...payload.value);
       s.wall.push('dog-nail')
       s.wall.splice(-1, 1)
     },

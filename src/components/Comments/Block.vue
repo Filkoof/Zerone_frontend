@@ -16,12 +16,8 @@
         @recover-comment='onRecoverComment'
     )
     .comment-block__reviews(v-if='!info.is_deleted')
-        a.comment-block__reviews-show(
-            href='#',
-            v-if='!isShowSubComments && info.sub_comments != null',
-            @click.prevent='showSubComments'
-        ) {{ $t("show") }} {{ info.sub_comments.length }} {{ answerText }}
-        .comment-block__reviews-list(v-else)
+        a.comment-block__reviews-show(href='#', v-if='info.sub_comments.length > 1', @click.prevent='showSubComments') {{ showSubText() }} {{ info.sub_comments.length }} {{ answerText }}
+        .comment-block__reviews-list(v-if='isShowSubComments')
             comment-main(
                 :admin='admin',
                 v-for='i in info.sub_comments',
@@ -74,7 +70,13 @@ export default {
     methods: {
         ...mapActions('profile/comments', ['commentActions', 'deleteComment', 'recoverComment']),
         showSubComments() {
-            this.isShowSubComments = true
+            this.isShowSubComments = !this.isShowSubComments
+        },
+        showSubText() {
+            if (localStorage.getItem('lang') === 'en') {
+                return this.isShowSubComments ? 'hide' : 'show'
+            }
+            return this.isShowSubComments ? 'скрыть' : 'показать'
         },
         onAnswerSub() {
             this.$refs.addComment.$refs.addInput.focus()
@@ -124,13 +126,16 @@ export default {
             })
         },
     },
+    mounted() {},
     i18n: {
         messages: {
             en: {
                 show: 'show',
+                hide: 'hide',
             },
             ru: {
                 show: 'показать',
+                hide: 'скрыть',
             },
         },
     },
@@ -174,7 +179,6 @@ export default {
 
         .comment-block__reviews {
             border-top: 1px solid #e7e7e7;
-            padding-top: 40px;
         }
     }
 
@@ -184,7 +188,7 @@ export default {
 }
 
 .comment-block__reviews {
-    margin-top: 15px;
+    margin-top: 10px;
     max-width: calc(100% - 50px);
     margin-left: auto;
 }
@@ -195,6 +199,7 @@ export default {
     font-weight: 600;
     display: flex;
     align-items: center;
+    padding-top: 5px;
 
     &:before {
         content: '';
@@ -211,6 +216,8 @@ export default {
 }
 
 .comment-block__reviews-list {
+    padding-top: 20px;
+
     .comment-main + .comment-main {
         margin-top: 15px;
         padding-top: 15px;

@@ -77,7 +77,6 @@ export default {
         },
         ...mapActions('auth/api', ['register']),
         submitHandler() {
-            console.log(this.$invalid)
             if (this.$v.$invalid) {
                 this.$v.$touch()
                 return

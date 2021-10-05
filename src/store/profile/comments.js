@@ -79,6 +79,29 @@ export default {
       payload.edit ?
         await dispatch('editComment', payload) :
         await dispatch('newComment', payload)
-    }
+    },
+    async addCommentsById({
+      commit,
+      getters
+    }, data) {
+      await axios({
+        url: `post/${data.post_id}/comments?offset=${data.offset}&itemPerPage=${data.perPage}`,
+        method: 'GET'
+      }).then(response => {
+
+        let dataComments = {
+          post_id: data.post_id,
+          value: response.data.data
+        }
+
+        router.history.current.name === 'News' ?
+          commit('profile/feeds/setCommentsById', dataComments, {
+            root: true
+          }) :
+          commit('users/info/setCommentsById', dataComments, {
+            root: true
+          })
+      }).catch(() => {})
+    },
   }
 }
