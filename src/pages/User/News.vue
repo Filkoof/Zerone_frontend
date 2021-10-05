@@ -12,6 +12,10 @@
           :deleted="getInfo.id === feed.author_id"
         )
       div.load-block(ref="observer")
+        div.load-anial-container(v-if="isLoad")
+          span.load-anial-icon
+          span.load-anial-icon
+          span.load-anial-icon
     .inner-page__aside
       friends-request
       br
@@ -31,6 +35,7 @@ export default {
     data: () => ({
         offset: 0,
         itemPerPage: 5,
+        isLoad: false,
     }),
     computed: {
         ...mapGetters('profile/feeds', ['getFeeds']),
@@ -41,8 +46,11 @@ export default {
         ...mapMutations('profile/feeds', ['setFeeds']),
     },
     mounted() {
+        this.isLoad = true
         this.setFeeds([])
-        this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage })
+        this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage }).then(() => {
+            this.isLoad = false
+        })
 
         const options = {
             rootMargin: '0px',
@@ -51,9 +59,12 @@ export default {
 
         const callback = (entries, observer) => {
             if (entries[0].isIntersecting) {
+                this.isLoad = true
                 this.offset = this.offset + this.itemPerPage
 
-                this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage })
+                this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage }).then(() => {
+                    this.isLoad = false
+                })
             }
         }
         const observer = new IntersectionObserver(callback, options)
@@ -75,5 +86,49 @@ export default {
     height: 10px;
     position: relative;
     z-index: -1;
+}
+
+.load-anial-container {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 20px);
+    grid-column-gap: 5px;
+}
+
+.load-anial-icon {
+    display: block;
+    height: 8px;
+    background-color: #21a45d;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+    border-radius: 2px;
+    animation-name: loadAnimations;
+    animation-duration: 1.6s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    &:nth-child(1) {
+        -webkit-animation-delay: 0.4s;
+    }
+
+    &:nth-child(2) {
+        -webkit-animation-delay: 0.8s;
+    }
+
+    &:nth-child(3) {
+        -webkit-animation-delay: 1.2s;
+    }
+}
+
+@keyframes loadAnimations {
+    0% {
+        opacity: 0.3;
+        transition: opacity 0.3s;
+    }
+
+    70% {
+        opacity: 1;
+        transition: opacity 0.3s;
+    }
 }
 </style>
