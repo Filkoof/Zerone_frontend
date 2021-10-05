@@ -202,10 +202,10 @@ export default {
                         first_name: this.name,
                         last_name: this.lastName,
                         birth_date: moment([this.year, this.month.val, this.day]).format(),
-                        phone: this.phoneNumber,
+                        phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
                         about: this.about,
-                        country: this.country,
-                        city: this.city,
+                        country: this.country.trim() === '' ? null : this.country,
+                        city: this.city.trim() === '' ? null : this.city,
                     })
                 })
             } else {
@@ -213,10 +213,10 @@ export default {
                     first_name: this.name,
                     last_name: this.lastName,
                     birth_date: moment([this.year, this.month.val, this.day]).format(),
-                    phone: this.phoneNumber,
+                    phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
                     about: this.about,
-                    country: this.country,
-                    city: this.city,
+                    country: this.country.trim() === '' ? null : this.country,
+                    city: this.city.trim() === '' ? null : this.city,
                 })
             }
         },
@@ -234,13 +234,14 @@ export default {
             this.src = ''
         },
         setBritishData() {
-            const data = this.getInfo.birth_date.split('-')
-            const m = data[1] - 1
+            const data = new Date(this.getInfo.birth_date * 1000)
+            const m = data.getMonth()
             const result = {
-                year: Number(data[0]),
+                year: data.getFullYear(),
                 month: this.months[m],
-                day: Number(data[2]),
+                day: data.getDate(),
             }
+
             this.day = result.day
             this.month = result.month
             this.year = result.year

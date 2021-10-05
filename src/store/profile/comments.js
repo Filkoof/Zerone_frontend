@@ -8,12 +8,12 @@ export default {
       commit
     }, post_id) {
       await axios({
-        url: `post/${post_id}/comments`,
+        url: `post/${post_id}`,
         method: 'GET'
       }).then(response => {
         let dataComments = {
-          post_id,
-          value: response.data.data
+          post_id: response.data.data.id,
+          value: response.data.data.comments
         }
 
         router.history.current.name === 'News' ?

@@ -15,7 +15,7 @@
             span.user-status(:class='{ online, offline: !online }') {{ statusText }}
         .profile-info__block
             span.profile-info__title {{ $t("birthday") }}:
-            span.profile-info__val(v-if='info.birth_date') {{ info.birth_date | moment("D MMMM YYYY") }} ({{ info.ages }} {{ yearsOld(info.ages) }})
+            span.profile-info__val(v-if='info.birth_date') {{ new Date(info.birth_date * 1000) | moment("D MMMM YYYY") }} ({{ info.ages }} {{ yearsOld(info.ages) }})
             span.profile-info__val(v-else) {{ $t("info") }}
         .profile-info__block
             span.profile-info__title {{ $t("tel") }}:
@@ -35,7 +35,6 @@
             button-hover(@click.native.prevent='onConfirm') {{ $t("yes") }}
             button-hover(variant='red', bordered, @click.native='closeModal') {{ $t("cancel") }}
 </template>
-
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import Modal from '@/components/Modal'
