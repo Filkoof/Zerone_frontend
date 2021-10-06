@@ -2,7 +2,7 @@
 .comment-main
     template(v-if='info.is_deleted')
         p.comment-main__text {{ $t("del") }}.
-            a(href='#', @click.prevent='onRecoverComment') {{ $t("restore") }}
+            a(href='#', @click.prevent='onRecoverComment', v-if='edit') {{ $t("restore") }}
     template(v-else)
         .edit.edit--small(v-if='edit || deleted')
             .edit__icon(v-if='deleted', @click='onDeleteComment')
@@ -17,7 +17,7 @@
             .comment-main__actions
                 span.comment-main__time {{ info.time | moment("from") }}
                 template(v-if='!admin')
-                    a.comment-main__review(href='#', @click.prevent='$emit("answer-comment")') {{ $t("answer") }}
+                    a.comment-main__review(href='#', @click.prevent='$emit("answer-comment", info)') {{ $t("answer") }}
                     like-comment(fill, :active='info.my_like', :id='info.id', @liked='likeAction')
 </template>
 

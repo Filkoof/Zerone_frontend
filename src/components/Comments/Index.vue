@@ -5,8 +5,8 @@
         a.comments__show(@click.prevent='showComments', href='#', v-if='info.data.length > 1') {{ showText }}
     .comments__list(v-if='getInfo')
         comment-block(
-            :admin='admin',
             v-for='i in info.data',
+            :admin='admin',
             :key='i.id',
             :info='i',
             :offset='commentOffset',
@@ -98,6 +98,11 @@ export default {
                     this.isLoad = false
                 })
             }
+        },
+    },
+    watch: {
+        info: function (val) {
+            this.commentOffset = val.data.length
         },
     },
     i18n: {

@@ -1,27 +1,26 @@
 <template lang="pug">
-  .news.inner-page
+.news.inner-page
     .inner-page__main
-      .news__add
-        news-add(user)
-      .news__list(v-if="getInfo")
-        news-block(
-          v-for="feed in getFeeds" 
-          :key="feed.id"
-          :info="feed" 
-          :edit="getInfo.id === feed.author.id" 
-          :deleted="getInfo.id === feed.author.id"
-        )
-      div.load-block(ref="observer")
-        div.load-anial-container(v-if="isLoad")
-          span.load-anial-icon
-          span.load-anial-icon
-          span.load-anial-icon
+        .news__add
+            news-add(user)
+        .news__list(v-if='getInfo')
+            news-block(
+                v-for='feed in getFeeds',
+                :key='feed.id',
+                :info='feed',
+                :edit='getInfo.id === feed.author.id',
+                :deleted='getInfo.id === feed.author.id'
+            )
+        .load-block(ref='observer')
+            .load-anial-container(v-if='isLoad')
+                span.load-anial-icon
+                span.load-anial-icon
+                span.load-anial-icon
     .inner-page__aside
-      friends-request
-      br
-      friends-possible
-  
- </template>
+        friends-request
+        br
+        friends-possible
+</template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'

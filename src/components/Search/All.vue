@@ -1,5 +1,6 @@
 <template lang="pug">
 .search-all
+    h2 НИКИТА ПЕРЕПОДНИМИ КОНТЕЙНЕРЫ !
     search-block#users(title='Люди', all)
         .friends__list
             friends-block(v-for='user in users', :key='user.id', :info='user')

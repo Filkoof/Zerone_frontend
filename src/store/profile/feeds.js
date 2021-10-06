@@ -14,13 +14,22 @@ export default {
     setFeeds: (s, feeds) => s.feeds = feeds,
     setCommentsById: (s, payload) => {
       const post = s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))]
-      const newPost = [...payload.value, ...post.comments.data]
+      const newPost = [...payload.value.data, ...post.comments.data];
       const filteredStrings = newPost.filter((thing, index, self) =>
         index === self.findIndex((t) => (
           t.id === thing.id
         ))
       )
-      const revers = filteredStrings.reverse();
+      const revers = filteredStrings.sort(function (a, b) {
+        return new Date(a.time) - new Date(b.time);
+      })
+
+      s.feeds.forEach(el => {
+        if (el.id === payload.post_id) {
+          el.comments.total = payload.value.total
+        }
+      })
+
       s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data = [...revers];
     },
     setFeedsById: (s, payload) => s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.id))] = payload

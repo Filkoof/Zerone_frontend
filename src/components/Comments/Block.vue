@@ -15,12 +15,12 @@
         @delete-comment='onDeleteComment',
         @recover-comment='onRecoverComment'
     )
-    .comment-block__reviews(v-if='!info.is_deleted')
+    .comment-block__reviews
         a.comment-block__reviews-show(href='#', v-if='info.sub_comments.length > 1', @click.prevent='showSubComments') {{ showSubText() }} {{ info.sub_comments.length }} {{ answerText }}
         .comment-block__reviews-list(v-if='isShowSubComments')
             comment-main(
-                :admin='admin',
                 v-for='i in info.sub_comments',
+                :admin='admin',
                 :key='i.id',
                 :info='i',
                 :edit='getInfo.id === i.author.id',
@@ -61,6 +61,7 @@ export default {
         commentEdit: false,
         commentEditId: null,
         commentEditParentId: null,
+        userResponding: '',
     }),
     computed: {
         ...mapGetters('profile/info', ['getInfo']),
@@ -80,7 +81,11 @@ export default {
             }
             return this.isShowSubComments ? 'скрыть' : 'показать'
         },
-        onAnswerSub() {
+        onAnswerSub(info) {
+            if (info) {
+                this.userResponding = info.author.first_name
+                this.$refs.addComment.$refs.addInput.value = info.author.first_name + ': '
+            }
             this.$refs.addComment.$refs.addInput.focus()
         },
         onAnswerMain() {
@@ -128,6 +133,7 @@ export default {
                 perPage: this.perPage,
             }).then(() => {
                 this.commentText = ''
+                this.userResponding = ''
                 this.commentEdit = false
                 this.commentEditInfo = null
                 this.commentEditParentId = null

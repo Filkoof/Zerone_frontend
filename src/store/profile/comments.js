@@ -89,7 +89,7 @@ export default {
 
         let dataComments = {
           post_id: data.post_id,
-          value: response.data.data
+          value: response.data
         }
 
         router.history.current.name === 'News' ?
