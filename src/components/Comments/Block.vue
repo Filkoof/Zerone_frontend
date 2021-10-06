@@ -23,8 +23,8 @@
                 v-for='i in info.sub_comments',
                 :key='i.id',
                 :info='i',
-                :edit='getInfo.id === i.author_id',
-                :deleted='getInfo.id === i.author_id',
+                :edit='getInfo.id === i.author.id',
+                :deleted='getInfo.id === i.author.id',
                 @answer-comment='onAnswerSub',
                 @edit-comment='onEditSub',
                 @delete-comment='onDeleteComment',
@@ -51,6 +51,8 @@ export default {
         info: Object,
         edit: Boolean,
         deleted: Boolean,
+        offset: Number,
+        perPage: Number,
     },
     components: { CommentMain, CommentAdd },
     data: () => ({
@@ -95,12 +97,16 @@ export default {
             this.deleteComment({
                 id,
                 post_id: this.info.post_id,
+                offset: this.offset,
+                perPage: this.perPage,
             })
         },
         onRecoverComment(id) {
             this.recoverComment({
                 id,
                 post_id: this.info.post_id,
+                offset: this.offset,
+                perPage: this.perPage,
             })
         },
         onEditSub({ parentId, id, commentText }) {
@@ -118,6 +124,8 @@ export default {
                 parent_id: this.info.id,
                 text: this.commentText,
                 id: this.commentEditId,
+                offset: this.offset,
+                perPage: this.perPage,
             }).then(() => {
                 this.commentText = ''
                 this.commentEdit = false

@@ -8,8 +8,8 @@
           v-for="feed in getFeeds" 
           :key="feed.id"
           :info="feed" 
-          :edit="getInfo.id === feed.author_id" 
-          :deleted="getInfo.id === feed.author_id"
+          :edit="getInfo.id === feed.author.id" 
+          :deleted="getInfo.id === feed.author.id"
         )
       div.load-block(ref="observer")
         div.load-anial-container(v-if="isLoad")

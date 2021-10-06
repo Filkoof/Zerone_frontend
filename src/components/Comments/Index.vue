@@ -9,8 +9,10 @@
             v-for='i in info.data',
             :key='i.id',
             :info='i',
-            :edit='getInfo.id === i.author_id',
-            :deleted='getInfo.id === i.author_id',
+            :offset='commentOffset',
+            :perPage='commentPerPage',
+            :edit='getInfo.id === i.author.id',
+            :deleted='getInfo.id === i.author.id',
             @edit-comment='onEditMain'
         )
         .div(v-if='isOpenComments && commentOffset + commentPerPage <= info.total') 
@@ -75,6 +77,8 @@ export default {
                 text: this.commentText,
                 id: this.commentEdit ? this.commentEditInfo.id : null,
                 parent_id: null,
+                offset: this.commentOffset,
+                perPage: this.commentPerPage,
             }).then(() => {
                 this.commentText = ''
                 this.commentEdit = false

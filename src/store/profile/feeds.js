@@ -13,8 +13,15 @@ export default {
   mutations: {
     setFeeds: (s, feeds) => s.feeds = feeds,
     setCommentsById: (s, payload) => {
-
-      s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data.push(...payload.value);
+      const post = s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))]
+      const newPost = [...payload.value, ...post.comments.data]
+      const filteredStrings = newPost.filter((thing, index, self) =>
+        index === self.findIndex((t) => (
+          t.id === thing.id
+        ))
+      )
+      const revers = filteredStrings.reverse();
+      s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data = [...revers];
     },
     setFeedsById: (s, payload) => s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.id))] = payload
   },

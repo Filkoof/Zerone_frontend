@@ -12,8 +12,8 @@ export default {
         method: 'GET'
       }).then(response => {
         let dataComments = {
-          post_id: response.data.data.id,
-          value: response.data.data.comments
+          post_id: data.post_id,
+          value: response.data.data
         }
 
         router.history.current.name === 'News' ?
@@ -36,7 +36,7 @@ export default {
           comment_text: payload.text
         }
       }).then(() => {
-        dispatch('commentsById', payload.post_id)
+        dispatch('addCommentsById', payload)
       }).catch(() => {})
     },
     async editComment({
@@ -49,7 +49,7 @@ export default {
           comment_text: payload.text
         }
       }).then(() => {
-        dispatch('commentsById', payload.post_id)
+        dispatch('addCommentsById', payload)
       }).catch(() => {})
     },
     async deleteComment({
@@ -59,7 +59,7 @@ export default {
         url: `post/${payload.post_id}/comments/${payload.id}`,
         method: 'DELETE'
       }).then(() => {
-        dispatch('commentsById', payload.post_id)
+        dispatch('addCommentsById', payload)
       }).catch(() => {})
     },
     async recoverComment({
@@ -69,20 +69,18 @@ export default {
         url: `post/${payload.post_id}/comments/${payload.id}/recover`,
         method: 'PUT'
       }).then(() => {
-        dispatch('commentsById', payload.post_id)
+        dispatch('addCommentsById', payload)
       }).catch(() => {})
     },
     async commentActions({
       dispatch
     }, payload) {
-      console.log(payload)
       payload.edit ?
         await dispatch('editComment', payload) :
         await dispatch('newComment', payload)
     },
     async addCommentsById({
       commit,
-      getters
     }, data) {
       await axios({
         url: `post/${data.post_id}/comments?offset=${data.offset}&itemPerPage=${data.perPage}`,
