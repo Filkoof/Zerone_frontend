@@ -9,10 +9,10 @@
                 simple-svg(:filepath='"/static/img/delete-news.svg"')
             .edit__icon(v-if='edit', @click='editComment')
                 simple-svg(:filepath='"/static/img/edit.svg"')
-        router-link.comment-main__pic(:to='{ name: "ProfileId", params: { id: info.author_id } }')
-            img(:src='info.photo', :alt='info.first_name')
+        router-link.comment-main__pic(:to='{ name: "ProfileId", params: { id: info.author.id } }')
+            img(:src='info.author.photo', :alt='info.author.first_name')
         .comment-main__main
-            router-link.comment-main__author(:to='{ name: "ProfileId", params: { id: info.author_id } }') {{ info.first_name + " " + info.last_name }}
+            router-link.comment-main__author(:to='{ name: "ProfileId", params: { id: info.author.id } }') {{ info.author.first_name + " " + info.author.last_name }}
             p.comment-main__text {{ info.comment_text }}
             .comment-main__actions
                 span.comment-main__time {{ info.time | moment("from") }}
@@ -91,6 +91,10 @@ export default {
 
     img {
         width: 100%;
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: content;
     }
 }
 

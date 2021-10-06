@@ -49,7 +49,9 @@ export default {
 
 <style lang="stylus">
 .comment-add {
-    display: flex;
+    display: grid;
+    grid-template-columns: 36px 1fr 20px 15px;
+    grid-column-gap: 14px;
     align-items: center;
     height: 60px;
     border-top: 1px solid #e7e7e7;

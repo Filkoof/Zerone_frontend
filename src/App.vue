@@ -1,8 +1,8 @@
 <template lang="pug">
-  #app
-    component(:is="layout" v-if="$route.meta.layout")
-      router-view
-    v-snackbar(:value="getState.show" :timeout="getState.timeout" :color="getState.status" right bottom) {{getState.text}}
+#app
+    component(:is='layout', v-if='$route.meta.layout')
+        router-view
+    v-snackbar(:value='getState.show', :timeout='getState.timeout', :color='getState.status', right, bottom) {{ getState.text }}
 </template>
 
 <script>
@@ -13,19 +13,19 @@ import MainLayout from '@/layouts/MainLayout'
 import EmptyLayout from '@/layouts/EmptyLayout'
 
 export default {
-  name: 'App',
-  components: {
-    FormLayout,
-    MainLayout,
-    EmptyLayout,
-    VSnackbar
-  },
-  computed: {
-    ...mapGetters('global/alert', ['getState']),
-    layout() {
-      return this.$route.meta.layout + '-layout'
-    }
-  }
+    name: 'App',
+    components: {
+        FormLayout,
+        MainLayout,
+        EmptyLayout,
+        VSnackbar,
+    },
+    computed: {
+        ...mapGetters('global/alert', ['getState']),
+        layout() {
+            return this.$route.meta.layout + '-layout'
+        },
+    },
 }
 </script>
 
@@ -33,12 +33,20 @@ export default {
 @import './assets/stylus/main.styl';
 
 .v-snack__wrapper {
-  &.success {
-    background-color: eucalypt;
-  }
+    &.success {
+        background-color: eucalypt;
+    }
 
-  &.error {
-    background-color: wild-watermelon;
-  }
+    &.error {
+        background-color: wild-watermelon;
+    }
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: content;
 }
 </style>

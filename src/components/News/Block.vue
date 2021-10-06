@@ -34,8 +34,20 @@
                 a.news-block__content-more(href='#', v-if='isLotText', @click.prevent='toggleText')
                     template(v-if='openText') {{ $t("hide") }}
                     template(v-else) {{ $t("read") }}
-            ul.news-block__content-tags
-                li.news-block__content-tag(v-for='(tag, index) in info.tags', :key='index') {{ "#" + tag }}
+
+                .news-block__tags-block(v-if='info.tags.length > 0')
+                    h3.news-block__tags-title тэги
+                    ul.news-block__content-tags
+                        template(v-if='!isOpenTags')
+                            li.news-block__item-tag(v-for='(tag, index) in info.tags.slice(0, 5)', :key='index')
+                                a.news-block__content-tag(:class='{ "news-block__content-tag_close": !isOpenTags }') {{ "#" + tag }}
+                        template(v-else)
+                            li.news-block__item-tag(v-for='(tag, index) in info.tags', :key='index')
+                                a.news-block__content-tag(:class='{ "news-block__content-tag_close": !isOpenTags }') {{ "#" + tag }}
+
+                        li.news-block__item-tag(v-if='info.tags.length > 5')
+                            a.news-block__content-tag(@click.prevent='openCloseAllTags') {{ showTextClose }}
+
         .news-block__actions(v-if='!deffered && !admin')
             .news-block__actions-block
                 like-comment(
@@ -86,6 +98,7 @@ export default {
         isLotText: false,
         openText: false,
         isEditNews: false,
+        isOpenTags: false,
     }),
     computed: {
         ...mapGetters('profile/info', ['getInfo']),
@@ -99,6 +112,12 @@ export default {
                     })
             })
             return result
+        },
+        showTextClose() {
+            if (localStorage.getItem('lang') === 'en') {
+                return this.isOpenTags ? 'hide' : 'show'
+            }
+            return this.isOpenTags ? 'Cкрыть' : 'Показать'
         },
     },
     methods: {
@@ -135,6 +154,10 @@ export default {
                 post_id: this.info.id,
                 route: this.$route.name,
             })
+        },
+
+        openCloseAllTags() {
+            this.isOpenTags = !this.isOpenTags
         },
     },
     mounted() {
@@ -258,7 +281,7 @@ export default {
 }
 
 .news-block__content-main {
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #E7E7E7;
     width: 100%;
 }
@@ -279,6 +302,7 @@ export default {
     text-align: justify;
     padding-right: 1em;
     position: relative;
+    margin-bottom: 15px;
 
     &:before {
         content: '\02026';
@@ -314,25 +338,46 @@ export default {
     color: eucalypt;
 }
 
-.news-block__content-tags {
-    background-color: #F5F7FB;
-    padding: 20px;
-    max-width: 230px;
-    flex: none;
-    align-self: flex-start;
-    margin-left: 40px;
+.news-block__tags-block {
+    border-top: 1px solid #e7e7e7;
+    padding-top: 10px;
+}
 
-    @media (max-width: breakpoint-xxl) {
-        margin-left: 20px;
+.news-block__tags-title {
+    font-size: 16px;
+}
+
+.news-block__content-tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.news-block__item-tag {
+    display: block;
+    margin-top: 5px;
+
+    &:not(:last-child) {
+        margin-right: 5px;
     }
 }
 
 .news-block__content-tag {
+    display: inline-block;
+    padding: 2px 5px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: #e7e7e7;
     color: eucalypt;
     font-size: 13px;
     line-height: 22px;
-    display: inline-block;
-    margin: 0 7px;
+    cursor: pointer;
+}
+
+.news-block__content-tag_close {
+    text-overflow: ellipsis;
+    width: 70px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .news-block__actions {
