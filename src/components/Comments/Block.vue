@@ -61,7 +61,7 @@ export default {
         commentEdit: false,
         commentEditId: null,
         commentEditParentId: null,
-        userResponding: '',
+        respongindLink: '',
     }),
     computed: {
         ...mapGetters('profile/info', ['getInfo']),
@@ -82,11 +82,14 @@ export default {
             return this.isShowSubComments ? 'скрыть' : 'показать'
         },
         onAnswerSub(info) {
+            if (info) this.saveLink(info)
+            this.$refs.addComment.$refs.addInput.focus()
+        },
+        saveLink(info) {
             if (info) {
-                this.userResponding = info.author.first_name
+                this.respongindLink = `id:${info.author.id}, name:${info.author.first_name}`
                 this.$refs.addComment.$refs.addInput.value = info.author.first_name + ': '
             }
-            this.$refs.addComment.$refs.addInput.focus()
         },
         onAnswerMain() {
             this.showSubComments()
@@ -114,26 +117,27 @@ export default {
                 perPage: this.perPage,
             })
         },
-        onEditSub({ parentId, id, commentText }) {
+        onEditSub({ parentId, id, commentText, respongindLink }) {
             this.commentEdit = true
             this.commentText = commentText
             this.commentEditId = id
             this.commentEditParentId = parentId
-            this.onAnswerSub()
+            this.respongindLink = respongindLink
         },
         onSubmitComment() {
             if (this.commentText === '') return
+
             this.commentActions({
                 edit: this.commentEdit,
                 post_id: this.info.post_id,
                 parent_id: this.info.id,
-                text: this.commentText,
+                text: this.respongindLink + `,message:${this.commentText}`,
                 id: this.commentEditId,
                 offset: this.offset,
                 perPage: this.perPage,
             }).then(() => {
                 this.commentText = ''
-                this.userResponding = ''
+                this.respongindLink = ''
                 this.commentEdit = false
                 this.commentEditInfo = null
                 this.commentEditParentId = null

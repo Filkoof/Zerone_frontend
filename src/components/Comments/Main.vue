@@ -13,7 +13,10 @@
             img(:src='info.author.photo', :alt='info.author.first_name')
         .comment-main__main
             router-link.comment-main__author(:to='{ name: "ProfileId", params: { id: info.author.id } }') {{ info.author.first_name + " " + info.author.last_name }}
-            p.comment-main__text {{ info.comment_text }}
+            p.comment-main__text
+                template(v-if='commentTexts.id && commentTexts.name')
+                    router-link.comment-main__author-res(:to='{ name: "ProfileId", params: { id: commentTexts.id } }') {{ commentTexts.name }}:
+                span {{ commentTexts.message ? commentTexts.message : info.comment_text }}
             .comment-main__actions
                 span.comment-main__time {{ info.time | moment("from") }}
                 template(v-if='!admin')
@@ -46,12 +49,35 @@ export default {
         editComment() {
             this.$emit('edit-comment', {
                 id: this.info.id,
-                commentText: this.info.comment_text,
+                commentText: this.commentTexts.message ? this.commentTexts.message : this.info.comment_text,
                 parentId: this.info.parent_id,
+                respongindLink:
+                    this.commentTexts.id && this.commentTexts.name
+                        ? `id:${this.commentTexts.id}, name:${this.commentTexts.name}`
+                        : '',
             })
         },
         onRecoverComment() {
             this.$emit('recover-comment', this.info.id)
+        },
+    },
+    computed: {
+        commentTexts() {
+            const test = this.info.comment_text.split(',')
+            const arr = {}
+            test.map((el) => {
+                if (el.includes('id')) {
+                    arr.id = el.split(':').pop().trim().replace(/"/g, '')
+                }
+                if (el.includes('name')) {
+                    arr.name = el.split(':').pop().trim().replace(/"/g, '')
+                }
+                if (el.includes('message')) {
+                    arr.message = el.split(':').pop().trim().replace(/"/g, '')
+                }
+            })
+
+            return arr
         },
     },
     i18n: {
@@ -107,6 +133,19 @@ export default {
     color: #000;
     margin-bottom: 5px;
     display: block;
+}
+
+.comment-main__author-res {
+    font-weight: 600;
+    color: #21a45d;
+    margin-right: 5px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s;
+
+    &:hover, &:focus {
+        border-color: #21a45d;
+        transition: border-color 0.3s;
+    }
 }
 
 .comment-main__text {
