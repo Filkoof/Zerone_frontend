@@ -62,6 +62,7 @@ export default {
         commentEditId: null,
         commentEditParentId: null,
         respongindLink: '',
+        commentName: '',
     }),
     computed: {
         ...mapGetters('profile/info', ['getInfo']),
@@ -81,25 +82,39 @@ export default {
             }
             return this.isShowSubComments ? 'скрыть' : 'показать'
         },
-        onAnswerSub(info) {
-            if (info) this.saveLink(info)
+        saveLink(info) {
+            this.commentName = info.author.first_name + ': '
+            this.$refs.addComment.$refs.addInput.value = info.author.first_name + ': '
+            this.respongindLink = `id:${info.author.id}, name:${info.author.first_name}`
+        },
+        ansfer() {
+            this.commentEdit = false
             this.$refs.addComment.$refs.addInput.focus()
         },
-        saveLink(info) {
+        onAnswerSub(info) {
+            this.ansfer()
             if (info) {
-                this.respongindLink = `id:${info.author.id}, name:${info.author.first_name}`
-                this.$refs.addComment.$refs.addInput.value = info.author.first_name + ': '
+                this.saveLink(info)
             }
         },
         onAnswerMain() {
             this.showSubComments()
-            this.$nextTick(() => this.onAnswerSub())
+            this.$nextTick(() => this.ansfer())
         },
         onEditMain({ commentText }) {
+            this.commentEdit = true
             this.$emit('edit-comment', {
                 commentInfo: this.info,
                 commentText,
             })
+        },
+        onEditSub({ parentId, id, commentText, respongindLink }) {
+            this.commentEdit = true
+            this.commentText = commentText
+            this.$refs.addComment.$refs.addInput.value = commentText
+            this.commentEditId = id
+            this.commentEditParentId = parentId
+            this.respongindLink = respongindLink
         },
         onDeleteComment(id) {
             this.deleteComment({
@@ -117,15 +132,15 @@ export default {
                 perPage: this.perPage,
             })
         },
-        onEditSub({ parentId, id, commentText, respongindLink }) {
-            this.commentEdit = true
-            this.commentText = commentText
-            this.commentEditId = id
-            this.commentEditParentId = parentId
-            this.respongindLink = respongindLink
-        },
         onSubmitComment() {
             if (this.commentText === '') return
+
+            const nameLenght = this.commentName.length
+            const nameCheck = this.commentText.substr(0, nameLenght)
+
+            if (this.respongindLink !== '' && nameCheck == this.commentName) {
+                this.commentText = this.commentText.substr(nameLenght)
+            }
 
             this.commentActions({
                 edit: this.commentEdit,

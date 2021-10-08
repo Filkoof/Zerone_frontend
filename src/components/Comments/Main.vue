@@ -16,12 +16,18 @@
             p.comment-main__text
                 template(v-if='commentTexts.id && commentTexts.name')
                     router-link.comment-main__author-res(:to='{ name: "ProfileId", params: { id: commentTexts.id } }') {{ commentTexts.name }}:
-                span {{ commentTexts.message ? commentTexts.message : info.comment_text }}
+                span {{ commentTexts.messages ? commentTexts.messages : info.comment_text }}
             .comment-main__actions
                 span.comment-main__time {{ info.time | moment("from") }}
                 template(v-if='!admin')
                     a.comment-main__review(href='#', @click.prevent='$emit("answer-comment", info)') {{ $t("answer") }}
-                    like-comment(fill, :active='info.my_like', :id='info.id', @liked='likeAction')
+                    like-comment(
+                        fill,
+                        :quantity='info.likes',
+                        :active='info.my_like',
+                        :id='info.id',
+                        @liked='likeAction'
+                    )
 </template>
 
 <script>
@@ -49,7 +55,7 @@ export default {
         editComment() {
             this.$emit('edit-comment', {
                 id: this.info.id,
-                commentText: this.commentTexts.message ? this.commentTexts.message : this.info.comment_text,
+                commentText: this.commentTexts.messages ? this.commentTexts.messages : this.info.comment_text,
                 parentId: this.info.parent_id,
                 respongindLink:
                     this.commentTexts.id && this.commentTexts.name
@@ -63,23 +69,36 @@ export default {
     },
     computed: {
         commentTexts() {
-            const test = this.info.comment_text.split(',')
+            const resp = this.info.comment_text.split(',')
+            const str = this.info.comment_text
             const arr = {}
-            test.map((el) => {
-                if (el.includes('id')) {
-                    arr.id = el.split(':').pop().trim().replace(/"/g, '')
-                }
-                if (el.includes('name')) {
-                    arr.name = el.split(':').pop().trim().replace(/"/g, '')
-                }
-                if (el.includes('message')) {
-                    arr.message = el.split(':').pop().trim().replace(/"/g, '')
+
+            resp.forEach((el) => {
+                if (el.includes('id:')) {
+                    const i = el.indexOf('id:') + 3
+                    arr.id = el.substr(i).trim()
+                } else if (el.includes('name:')) {
+                    const i = el.indexOf('name:') + 5
+                    arr.name = el.substr(i).trim()
                 }
             })
+            const i = str.indexOf('message:') + 8
+            arr.messages = str.substr(i)
 
             return arr
         },
+
+        commText() {
+            return this.info.comment_text
+        },
     },
+
+    watch: {
+        commText(val) {
+            this.commentTexts
+        },
+    },
+
     i18n: {
         messages: {
             en: {
