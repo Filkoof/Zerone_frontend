@@ -201,7 +201,7 @@ export default {
                         photo_id: this.getStorage && this.getStorage.id,
                         first_name: this.name,
                         last_name: this.lastName,
-                        birth_date: moment([this.year, this.month.val, this.day]).format(),
+                        birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
                         phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
                         about: this.about,
                         country: this.country.trim() === '' ? null : this.country,
@@ -212,7 +212,7 @@ export default {
                 this.apiChangeInfo({
                     first_name: this.name,
                     last_name: this.lastName,
-                    birth_date: moment([this.year, this.month.val, this.day]).format(),
+                    birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
                     phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
                     about: this.about,
                     country: this.country.trim() === '' ? null : this.country,
@@ -234,7 +234,7 @@ export default {
             this.src = ''
         },
         setBritishData() {
-            const data = new Date(this.getInfo.birth_date * 1000)
+            const data = new Date(this.getInfo.birth_date)
             const m = data.getMonth()
             const result = {
                 year: data.getFullYear(),
@@ -251,9 +251,7 @@ export default {
             this.lastName = this.getInfo.last_name
             this.src = this.getInfo.photo
             this.phone = this.getInfo.phone !== null ? this.getInfo.phone.replace(/^[+]?[78]/, '') : ''
-            if (this.getInfo.birth_date) {
-                this.setBritishData()
-            }
+            this.setBritishData()
             this.about = this.getInfo.about
             this.country = this.getInfo.country !== null ? this.getInfo.country : ''
             this.city = this.getInfo.city !== null ? this.getInfo.city : ''
@@ -294,12 +292,6 @@ export default {
             }
             this.city = value.title
             this.citiesClose()
-        },
-    },
-    watch: {
-        getInfo(value) {
-            if (!value) return
-            this.setInfo()
         },
     },
     mounted() {
