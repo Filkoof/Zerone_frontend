@@ -83,265 +83,266 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import ClickOutside from 'vue-click-outside'
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue'
+
 export default {
-    name: 'SettingsMain',
-    components: { UserInfoFormBlock },
-    data: () => ({
-        name: '',
-        lastName: '',
-        phone: '',
-        about: '',
-        day: 1,
-        month: {},
-        year: 2000,
-        photo: null,
-        src: '',
-        country: '',
-        city: '',
-        isCountriesShow: false,
-        isCitiesShow: false,
-        isCountryShow: false,
-        country_city: {
-            country: '',
-            city: '',
-        },
-    }),
-    computed: {
-        ...mapGetters('global/storage', ['getStorage']),
-        ...mapGetters('profile/info', ['getInfo']),
-        ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
+  name: 'SettingsMain',
+  components: { UserInfoFormBlock },
+  data: () => ({
+    name: '',
+    lastName: '',
+    phone: '',
+    about: '',
+    day: 1,
+    month: {},
+    year: 2000,
+    photo: null,
+    src: '',
+    country: '',
+    city: '',
+    isCountriesShow: false,
+    isCitiesShow: false,
+    isCountryShow: false,
+    country_city: {
+      country: '',
+      city: ''
+    }
+  }),
+  computed: {
+    ...mapGetters('global/storage', ['getStorage']),
+    ...mapGetters('profile/info', ['getInfo']),
+    ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
 
-        countries() {
-            if (this.country !== '') {
-                return this.getCountries.filter((c) => c.title.toUpperCase().includes(this.country.toUpperCase()))
-            }
-        },
-        cities() {
-            if (this.city !== '') {
-                return this.getCities.filter((c) => c.title.toUpperCase().includes(this.city.toUpperCase()))
-            }
-        },
-        phoneNumber() {
-            return this.phone.replace(/\D+/g, '')
-        },
-        years() {
-            return Array.from({ length: 60 }, (value, index) => 1970 + index)
-        },
-        months() {
-            if (localStorage.getItem('lang') === 'en') {
-                return [
-                    { val: 0, text: 'January' },
-                    { val: 1, text: 'February' },
-                    { val: 2, text: 'March' },
-                    { val: 3, text: 'April' },
-                    { val: 4, text: 'May' },
-                    { val: 5, text: 'June' },
-                    { val: 6, text: 'July' },
-                    { val: 7, text: 'August' },
-                    { val: 8, text: 'September' },
-                    { val: 9, text: 'October' },
-                    { val: 10, text: 'November' },
-                    { val: 11, text: 'December' },
-                ]
-            }
-
-            return [
-                { val: 0, text: 'Января' },
-                { val: 1, text: 'Февраля' },
-                { val: 2, text: 'Марта' },
-                { val: 3, text: 'Апреля' },
-                { val: 4, text: 'Мая' },
-                { val: 5, text: 'Июня' },
-                { val: 6, text: 'Июля' },
-                { val: 7, text: 'Августа' },
-                { val: 8, text: 'Сентября' },
-                { val: 9, text: 'Октября' },
-                { val: 10, text: 'Ноября' },
-                { val: 11, text: 'Декабря' },
-            ]
-        },
-        days() {
-            switch (this.month.val) {
-                case 0:
-                    return 31
-                case 1:
-                    return this.years % 4 == 0 ? 29 : 28
-                case 2:
-                    return 31
-                case 3:
-                    return 30
-                case 4:
-                    return 31
-                case 5:
-                    return 30
-                case 6:
-                    return 31
-                case 7:
-                    return 31
-                case 8:
-                    return 30
-                case 9:
-                    return 31
-                case 10:
-                    return 30
-                case 11:
-                    return 31
-            }
-        },
+    countries() {
+      if (this.country !== '') {
+        return this.getCountries.filter(c => c.title.toUpperCase().includes(this.country.toUpperCase()))
+      }
     },
-    methods: {
-        ...mapActions('global/storage', ['apiStorage']),
-        ...mapActions('profile/info', ['apiChangeInfo']),
-        ...mapActions('profile/country_city', ['apiCountries', 'apiCities']),
-
-        submitHandler() {
-            if (this.src !== this.getInfo.photo && this.src !== '') {
-                this.apiStorage(this.photo).then(() => {
-                    this.apiChangeInfo({
-                        photo_id: this.getStorage && this.getStorage.id,
-                        first_name: this.name,
-                        last_name: this.lastName,
-                        birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
-                        phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
-                        about: this.about,
-                        country: this.country.trim() === '' ? null : this.country,
-                        city: this.city.trim() === '' ? null : this.city,
-                    })
-                })
-            } else {
-                this.apiChangeInfo({
-                    first_name: this.name,
-                    last_name: this.lastName,
-                    birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
-                    phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
-                    about: this.about,
-                    country: this.country.trim() === '' ? null : this.country,
-                    city: this.city.trim() === '' ? null : this.city,
-                })
-            }
-        },
-        processFile(event) {
-            this.photo = event.target.files[0]
-            const reader = new window.FileReader()
-            reader.onload = (e) => (this.src = e.target.result)
-            reader.readAsDataURL(this.photo)
-        },
-        loadPhoto() {
-            this.$refs.photo.click()
-        },
-        deletePhoto() {
-            this.photo = null
-            this.src = ''
-        },
-        setBritishData() {
-            const data = new Date(this.getInfo.birth_date)
-            const m = data.getMonth()
-            const result = {
-                year: data.getFullYear(),
-                month: this.months[m],
-                day: data.getDate(),
-            }
-
-            this.day = result.day
-            this.month = result.month
-            this.year = result.year
-        },
-        setInfo() {
-            this.name = this.getInfo.first_name
-            this.lastName = this.getInfo.last_name
-            this.src = this.getInfo.photo
-            this.phone = this.getInfo.phone !== null ? this.getInfo.phone.replace(/^[+]?[78]/, '') : ''
-            this.setBritishData()
-            this.about = this.getInfo.about
-            this.country = this.getInfo.country !== null ? this.getInfo.country : ''
-            this.city = this.getInfo.city !== null ? this.getInfo.city : ''
-        },
-        countriesOpen() {
-            this.isCountriesShow = true
-        },
-        countriesClose() {
-            if (this.city === '') {
-                this.isCountryShow = false
-            }
-            this.isCountriesShow = false
-        },
-        setCountry(value) {
-            this.country = value
-            this.countriesClose()
-
-            if (this.countries[0].id && this.countries.length == 1) {
-                this.apiCities(this.countries[0].id)
-            }
-        },
-        citiesOpen() {
-            this.isCitiesShow = true
-        },
-        citiesClose() {
-            this.isCitiesShow = false
-        },
-        setCity(value) {
-            if (value === '') {
-                this.country = ''
-                this.isCountryShow = false
-                return
-            }
-            if (this.cities.length === 0) {
-                this.country = ''
-                this.isCountryShow = true
-                return
-            }
-            this.city = value.title
-            this.citiesClose()
-        },
+    cities() {
+      if (this.city !== '') {
+        return this.getCities.filter(c => c.title.toUpperCase().includes(this.city.toUpperCase()))
+      }
     },
-    mounted() {
-        this.getInfo ? this.setInfo() : (this.month = this.months[0])
+    phoneNumber() {
+      return this.phone.replace(/\D+/g, '')
+    },
+    years() {
+      return Array.from({ length: 60 }, (value, index) => 1970 + index)
+    },
+    months() {
+      if (localStorage.getItem('lang') === 'en') {
+        return [
+          { val: 0, text: 'January' },
+          { val: 1, text: 'February' },
+          { val: 2, text: 'March' },
+          { val: 3, text: 'April' },
+          { val: 4, text: 'May' },
+          { val: 5, text: 'June' },
+          { val: 6, text: 'July' },
+          { val: 7, text: 'August' },
+          { val: 8, text: 'September' },
+          { val: 9, text: 'October' },
+          { val: 10, text: 'November' },
+          { val: 11, text: 'December' }
+        ]
+      }
 
-        this.apiCountries()
+      return [
+        { val: 0, text: 'Января' },
+        { val: 1, text: 'Февраля' },
+        { val: 2, text: 'Марта' },
+        { val: 3, text: 'Апреля' },
+        { val: 4, text: 'Мая' },
+        { val: 5, text: 'Июня' },
+        { val: 6, text: 'Июля' },
+        { val: 7, text: 'Августа' },
+        { val: 8, text: 'Сентября' },
+        { val: 9, text: 'Октября' },
+        { val: 10, text: 'Ноября' },
+        { val: 11, text: 'Декабря' }
+      ]
     },
-    directives: {
-        ClickOutside,
+    days() {
+      switch (this.month.val) {
+        case 0:
+          return 31
+        case 1:
+          return this.years % 4 == 0 ? 29 : 28
+        case 2:
+          return 31
+        case 3:
+          return 30
+        case 4:
+          return 31
+        case 5:
+          return 30
+        case 6:
+          return 31
+        case 7:
+          return 31
+        case 8:
+          return 30
+        case 9:
+          return 31
+        case 10:
+          return 30
+        case 11:
+          return 31
+      }
+    }
+  },
+  methods: {
+    ...mapActions('global/storage', ['apiStorage']),
+    ...mapActions('profile/info', ['apiChangeInfo']),
+    ...mapActions('profile/country_city', ['apiCountries', 'apiCities']),
+
+    submitHandler() {
+      if (this.src !== this.getInfo.photo && this.src !== '') {
+        this.apiStorage(this.photo).then(() => {
+          this.apiChangeInfo({
+            photo: this.getStorage && this.getStorage.id,
+            first_name: this.name,
+            last_name: this.lastName,
+            birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
+            phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
+            about: this.about,
+            country: this.country.trim() === '' ? null : this.country,
+            city: this.city.trim() === '' ? null : this.city
+          })
+        })
+      } else {
+        this.apiChangeInfo({
+          first_name: this.name,
+          last_name: this.lastName,
+          birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
+          phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
+          about: this.about,
+          country: this.country.trim() === '' ? null : this.country,
+          city: this.city.trim() === '' ? null : this.city
+        })
+      }
     },
-    i18n: {
-        messages: {
-            en: {
-                tel: 'Phone:',
-                entTel: 'Enter your phone',
-                lastName: 'Last name:',
-                entLastName: 'Enter last name',
-                name: 'Name:',
-                entName: 'Enter name',
-                country: 'Country:',
-                entCountry: 'Enter country',
-                city: 'City:',
-                entCity: 'Enter city',
-                birthDay: 'Date of Birth:',
-                photo: 'Photo:',
-                myself: 'About myself:',
-                download: 'Download',
-                cancel: 'Cancel',
-                save: 'Save',
-            },
-            ru: {
-                tel: 'Телефон:',
-                entTel: 'Введите телефон',
-                lastName: 'Фамилия:',
-                entLastName: 'Введите фамилию',
-                name: 'Имя:',
-                entName: 'Введите имя',
-                country: 'Страна:',
-                entCountry: 'Введите страну',
-                city: 'Город:',
-                entCity: 'Введите город',
-                birthDay: 'Дата рождения:',
-                photo: 'Фотография:',
-                myself: 'О себе:',
-                download: 'Загрузить',
-                cancel: 'Отмена',
-                save: 'Сохранить',
-            },
-        },
+    processFile(event) {
+      this.photo = event.target.files[0]
+      const reader = new window.FileReader()
+      reader.onload = e => (this.src = e.target.result)
+      reader.readAsDataURL(this.photo)
     },
+    loadPhoto() {
+      this.$refs.photo.click()
+    },
+    deletePhoto() {
+      this.photo = null
+      this.src = ''
+    },
+    setBritishData() {
+      const data = new Date(this.getInfo.birth_date)
+      const m = data.getMonth()
+      const result = {
+        year: data.getFullYear(),
+        month: this.months[m],
+        day: data.getDate()
+      }
+
+      this.day = result.day
+      this.month = result.month
+      this.year = result.year
+    },
+    setInfo() {
+      this.name = this.getInfo.first_name
+      this.lastName = this.getInfo.last_name
+      this.src = this.getInfo.photo
+      this.phone = this.getInfo.phone !== null ? this.getInfo.phone.replace(/^[+]?[78]/, '') : ''
+      this.setBritishData()
+      this.about = this.getInfo.about
+      this.country = this.getInfo.country !== null ? this.getInfo.country : ''
+      this.city = this.getInfo.city !== null ? this.getInfo.city : ''
+    },
+    countriesOpen() {
+      this.isCountriesShow = true
+    },
+    countriesClose() {
+      if (this.city === '') {
+        this.isCountryShow = false
+      }
+      this.isCountriesShow = false
+    },
+    setCountry(value) {
+      this.country = value
+      this.countriesClose()
+
+      if (this.countries[0].id && this.countries.length == 1) {
+        this.apiCities(this.countries[0].id)
+      }
+    },
+    citiesOpen() {
+      this.isCitiesShow = true
+    },
+    citiesClose() {
+      this.isCitiesShow = false
+    },
+    setCity(value) {
+      if (value === '') {
+        this.country = ''
+        this.isCountryShow = false
+        return
+      }
+      if (this.cities.length === 0) {
+        this.country = ''
+        this.isCountryShow = true
+        return
+      }
+      this.city = value.title
+      this.citiesClose()
+    }
+  },
+  mounted() {
+    this.getInfo ? this.setInfo() : (this.month = this.months[0])
+
+    this.apiCountries()
+  },
+  directives: {
+    ClickOutside
+  },
+  i18n: {
+    messages: {
+      en: {
+        tel: 'Phone:',
+        entTel: 'Enter your phone',
+        lastName: 'Last name:',
+        entLastName: 'Enter last name',
+        name: 'Name:',
+        entName: 'Enter name',
+        country: 'Country:',
+        entCountry: 'Enter country',
+        city: 'City:',
+        entCity: 'Enter city',
+        birthDay: 'Date of Birth:',
+        photo: 'Photo:',
+        myself: 'About myself:',
+        download: 'Download',
+        cancel: 'Cancel',
+        save: 'Save'
+      },
+      ru: {
+        tel: 'Телефон:',
+        entTel: 'Введите телефон',
+        lastName: 'Фамилия:',
+        entLastName: 'Введите фамилию',
+        name: 'Имя:',
+        entName: 'Введите имя',
+        country: 'Страна:',
+        entCountry: 'Введите страну',
+        city: 'Город:',
+        entCity: 'Введите город',
+        birthDay: 'Дата рождения:',
+        photo: 'Фотография:',
+        myself: 'О себе:',
+        download: 'Загрузить',
+        cancel: 'Отмена',
+        save: 'Сохранить'
+      }
+    }
+  }
 }
 </script>
 

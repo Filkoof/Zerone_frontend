@@ -15,12 +15,9 @@
             :deleted='getInfo.id === i.author.id',
             @edit-comment='onEditMain'
         )
-        .div(v-if='isOpenComments && commentOffset + commentPerPage <= info.total') 
+        .div(v-if='isOpenComments && commentOffset + commentPerPage < info.total') 
             button.btn-load-comments-text(type='button', v-if='!isLoad', @click.prevent='loadComments') Показать следующие комментарии
-            .btn-load-comments-container(v-else)
-                span.btn-load-comments-container_icon
-                span.btn-load-comments-container_icon
-                span.btn-load-comments-container_icon
+        is-loading( :isLoad='isLoad', :total='info.total', :itemPerPage='commentPerPage')
         .comments__add(v-if='!admin')
             comment-add(ref='addComment', :id='id', v-model='commentText', @submited='onSubmitComment')
 </template>
@@ -29,6 +26,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import CommentBlock from '@/components/Comments/Block'
 import CommentAdd from '@/components/Comments/Add'
+import isLoading from '@/components/isLoading'
 export default {
   name: 'Comments',
   props: {
@@ -38,7 +36,7 @@ export default {
     edit: Boolean,
     deleted: Boolean
   },
-  components: { CommentBlock, CommentAdd },
+  components: { CommentBlock, CommentAdd, isLoading },
   data: () => ({
     isOpenComments: false,
     commentText: '',

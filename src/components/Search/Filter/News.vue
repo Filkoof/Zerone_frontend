@@ -27,11 +27,11 @@ export default {
     date_from: 'year',
     date_to: 0,
     offset: 0,
-    itemPerPage: 20,
+    itemPerPage: 10,
     author: ''
   }),
   computed: {
-    ...mapGetters('global/search', ['searchText'])
+    ...mapGetters('global/search', ['searchText', 'getLoadNews'])
   },
   methods: {
     ...mapActions('global/search', ['searchNews']),
@@ -45,8 +45,19 @@ export default {
           .subtract(1, this.date_from)
           .valueOf(),
         date_to: this.date_to,
-        author: this.author
+        author: this.author,
+        offset: this.offset,
+        itemPerPage: this.itemPerPage
+      }).then(() => {
+        this.offset += this.itemPerPage
       })
+    }
+  },
+  watch: {
+    getLoadNews: function(val) {
+      if (val) {
+        this.onSearchNews()
+      }
     }
   },
   mounted() {
@@ -54,3 +65,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.add-tags {
+  display: flex;
+}
+</style>

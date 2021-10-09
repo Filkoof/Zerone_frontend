@@ -2,7 +2,6 @@
   .search-block
     .search-block__header
       h2.search-block__title {{title}}
-      a.search-block__more(href="#" @click.prevent="changeTab(id)" v-if="all") Смотреть всех
     .search-block__list
       slot
 </template>

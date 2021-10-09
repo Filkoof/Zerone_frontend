@@ -7,7 +7,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 import './settings'
+import Vload from '@/directives/Vload'
 
+Vue.directive('load', Vload)
 Vue.use(VueI18n)
 
 if (!localStorage.getItem('lang')) {

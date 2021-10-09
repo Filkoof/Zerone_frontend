@@ -34,85 +34,85 @@
 import { mapActions } from 'vuex'
 import LikeComment from '@/components/LikeComment'
 export default {
-    name: 'CommentMain',
-    props: {
-        admin: Boolean,
-        info: Object,
-        edit: Boolean,
-        deleted: Boolean,
+  name: 'CommentMain',
+  props: {
+    admin: Boolean,
+    info: Object,
+    edit: Boolean,
+    deleted: Boolean
+  },
+  components: { LikeComment },
+  methods: {
+    ...mapActions('global/likes', ['putLike', 'deleteLike']),
+    likeAction(active) {
+      active
+        ? this.deleteLike({ item_id: this.info.id, post_id: this.info.post_id, type: 'Comment' })
+        : this.putLike({ item_id: this.info.id, post_id: this.info.post_id, type: 'Comment' })
     },
-    components: { LikeComment },
-    methods: {
-        ...mapActions('global/likes', ['putLike', 'deleteLike']),
-        likeAction(active) {
-            active
-                ? this.deleteLike({ item_id: this.info.id, post_id: this.info.post_id, type: 'Comment' })
-                : this.putLike({ item_id: this.info.id, post_id: this.info.post_id, type: 'Comment' })
-        },
-        onDeleteComment() {
-            this.$emit('delete-comment', this.info.id)
-        },
-        editComment() {
-            this.$emit('edit-comment', {
-                id: this.info.id,
-                commentText: this.commentTexts.messages ? this.commentTexts.messages : this.info.comment_text,
-                parentId: this.info.parent_id,
-                respongindLink:
-                    this.commentTexts.id && this.commentTexts.name
-                        ? `id:${this.commentTexts.id}, name:${this.commentTexts.name}`
-                        : '',
-            })
-        },
-        onRecoverComment() {
-            this.$emit('recover-comment', this.info.id)
-        },
+    onDeleteComment() {
+      this.$emit('delete-comment', this.info.id)
     },
-    computed: {
-        commentTexts() {
-            const resp = this.info.comment_text.split(',')
-            const str = this.info.comment_text
-            const arr = {}
+    editComment() {
+      this.$emit('edit-comment', {
+        id: this.info.id,
+        commentText: this.commentTexts.messages ? this.commentTexts.messages : this.info.comment_text,
+        parentId: this.info.parent_id,
+        respongindLink:
+          this.commentTexts.id && this.commentTexts.name
+            ? `id:${this.commentTexts.id}, name:${this.commentTexts.name}`
+            : ''
+      })
+    },
+    onRecoverComment() {
+      this.$emit('recover-comment', this.info.id)
+    }
+  },
+  computed: {
+    commentTexts() {
+      const resp = this.info.comment_text.split(',')
+      const str = this.info.comment_text
+      const arr = {}
 
-            resp.forEach((el) => {
-                if (el.includes('id:')) {
-                    const i = el.indexOf('id:') + 3
-                    arr.id = el.substr(i).trim()
-                } else if (el.includes('name:')) {
-                    const i = el.indexOf('name:') + 5
-                    arr.name = el.substr(i).trim()
-                }
-            })
-            const i = str.indexOf('message:') + 8
-            arr.messages = str.substr(i)
+      resp.forEach(el => {
+        if (el.includes('id:')) {
+          const i = el.indexOf('id:') + 3
+          arr.id = el.substr(i).trim()
+        } else if (el.includes('name:')) {
+          const i = el.indexOf('name:') + 5
+          arr.name = el.substr(i).trim()
+        }
+      })
+      const i = str.indexOf('message:') + 8
+      arr.messages = str.substr(i)
 
-            return arr
-        },
-
-        commText() {
-            return this.info.comment_text
-        },
+      return arr
     },
 
-    watch: {
-        commText(val) {
-            this.commentTexts
-        },
-    },
+    commText() {
+      return this.info.comment_text
+    }
+  },
 
-    i18n: {
-        messages: {
-            en: {
-                del: 'Comment has been deleted',
-                restore: 'Restore',
-                answer: 'To answer',
-            },
-            ru: {
-                del: 'Комментарий удален',
-                restore: 'Восстановить',
-                answer: 'Ответить',
-            },
-        },
-    },
+  watch: {
+    commText(val) {
+      this.commentTexts
+    }
+  },
+
+  i18n: {
+    messages: {
+      en: {
+        del: 'Comment has been deleted',
+        restore: 'Restore',
+        answer: 'To answer'
+      },
+      ru: {
+        del: 'Комментарий удален',
+        restore: 'Восстановить',
+        answer: 'Ответить'
+      }
+    }
+  }
 }
 </script>
 

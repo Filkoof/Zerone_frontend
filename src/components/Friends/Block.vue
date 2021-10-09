@@ -45,100 +45,94 @@
 import Modal from '@/components/Modal'
 import { mapActions, mapGetters } from 'vuex'
 export default {
-    name: 'FriendsBlock',
-    props: {
-        friend: Boolean,
-        admin: Boolean,
-        blocked: Boolean,
-        moderator: Boolean,
-        info: {
-            type: Object,
-            default: () => ({
-                first_name: 'Артем',
-                last_name: 'Иващенко',
-                birth_date: 1559751301818,
-                town_id: 1,
-                photo: '/static/img/user/1.jpg',
-                id: 124,
-            }),
-        },
+  name: 'FriendsBlock',
+  props: {
+    friend: Boolean,
+    admin: Boolean,
+    blocked: Boolean,
+    moderator: Boolean,
+    info: {
+      type: Object,
+      default: () => ({
+        first_name: 'Артем',
+        last_name: 'Иващенко',
+        birth_date: 1559751301818,
+        town_id: 1,
+        photo: '/static/img/user/1.jpg',
+        id: 124
+      })
+    }
+  },
+  components: { Modal },
+  data: () => ({
+    modalShow: false,
+    modalType: 'delete'
+  }),
+  computed: {
+    ...mapGetters('profile/dialogs', ['dialogs']),
+    modalText() {
+      if (localStorage.getItem('lang') === 'en') {
+        return this.modalType === 'delete'
+          ? `Are you sure you want to remove the user  ${this.info.first_name +
+              ' ' +
+              this.info.last_name} from friends?`
+          : this.modalType === 'deleteModerator'
+          ? `Are you sure you want to be removed ${this.info.first_name +
+              ' ' +
+              this.info.last_name} from the list of moderators?`
+          : `Are you sure you want to block the user ${this.info.first_name + ' ' + this.info.last_name}?`
+      }
+      return this.modalType === 'delete'
+        ? `Вы уверены, что хотите удалить пользователя ${this.info.first_name + ' ' + this.info.last_name} из друзей?`
+        : this.modalType === 'deleteModerator'
+        ? `Вы уверены, что хотите удалить ${this.info.first_name + ' ' + this.info.last_name} из списка модераторов?`
+        : `Вы уверены, что хотите заблокировать пользователя ${this.info.first_name + ' ' + this.info.last_name}?`
+    }
+  },
+  methods: {
+    ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends']),
+    // ...mapActions('profile/dialogs', ['openDialog']),
+    ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
+    closeModal() {
+      this.modalShow = false
     },
-    components: { Modal },
-    data: () => ({
-        modalShow: false,
-        modalType: 'delete',
-    }),
-    computed: {
-        ...mapGetters('profile/dialogs', ['dialogs']),
-        modalText() {
-            if (localStorage.getItem('lang') === 'en') {
-                return this.modalType === 'delete'
-                    ? `Are you sure you want to remove the user  ${
-                          this.info.first_name + ' ' + this.info.last_name
-                      } from friends?`
-                    : this.modalType === 'deleteModerator'
-                    ? `Are you sure you want to be removed ${
-                          this.info.first_name + ' ' + this.info.last_name
-                      } from the list of moderators?`
-                    : `Are you sure you want to block the user ${this.info.first_name + ' ' + this.info.last_name}?`
-            }
-            return this.modalType === 'delete'
-                ? `Вы уверены, что хотите удалить пользователя ${
-                      this.info.first_name + ' ' + this.info.last_name
-                  } из друзей?`
-                : this.modalType === 'deleteModerator'
-                ? `Вы уверены, что хотите удалить ${
-                      this.info.first_name + ' ' + this.info.last_name
-                  } из списка модераторов?`
-                : `Вы уверены, что хотите заблокировать пользователя ${
-                      this.info.first_name + ' ' + this.info.last_name
-                  }?`
-        },
+    openModal(id) {
+      this.modalType = id
+      this.modalShow = true
     },
-    methods: {
-        ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends']),
-        // ...mapActions('profile/dialogs', ['openDialog']),
-        ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
-        closeModal() {
-            this.modalShow = false
-        },
-        openModal(id) {
-            this.modalType = id
-            this.modalShow = true
-        },
-        sendMessage(userId) {
-            this.$router.push({ name: 'Im', query: { userId: userId } })
-        },
-        onConfrim(id) {
-            this.modalType === 'delete'
-                ? this.apiDeleteFriends(id).then(() => this.closeModal())
-                : this.modalType === 'deleteModerator'
-                ? console.log('delete moderator')
-                : this.apiBlockUser(id).then(() => this.closeModal())
-        },
+    sendMessage(userId) {
+      this.$router.push({ name: 'Im', query: { userId: userId } })
     },
-    i18n: {
-        messages: {
-            en: {
-                sendMassage: 'Send message',
-                del: 'Remove from friends',
-                info: 'profile is not completed',
-                add: 'Add as Friend',
-                blocked: 'Blocked',
-                yes: 'Yes',
-                cancel: 'Сancel',
-            },
-            ru: {
-                sendMessage: 'Написать сообщение',
-                del: 'Удалить из друзей',
-                info: 'профиль не заполнен',
-                add: 'Добавить в друзья',
-                blocked: 'Заблокировать',
-                yes: 'Да',
-                cancel: 'Отмена',
-            },
-        },
-    },
+    onConfrim(id) {
+      this.modalType === 'delete'
+        ? this.apiDeleteFriends(id).then(() => this.closeModal())
+        : this.modalType === 'deleteModerator'
+        ? console.log('delete moderator')
+        : this.apiBlockUser(id).then(() => this.closeModal())
+    }
+  },
+  i18n: {
+    messages: {
+      en: {
+        sendMassage: 'Send message',
+        del: 'Remove from friends',
+        info: 'profile is not completed',
+        add: 'Add as Friend',
+        blocked: 'Blocked',
+        yes: 'Yes',
+        cancel: 'Сancel'
+      },
+      ru: {
+        sendMessage: 'Написать сообщение',
+        del: 'Удалить из друзей',
+        info: 'профиль не заполнен',
+        add: 'Добавить в друзья',
+        blocked: 'Заблокировать',
+        yes: 'Да',
+        cancel: 'Отмена'
+      }
+    }
+  }
 }
 </script>
 
@@ -151,9 +145,8 @@ export default {
     box-shadow: standart-boxshadow;
     padding: 20px;
     width: 100%;
-    max-width: calc(50% - 20px);
+    max-width: 600px;
     display: inline-flex;
-    margin: 0 10px 20px;
 }
 
 .friends-block__img {

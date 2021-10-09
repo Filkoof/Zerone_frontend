@@ -49,12 +49,12 @@ export default {
     country: null,
     city: null,
     offset: 0,
-    itemPerPage: 20
+    itemPerPage: 10
   }),
   computed: {
-    ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
+    ...mapGetters('profile/country_city', ['getCountries', 'getCities', 'getLoadUsers']),
     getCityFilter() {
-      if (!this.country || this.country === "null") {
+      if (!this.country || this.country === 'null') {
         return this.getCities
       } else {
         return this.getCities.filter(el => el.city === this.country)
@@ -65,8 +65,10 @@ export default {
     ...mapActions('global/search', ['searchUsers', 'clearSearch']),
     ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities']),
     onSearchUsers() {
-      let { first_name, last_name, age_from, age_to, country, city } = this
-      this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
+      let { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage } = this
+      this.searchUsers({ first_name, last_name, age_from, age_to, country, city, offset, itemPerPage }).then(() => {
+        this.offset += this.itemPerPage
+      })
     }
   },
   created() {
@@ -74,8 +76,13 @@ export default {
     this.apiAllCities()
   },
   watch: {
+    getLoadUsers: function(val) {
+      if (val) {
+        this.onSearchUsers()
+      }
+    },
     city(value) {
-      if (!value || value === "null") return
+      if (!value || value === 'null') return
       const countryId = this.getCities.find(el => el.country === value).cityId
       this.country = this.getCountries.find(el => el.id === countryId).title
     }

@@ -35,10 +35,10 @@ export default {
   methods: {
     ...mapMutations('global/search', ['setSearchText']),
     ...mapActions('profile/info', ['apiInfo']),
-    ...mapActions('global/search', ['searchAll']),
+    ...mapActions('global/search', ['searchUsers']),
     onSearch() {
-      if (this.searchText === '') this.$router.push({ name: 'Search'})
-      this.searchAll(this.searchText).then(() => {
+      if (this.searchText === '') this.$router.push({ name: 'Search' })
+      this.searchUsers(this.searchText).then(() => {
         this.$router.push({ name: 'Search', query: { text: this.searchText } })
       })
     },
@@ -51,16 +51,16 @@ export default {
   },
   i18n: {
     messages: {
-      "en": {
-        "search": "Search",
-        "admin": "administrator"
+      en: {
+        search: 'Search',
+        admin: 'administrator'
       },
-      "ru": {
-        "search": "Поиск",
-        "admin": "администратор"
+      ru: {
+        search: 'Поиск',
+        admin: 'администратор'
       }
     }
-  },
+  }
 }
 </script>
 

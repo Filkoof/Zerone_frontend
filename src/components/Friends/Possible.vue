@@ -30,17 +30,17 @@ export default {
   },
   i18n: {
     messages: {
-      "en": {
-        "title": "Maybe you know them",
-        "add": "Add",
-        "find": "Find friends"
+      en: {
+        title: 'Maybe you know them',
+        add: 'Add',
+        find: 'Find friends'
       },
-      "ru": {
-        "title": "Возможно вы их знаете",
-        "add": "Добавить",
-        "find": "Искать друзей"
+      ru: {
+        title: 'Возможно вы их знаете',
+        add: 'Добавить',
+        find: 'Искать друзей'
       }
     }
-  },
+  }
 }
 </script>

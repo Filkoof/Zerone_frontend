@@ -51,12 +51,11 @@ export default {
           }
         },
         'forgot-success': {
-          title: 'A link to reset your password has been sent to your e-mail',
-          text:
-            'Within 5 minutes, a letter with a link will be sent to the mail you specified. Follow it to recover your password.',
+          title: 'A new password has been sent to your e-mail',
+          text: 'Within 5 minutes, a new password will be sent to the email address you specified.',
           btn: {
-            link: '',
-            text: 'Go to e-mail'
+            link: 'Login',
+            text: 'Back to authorization'
           }
         },
         'change-password': {
@@ -147,12 +146,11 @@ export default {
           }
         },
         'forgot-success': {
-          title: 'На ваш e-mail отправлена ссылка для восстановления пароля',
-          text:
-            'В течение 5 минут, на указанную вами почту, придёт письмо со ссылкой. Перейдите по ней, чтобы восстановить пароль.',
+          title: 'На ваш e-mail отправлен новый пароль',
+          text: 'В течение 5 минут, на указанную вами почту, придёт новый пароль.',
           btn: {
-            link: '',
-            text: 'Перейти в почту'
+            link: 'Login',
+            text: 'Вернуться к авторизации'
           }
         },
         'change-password': {

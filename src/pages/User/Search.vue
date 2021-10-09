@@ -2,27 +2,53 @@
   .search
     .search__tabs
       search-tabs
-      component(:is="`search-filter-${tabSelect}`" v-if="tabSelect !== 'all'")
-    .search__main(:class="{high: tabSelect !== 'all'}")
+      component(:is="`search-filter-${tabSelect}`")
+    .search__main
       component(:is="`search-${tabSelect}`")
+      is-loading( :isLoad='getData.status', :total='getData.total', :itemPerPage='getData.perPage', v-load="loadData")
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import SearchTabs from '@/components/Search/Tabs'
-import SearchAll from '@/components/Search/All'
 import SearchUsers from '@/components/Search/Users'
 import SearchNews from '@/components/Search/News'
 import SearchFilterUsers from '@/components/Search/Filter/Users'
 import SearchFilterNews from '@/components/Search/Filter/News'
+import isLoading from '@/components/isLoading'
 export default {
   name: 'Search',
-  components: { SearchTabs, SearchAll, SearchUsers, SearchNews, SearchFilterUsers, SearchFilterNews },
+  components: { SearchTabs, SearchUsers, SearchNews, SearchFilterUsers, SearchFilterNews, isLoading },
   data: () => ({
     hasSearchText: true
   }),
   computed: {
-    ...mapGetters('global/search', ['searchText', 'tabSelect'])
+    ...mapGetters('global/search', [
+      'searchText',
+      'tabSelect',
+      'getTotalUsers',
+      'getLoadUsers',
+      'getPerPageUsers',
+      'getTotalNews',
+      'getLoadNews',
+      'getPerPageNews'
+    ]),
+
+    getData() {
+      if (this.tabSelect == 'users') {
+        return {
+          total: this.getTotalUsers,
+          perPage: this.getPerPageUsers,
+          status: this.getLoadUsers
+        }
+      } else {
+        return {
+          total: this.getTotalNews,
+          perPage: this.getPerPageNews,
+          status: this.getLoadNews
+        }
+      }
+    }
   },
   watch: {
     searchText() {
@@ -30,14 +56,14 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('global/search', ['setTabSelect', 'routePushWithQuery']),
-    ...mapActions('global/search', ['searchAll', 'clearSearch'])
-  },
-  mounted() {
-    if (this.$route.query.tab) this.setTabSelect(this.$route.query.tab)
-    this.$route.query.text ? this.searchAll(this.$route.query.text) : (this.hasSearchText = false)
-    document.body.onkeydown = e => {
-      if (e.which === 13) this.hasSearchText = true
+    ...mapMutations('global/search', ['setTabSelect', 'routePushWithQuery', 'setLoadUsers', 'setloadNews']),
+    ...mapActions('global/search', ['clearSearch']),
+    loadData() {
+      if (this.tabSelect == 'users') {
+        this.setLoadUsers(true)
+      } else {
+        this.setloadNews(true)
+      }
     }
   },
   beforeDestroy() {
@@ -68,9 +94,7 @@ export default {
   padding: 100px 40px 50px;
   height: 100%;
   overflow-y: auto;
+  padding-top: 250px;
 
-  &.high {
-    padding-top: 250px;
-  }
 }
 </style>

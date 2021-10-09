@@ -33,11 +33,12 @@ export default {
 
       this.passwordRecovery({ email: this.getMail, key: this.code })
         .then(resp => {
-          // this.$router.push({ name: 'ForgotSuccess' })
-          console.log(123)
+          if (resp.status === 200) {
+            this.$router.push({ name: 'ForgotSuccess' })
+          }
         })
         .catch(err => {
-          console.log(err)
+          this.$router.push({ name: 'ChangePasswordFailed' })
         })
     }
   },
