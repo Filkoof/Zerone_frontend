@@ -31,7 +31,7 @@ Vue.component('button-hover', {
   data: () => ({
     x: null,
     y: null,
-    isAnimated: true,
+    isAnimated: true
   }),
   computed: {
     classObject() {

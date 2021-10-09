@@ -30,91 +30,91 @@ import { mapGetters, mapActions } from 'vuex'
 import CommentBlock from '@/components/Comments/Block'
 import CommentAdd from '@/components/Comments/Add'
 export default {
-    name: 'Comments',
-    props: {
-        admin: Boolean,
-        info: Object,
-        id: Number,
-        edit: Boolean,
-        deleted: Boolean,
+  name: 'Comments',
+  props: {
+    admin: Boolean,
+    info: Object,
+    id: Number,
+    edit: Boolean,
+    deleted: Boolean
+  },
+  components: { CommentBlock, CommentAdd },
+  data: () => ({
+    isOpenComments: false,
+    commentText: '',
+    commentEdit: false,
+    commentEditInfo: null,
+    isLoad: false,
+    commentOffset: 0,
+    commentPerPage: 5
+  }),
+  computed: {
+    ...mapGetters('profile/info', ['getInfo']),
+    showText() {
+      if (localStorage.getItem('lang') === 'en') {
+        return this.isOpenComments ? 'hide' : 'show'
+      }
+      return this.isOpenComments ? 'скрыть' : 'показать'
+    }
+  },
+  methods: {
+    ...mapActions('profile/comments', ['commentActions']),
+    ...mapActions('profile/comments', ['addCommentsById']),
+    showComments() {
+      this.isOpenComments = !this.isOpenComments
     },
-    components: { CommentBlock, CommentAdd },
-    data: () => ({
-        isOpenComments: false,
-        commentText: '',
-        commentEdit: false,
-        commentEditInfo: null,
-        isLoad: false,
-        commentOffset: 0,
-        commentPerPage: 5,
-    }),
-    computed: {
-        ...mapGetters('profile/info', ['getInfo']),
-        showText() {
-            if (localStorage.getItem('lang') === 'en') {
-                return this.isOpenComments ? 'hide' : 'show'
-            }
-            return this.isOpenComments ? 'скрыть' : 'показать'
-        },
+    onEditMain({ commentInfo, commentText }) {
+      this.commentEdit = true
+      this.commentText = commentText
+      this.commentEditInfo = commentInfo
+      this.$refs.addComment.$refs.addInput.focus()
     },
-    methods: {
-        ...mapActions('profile/comments', ['commentActions']),
-        ...mapActions('profile/comments', ['addCommentsById']),
-        showComments() {
-            this.isOpenComments = !this.isOpenComments
-        },
-        onEditMain({ commentInfo, commentText }) {
-            this.commentEdit = true
-            this.commentText = commentText
-            this.commentEditInfo = commentInfo
-            this.$refs.addComment.$refs.addInput.focus()
-        },
-        onSubmitComment() {
-            if (this.commentText === '') return
-            this.commentActions({
-                edit: this.commentEdit,
-                post_id: this.id,
-                text: this.commentText,
-                id: this.commentEdit ? this.commentEditInfo.id : null,
-                parent_id: null,
-                offset: this.commentOffset,
-                perPage: this.commentPerPage,
-            }).then(() => {
-                this.commentText = ''
-                this.commentEdit = false
-                this.commentEditInfo = null
-            })
-        },
-        loadComments() {
-            if (this.commentOffset < this.info.total) {
-                this.isLoad = true
-                const data = {
-                    post_id: this.id,
-                    offset: this.commentOffset + this.commentPerPage,
-                    perPage: this.commentPerPage,
-                }
-                this.addCommentsById(data).then(() => {
-                    this.commentOffset += this.commentPerPage
-                    this.isLoad = false
-                })
-            }
-        },
+    onSubmitComment() {
+      if (this.commentText === '') return
+      this.commentActions({
+        edit: this.commentEdit,
+        post_id: this.id,
+        text: this.commentText,
+        id: this.commentEdit ? this.commentEditInfo.id : null,
+        parent_id: null,
+        offset: this.commentOffset,
+        perPage: this.commentPerPage
+      }).then(() => {
+        this.commentText = ''
+        this.commentEdit = false
+        this.commentEditInfo = null
+      })
     },
-    watch: {
-        info: function (val) {
-            this.commentOffset = val.data.length
-        },
-    },
-    i18n: {
-        messages: {
-            en: {
-                title: 'Comments',
-            },
-            ru: {
-                title: 'Комментарии',
-            },
-        },
-    },
+    loadComments() {
+      if (this.commentOffset < this.info.total) {
+        this.isLoad = true
+        const data = {
+          post_id: this.id,
+          offset: this.commentOffset + this.commentPerPage,
+          perPage: this.commentPerPage
+        }
+        this.addCommentsById(data).then(() => {
+          this.commentOffset += this.commentPerPage
+          this.isLoad = false
+        })
+      }
+    }
+  },
+  watch: {
+    info: function(val) {
+      this.commentOffset = val.data.length
+    }
+  },
+  i18n: {
+    messages: {
+      en: {
+        title: 'Comments'
+      },
+      ru: {
+        title: 'Комментарии'
+      }
+    }
+  }
 }
 </script>
 

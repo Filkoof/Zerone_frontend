@@ -44,134 +44,134 @@ import CommentMain from '@/components/Comments/Main'
 import CommentAdd from '@/components/Comments/Add'
 import { mapGetters, mapActions } from 'vuex'
 export default {
-    name: 'CommentBlock',
-    props: {
-        admin: Boolean,
-        blocked: Boolean,
-        info: Object,
-        edit: Boolean,
-        deleted: Boolean,
-        offset: Number,
-        perPage: Number,
+  name: 'CommentBlock',
+  props: {
+    admin: Boolean,
+    blocked: Boolean,
+    info: Object,
+    edit: Boolean,
+    deleted: Boolean,
+    offset: Number,
+    perPage: Number
+  },
+  components: { CommentMain, CommentAdd },
+  data: () => ({
+    isShowSubComments: false,
+    commentText: '',
+    commentEdit: false,
+    commentEditId: null,
+    commentEditParentId: null,
+    respongindLink: '',
+    commentName: ''
+  }),
+  computed: {
+    ...mapGetters('profile/info', ['getInfo']),
+    answerText() {
+      if (!this.info) return 'ответ'
+      return this.info.sub_comments == null ? 'ответа' : 'ответ'
+    }
+  },
+  methods: {
+    ...mapActions('profile/comments', ['commentActions', 'deleteComment', 'recoverComment']),
+    showSubComments() {
+      this.isShowSubComments = !this.isShowSubComments
     },
-    components: { CommentMain, CommentAdd },
-    data: () => ({
-        isShowSubComments: false,
-        commentText: '',
-        commentEdit: false,
-        commentEditId: null,
-        commentEditParentId: null,
-        respongindLink: '',
-        commentName: '',
-    }),
-    computed: {
-        ...mapGetters('profile/info', ['getInfo']),
-        answerText() {
-            if (!this.info) return 'ответ'
-            return this.info.sub_comments == null ? 'ответа' : 'ответ'
-        },
+    showSubText() {
+      if (localStorage.getItem('lang') === 'en') {
+        return this.isShowSubComments ? 'hide' : 'show'
+      }
+      return this.isShowSubComments ? 'скрыть' : 'показать'
     },
-    methods: {
-        ...mapActions('profile/comments', ['commentActions', 'deleteComment', 'recoverComment']),
-        showSubComments() {
-            this.isShowSubComments = !this.isShowSubComments
-        },
-        showSubText() {
-            if (localStorage.getItem('lang') === 'en') {
-                return this.isShowSubComments ? 'hide' : 'show'
-            }
-            return this.isShowSubComments ? 'скрыть' : 'показать'
-        },
-        saveLink(info) {
-            this.commentName = info.author.first_name + ': '
-            this.$refs.addComment.$refs.addInput.value = info.author.first_name + ': '
-            this.respongindLink = `id:${info.author.id}, name:${info.author.first_name}`
-        },
-        ansfer() {
-            this.commentEdit = false
-            this.$refs.addComment.$refs.addInput.focus()
-        },
-        onAnswerSub(info) {
-            this.ansfer()
-            if (info) {
-                this.saveLink(info)
-            }
-        },
-        onAnswerMain() {
-            this.showSubComments()
-            this.$nextTick(() => this.ansfer())
-        },
-        onEditMain({ commentText }) {
-            this.commentEdit = true
-            this.$emit('edit-comment', {
-                commentInfo: this.info,
-                commentText,
-            })
-        },
-        onEditSub({ parentId, id, commentText, respongindLink }) {
-            this.commentEdit = true
-            this.commentText = commentText
-            this.$refs.addComment.$refs.addInput.value = commentText
-            this.commentEditId = id
-            this.commentEditParentId = parentId
-            this.respongindLink = respongindLink
-        },
-        onDeleteComment(id) {
-            this.deleteComment({
-                id,
-                post_id: this.info.post_id,
-                offset: this.offset,
-                perPage: this.perPage,
-            })
-        },
-        onRecoverComment(id) {
-            this.recoverComment({
-                id,
-                post_id: this.info.post_id,
-                offset: this.offset,
-                perPage: this.perPage,
-            })
-        },
-        onSubmitComment() {
-            if (this.commentText === '') return
+    saveLink(info) {
+      this.commentName = info.author.first_name + ': '
+      this.$refs.addComment.$refs.addInput.value = info.author.first_name + ': '
+      this.respongindLink = `id:${info.author.id}, name:${info.author.first_name}`
+    },
+    ansfer() {
+      this.commentEdit = false
+      this.$refs.addComment.$refs.addInput.focus()
+    },
+    onAnswerSub(info) {
+      this.ansfer()
+      if (info) {
+        this.saveLink(info)
+      }
+    },
+    onAnswerMain() {
+      this.showSubComments()
+      this.$nextTick(() => this.ansfer())
+    },
+    onEditMain({ commentText }) {
+      this.commentEdit = true
+      this.$emit('edit-comment', {
+        commentInfo: this.info,
+        commentText
+      })
+    },
+    onEditSub({ parentId, id, commentText, respongindLink }) {
+      this.commentEdit = true
+      this.commentText = commentText
+      this.$refs.addComment.$refs.addInput.value = commentText
+      this.commentEditId = id
+      this.commentEditParentId = parentId
+      this.respongindLink = respongindLink
+    },
+    onDeleteComment(id) {
+      this.deleteComment({
+        id,
+        post_id: this.info.post_id,
+        offset: this.offset,
+        perPage: this.perPage
+      })
+    },
+    onRecoverComment(id) {
+      this.recoverComment({
+        id,
+        post_id: this.info.post_id,
+        offset: this.offset,
+        perPage: this.perPage
+      })
+    },
+    onSubmitComment() {
+      if (this.commentText === '') return
 
-            const nameLenght = this.commentName.length
-            const nameCheck = this.commentText.substr(0, nameLenght)
+      const nameLenght = this.commentName.length
+      const nameCheck = this.commentText.substr(0, nameLenght)
 
-            if (this.respongindLink !== '' && nameCheck == this.commentName) {
-                this.commentText = this.commentText.substr(nameLenght)
-            }
+      if (this.respongindLink !== '' && nameCheck == this.commentName) {
+        this.commentText = this.commentText.substr(nameLenght)
+      }
 
-            this.commentActions({
-                edit: this.commentEdit,
-                post_id: this.info.post_id,
-                parent_id: this.info.id,
-                text: this.respongindLink + `,message:${this.commentText}`,
-                id: this.commentEditId,
-                offset: this.offset,
-                perPage: this.perPage,
-            }).then(() => {
-                this.commentText = ''
-                this.respongindLink = ''
-                this.commentEdit = false
-                this.commentEditInfo = null
-                this.commentEditParentId = null
-            })
-        },
-    },
-    mounted() {},
-    i18n: {
-        messages: {
-            en: {
-                show: 'show',
-                hide: 'hide',
-            },
-            ru: {
-                show: 'показать',
-                hide: 'скрыть',
-            },
-        },
-    },
+      this.commentActions({
+        edit: this.commentEdit,
+        post_id: this.info.post_id,
+        parent_id: this.info.id,
+        text: this.respongindLink + `,message:${this.commentText}`,
+        id: this.commentEditId,
+        offset: this.offset,
+        perPage: this.perPage
+      }).then(() => {
+        this.commentText = ''
+        this.respongindLink = ''
+        this.commentEdit = false
+        this.commentEditInfo = null
+        this.commentEditParentId = null
+      })
+    }
+  },
+  mounted() {},
+  i18n: {
+    messages: {
+      en: {
+        show: 'show',
+        hide: 'hide'
+      },
+      ru: {
+        show: 'показать',
+        hide: 'скрыть'
+      }
+    }
+  }
 }
 </script>
 

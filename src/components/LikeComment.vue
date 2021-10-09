@@ -30,7 +30,7 @@ export default {
     },
     comment: Boolean,
     id: Number,
-    isPost: Boolean,
+    isPost: Boolean
   },
   data: () => ({
     localQuantity: null,

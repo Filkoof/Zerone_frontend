@@ -4,7 +4,8 @@ export default {
   namespaced: true,
   state: {
     notifications: {
-      ru: [{
+      ru: [
+        {
           icon: 'comments',
           name: 'О новых комментариях к моим публикациям',
           type: 'POST_COMMENT',
@@ -35,7 +36,8 @@ export default {
           enable: false
         }
       ],
-      en: [{
+      en: [
+        {
           icon: 'comments',
           name: 'About new comments to my publications',
           type: 'POST_COMMENT',
@@ -65,26 +67,45 @@ export default {
           type: 'FRIEND_BIRTHDAY',
           enable: false
         }
-      ],
+      ]
     },
+    email: ''
   },
   getters: {
-    getNotificationsSettings: s => s.notifications[localStorage.getItem('lang')]
+    getNotificationsSettings: s => s.notifications[localStorage.getItem('lang')],
+    getMail: s => s.email
   },
   mutations: {
-    setNotificationsSettings: (s, notifications) => s.notifications[localStorage.getItem('lang')].map(el => el.enable = notifications.find(n => n.notification_type === el.type).enable)
+    setNotificationsSettings: (s, notifications) =>
+      s.notifications[localStorage.getItem('lang')].map(
+        el => (el.enable = notifications.find(n => n.notification_type === el.type).enable)
+      ),
+    setEmail: (s, mail) => (s.email = mail)
   },
   actions: {
-    async passwordRecovery({}, email) {
-      await axios({
-        url: 'account/password/recovery',
+    async passwordRecoveryConfirmation({}, email) {
+      return axios({
+        url: 'account/recovery',
         method: 'PUT',
         data: email
-      }).then(response => {}).catch(error => {})
+      })
+        .then(resp => {
+          return resp
+        })
+        .catch(error => {})
     },
-    async passwordSet({
-      rootState
-    }, value) {
+    async passwordRecovery({}, data) {
+      console.log(data)
+      return axios({
+        url: `account/recovery_complete?key=${data.key}&eMail=${data.email}`,
+        method: 'GET'
+      })
+        .then(resp => {
+          return resp
+        })
+        .catch(error => {})
+    },
+    async passwordSet({ rootState }, value) {
       let data = {
         token: value.token,
         password: value.password
@@ -93,45 +114,50 @@ export default {
         url: 'account/password/set',
         method: 'PUT',
         data
-      }).then(response => {}).catch(error => {})
+      })
+        .then(response => {})
+        .catch(error => {})
     },
-    async changeEmail({
-      rootState
-    }, value) {
-
+    async changeEmail({ rootState }, value) {
       await axios({
         url: 'account/email',
         method: 'PUT',
         data: value
-      }).then(resp => {}).catch(error => {})
+      })
+        .then(resp => {})
+        .catch(error => {})
     },
-    changeNotifications({
-      dispatch
-    }, data) {
+    changeNotifications({ dispatch }, data) {
       axios({
         url: 'account/notifications',
         method: 'PUT',
         data
-      }).then(response => {
-        dispatch('global/alert/setAlert', {
-          status: 'success',
-          text: 'Настройки уведомления изменены'
-        }, {
-          root: true
+      })
+        .then(response => {
+          dispatch(
+            'global/alert/setAlert',
+            {
+              status: 'success',
+              text: 'Настройки уведомления изменены'
+            },
+            {
+              root: true
+            }
+          )
+          dispatch('apiNotificationsSettings')
         })
-        dispatch('apiNotificationsSettings')
-      }).catch(error => {})
+        .catch(error => {})
     },
-    async apiNotificationsSettings({
-      commit
-    }) {
+    async apiNotificationsSettings({ commit }) {
       await axios({
         url: 'account/notifications',
         method: 'GET'
-      }).then(response => {
-        console.log(response.data.data)
-        commit('setNotificationsSettings', response.data.data)
-      }).catch(error => {})
+      })
+        .then(response => {
+          console.log(response.data.data)
+          commit('setNotificationsSettings', response.data.data)
+        })
+        .catch(error => {})
     }
   }
 }

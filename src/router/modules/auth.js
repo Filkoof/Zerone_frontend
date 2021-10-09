@@ -1,4 +1,5 @@
-export default [{
+export default [
+  {
     path: '/login',
     name: 'Login',
     meta: {
@@ -78,6 +79,16 @@ export default [{
       title: 'Востановление'
     },
     component: () => import('@/pages/Auth/Forgot.vue')
+  },
+  {
+    path: '/forgot-success-confirmation',
+    name: 'ForgotSuccessConfirmation',
+    meta: {
+      layout: 'form',
+      notRequiresAuth: true,
+      title: 'Подтверждение востановление'
+    },
+    component: () => import('@/pages/Auth/ForgotSuccessConfirmation.vue')
   },
   {
     path: '/forgot-success',

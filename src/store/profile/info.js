@@ -20,46 +20,49 @@ export default {
     }
   },
   mutations: {
-    setInfo: (s, info) => s.info = info
+    setInfo: (s, info) => (s.info = info)
   },
   actions: {
-    async apiInfo({
-      commit,
-      dispatch
-    }) {
+    async apiInfo({ commit, dispatch }) {
       await axios({
         url: 'users/me',
         method: 'GET'
-      }).then(async response => {
-        console.log(response)
-        commit('setInfo', response.data.data)
-      }).catch(error => {})
+      })
+        .then(async response => {
+          commit('setInfo', response.data.data)
+        })
+        .catch(error => {})
     },
-    async apiChangeInfo({
-      commit,
-      dispatch
-    }, user) {
-      console.log("TCL: user", user)
+    async apiChangeInfo({ commit, dispatch }, user) {
+      console.log('TCL: user', user)
       await axios({
         url: 'users/me',
         method: 'PUT',
         data: user
-      }).then(response => {
-        console.log("TCL: apiChangeInfo -> response", response)
-        dispatch('global/alert/setAlert', {
-          status: 'success',
-          text: 'Информация обновлена'
-        }, {
-          root: true
+      })
+        .then(response => {
+          console.log('TCL: apiChangeInfo -> response', response)
+          dispatch(
+            'global/alert/setAlert',
+            {
+              status: 'success',
+              text: 'Информация обновлена'
+            },
+            {
+              root: true
+            }
+          )
+          commit('setInfo', response.data.data)
         })
-        commit('setInfo', response.data.data)
-      }).catch(error => {})
+        .catch(error => {})
     },
     async deleteInfo() {
       await axios({
         url: 'users/me',
         method: 'DELETE'
-      }).then(response => {}).catch(error => {})
+      })
+        .then(response => {})
+        .catch(error => {})
     }
   }
 }

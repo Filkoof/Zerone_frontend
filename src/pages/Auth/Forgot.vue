@@ -10,7 +10,7 @@
 <script>
 import { required, email } from 'vuelidate/lib/validators'
 import EmailField from '@/components/FormElements/EmailField'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 export default {
   name: 'Forgot',
   components: {
@@ -20,15 +20,20 @@ export default {
     email: ''
   }),
   methods: {
-    ...mapActions('profile/account', ['passwordRecovery']),
+    ...mapActions('profile/account', ['passwordRecoveryConfirmation']),
+    ...mapMutations('profile/account', ['setEmail']),
+
     submitHandler() {
       if (this.$v.$invalid) {
         this.$v.$touch()
         return
       }
 
-      this.passwordRecovery({ email: this.email }).then(() => {
-        this.$router.push({ name: 'ForgotSuccess' })
+      this.passwordRecoveryConfirmation({ email: this.email }).then(resp => {
+        if (resp.status == 200) {
+          this.setEmail(this.email)
+          this.$router.push({ name: 'ForgotSuccessConfirmation' })
+        }
       })
     }
   },
@@ -37,16 +42,16 @@ export default {
   },
   i18n: {
     messages: {
-      "en": {
-        "title": "Write your e-mail",
-        "send": "Send"
+      en: {
+        title: 'Write your code',
+        send: 'Send'
       },
-      "ru": {
-        "title": "Напишите ваш e-mail",
-        "send": "Отправить"
+      ru: {
+        title: 'Напишите ваш code',
+        send: 'Отправить'
       }
     }
-  },
+  }
 }
 </script>
 

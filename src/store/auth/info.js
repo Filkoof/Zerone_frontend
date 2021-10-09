@@ -5,7 +5,8 @@ export default {
       en: {
         login: {
           title: 'Hello!',
-          text: 'We have created this place so that you can develop, feel as comfortable as possible in the circle of nice people. This is a community of professionals united by one idea - with the help of code, magic will become a reality!',
+          text:
+            'We have created this place so that you can develop, feel as comfortable as possible in the circle of nice people. This is a community of professionals united by one idea - with the help of code, magic will become a reality!',
           btn: {
             link: 'Registration',
             text: 'Registration'
@@ -13,7 +14,7 @@ export default {
         },
         registration: {
           title: 'Quick registration',
-          text: 'To take full advantage of the service: you need to register. It won\'t take more than 1 minute!',
+          text: "To take full advantage of the service: you need to register. It won't take more than 1 minute!",
           descr: 'If you are registered, just sign in to your account',
           btn: {
             link: 'Login',
@@ -23,7 +24,8 @@ export default {
         },
         'registration-success': {
           title: 'Are you registered!',
-          text: 'Your account has been successfully created. To activate it, you need to log in using the data provided during registration.',
+          text:
+            'Your account has been successfully created. To activate it, you need to log in using the data provided during registration.',
           btn: {
             link: 'Login',
             text: 'Log in'
@@ -31,16 +33,27 @@ export default {
         },
         forgot: {
           title: 'Password recovery',
-          text: 'To recover your password, enter the e-mail to which your page is linked. We will send a link to reset your password there.',
+          text:
+            'To recover your password, enter the e-mail to which your page is linked. We will send a code to reset your password there.',
           btn: {
             link: 'Login',
             text: 'Back to login',
             variant: 'dark'
           }
         },
+        'forgot-success-confirmation': {
+          title: 'Password recovery',
+          text: 'o recover your password, enter the received code.',
+          btn: {
+            link: 'Login',
+            text: 'Back to authorization',
+            variant: 'dark'
+          }
+        },
         'forgot-success': {
           title: 'A link to reset your password has been sent to your e-mail',
-          text: 'Within 5 minutes, a letter with a link will be sent to the mail you specified. Follow it to recover your password.',
+          text:
+            'Within 5 minutes, a letter with a link will be sent to the mail you specified. Follow it to recover your password.',
           btn: {
             link: '',
             text: 'Go to e-mail'
@@ -60,15 +73,16 @@ export default {
         },
         'shift-password': {
           title: 'Change password',
-          text: 'Come up with a new password, later you can change it',
+          text: 'Come up with a new password, later you can change it'
         },
         'shift-email': {
           title: 'Change e-mail',
-          text: 'Enter a new e-mail',
+          text: 'Enter a new e-mail'
         },
         'shift-email-success': {
           title: 'A confirmation email has been sent to your new e-mail',
-          text: 'Within 5 minutes, a letter with a link will be sent to the mail you specified. Follow it to confirm your e-mail.',
+          text:
+            'Within 5 minutes, a letter with a link will be sent to the mail you specified. Follow it to confirm your e-mail.',
           btn: {
             link: '',
             text: 'Go to e-mail'
@@ -78,7 +92,8 @@ export default {
       ru: {
         login: {
           title: 'Привет!',
-          text: 'Мы создали это место, чтобы вы смогли развиваться, чувствую себя максимально комфортно в кругу приятных людей. Это сообщество профессионалов, объединённых одной идеей — с помощью кода, магия станет реальностью!',
+          text:
+            'Мы создали это место, чтобы вы смогли развиваться, чувствую себя максимально комфортно в кругу приятных людей. Это сообщество профессионалов, объединённых одной идеей — с помощью кода, магия станет реальностью!',
           btn: {
             link: 'Registration',
             text: 'Регистрация'
@@ -86,7 +101,8 @@ export default {
         },
         registration: {
           title: 'Быстрая регистрация',
-          text: 'Чтобы воспользоваться всеми возможностями сервиса: вам необходимо зарегистрироваться. Это не займёт больше 1 минуты!',
+          text:
+            'Чтобы воспользоваться всеми возможностями сервиса: вам необходимо зарегистрироваться. Это не займёт больше 1 минуты!',
           descr: 'Если вы зарегистрированы, просто войдите в аккаунт',
           btn: {
             link: 'Login',
@@ -96,7 +112,8 @@ export default {
         },
         'registration-success': {
           title: 'Вы зарегистрированы!',
-          text: 'Ваш аккаунт успешно создан. Чтобы активировать его, вам необходимо войти в систему, использую данные, указанные при регистрации.',
+          text:
+            'Ваш аккаунт успешно создан. Чтобы активировать его, вам необходимо войти в систему, использую данные, указанные при регистрации.',
           btn: {
             link: 'Login',
             text: 'Войти'
@@ -112,7 +129,17 @@ export default {
         },
         forgot: {
           title: 'Восстановление пароля',
-          text: 'Чтобы восстановить пароль, укажите e-mail, к которому привязана ваша страница. Мы отправим ссылку для восстановаления пароля туда.',
+          text:
+            'Чтобы восстановить пароль, укажите e-mail, к которому привязана ваша страница. Мы отправим код для восстановаления пароля туда.',
+          btn: {
+            link: 'Login',
+            text: 'Перейти к востановлению',
+            variant: 'dark'
+          }
+        },
+        'forgot-success-confirmation': {
+          title: 'Восстановление пароля',
+          text: 'Чтобы восстановить пароль, введите полученный код',
           btn: {
             link: 'Login',
             text: 'Вернуться к авторизации',
@@ -121,7 +148,8 @@ export default {
         },
         'forgot-success': {
           title: 'На ваш e-mail отправлена ссылка для восстановления пароля',
-          text: 'В течение 5 минут, на указанную вами почту, придёт письмо со ссылкой. Перейдите по ней, чтобы восстановить пароль.',
+          text:
+            'В течение 5 минут, на указанную вами почту, придёт письмо со ссылкой. Перейдите по ней, чтобы восстановить пароль.',
           btn: {
             link: '',
             text: 'Перейти в почту'
@@ -141,20 +169,21 @@ export default {
         },
         'shift-password': {
           title: 'Смена пароля',
-          text: 'Придумайте новый пароль, впоследсвии вы сможете его сменить',
+          text: 'Придумайте новый пароль, впоследсвии вы сможете его сменить'
         },
         'shift-email': {
           title: 'Смена почты',
-          text: 'Введите новый почтовый ящик',
+          text: 'Введите новый почтовый ящик'
         },
         'shift-email-success': {
           title: 'На ваш новый  e-mail  отправлено письмо с подтверждением',
-          text: 'В течение 5 минут, на указанную вами почту, придёт письмо со ссылкой. Перейдите по ней, чтобы подтвердить e-mail.',
+          text:
+            'В течение 5 минут, на указанную вами почту, придёт письмо со ссылкой. Перейдите по ней, чтобы подтвердить e-mail.',
           btn: {
             link: '',
             text: 'Перейти в почту'
           }
-        },
+        }
       }
     }
   },

@@ -4,6 +4,6 @@ import './plugins'
 import './btn'
 import './axios'
 import './router'
-import './filters'
+    import './filters'
 
 Vue.config.productionTip = false

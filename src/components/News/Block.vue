@@ -73,112 +73,112 @@ import moment from 'moment'
 import Comments from '@/components/Comments'
 import LikeComment from '@/components/LikeComment'
 export default {
-    name: 'NewsBlock',
-    components: { Comments, LikeComment, AddForm },
-    props: {
-        info: {
-            type: Object,
-            default: () => ({
-                title: 'Дизайн привычных вещей',
-                post_text:
-                    'А вот и «Книга недели от Skillbox и МИФ». Сегодня делимся с вами книгой «Дизайн привычных вещей» автора Дональда Нормана. В ней Дональд рассказывает об основополагающих принципах, которым нужно следовать, чтобы избежать проблем и превратить привычные вещи в приятные товары, доставляющие нам удовольствие А вот и «Книга недели от Skillbox и МИФ». Сегодня делимся с вами книгой «Дизайн привычных вещей» автора Дональда Нормана. В ней Дональд рассказывает об основополагающих принципах, которым нужно следовать, чтобы избежать проблем и превратить привычные вещи в приятные товары, доставляющие нам удовольствие',
-                time: 1559751301818,
-                likes: 44,
-                id: 1,
-                tags: ['tag1'],
-            }),
-        },
-        edit: Boolean,
-        deffered: Boolean,
-        admin: Boolean,
-        blocked: Boolean,
-        deleted: Boolean,
+  name: 'NewsBlock',
+  components: { Comments, LikeComment, AddForm },
+  props: {
+    info: {
+      type: Object,
+      default: () => ({
+        title: 'Дизайн привычных вещей',
+        post_text:
+          'А вот и «Книга недели от Skillbox и МИФ». Сегодня делимся с вами книгой «Дизайн привычных вещей» автора Дональда Нормана. В ней Дональд рассказывает об основополагающих принципах, которым нужно следовать, чтобы избежать проблем и превратить привычные вещи в приятные товары, доставляющие нам удовольствие А вот и «Книга недели от Skillbox и МИФ». Сегодня делимся с вами книгой «Дизайн привычных вещей» автора Дональда Нормана. В ней Дональд рассказывает об основополагающих принципах, которым нужно следовать, чтобы избежать проблем и превратить привычные вещи в приятные товары, доставляющие нам удовольствие',
+        time: 1559751301818,
+        likes: 44,
+        id: 1,
+        tags: ['tag1']
+      })
     },
-    data: () => ({
-        isLotText: false,
-        openText: false,
-        isEditNews: false,
-        isOpenTags: false,
-    }),
-    computed: {
-        ...mapGetters('profile/info', ['getInfo']),
-        commentsLength() {
-            let result = 0
-            this.info.comments.data.map((el) => {
-                !el.is_deleted && result++
-                el.sub_comments &&
-                    el.sub_comments.map((subEl) => {
-                        !subEl.is_deleted && result++
-                    })
-            })
-            return result
-        },
-        showTextClose() {
-            if (localStorage.getItem('lang') === 'en') {
-                return this.isOpenTags ? 'hide' : 'show'
-            }
-            return this.isOpenTags ? 'Cкрыть' : 'Показать'
-        },
+    edit: Boolean,
+    deffered: Boolean,
+    admin: Boolean,
+    blocked: Boolean,
+    deleted: Boolean
+  },
+  data: () => ({
+    isLotText: false,
+    openText: false,
+    isEditNews: false,
+    isOpenTags: false
+  }),
+  computed: {
+    ...mapGetters('profile/info', ['getInfo']),
+    commentsLength() {
+      let result = 0
+      this.info.comments.data.map(el => {
+        !el.is_deleted && result++
+        el.sub_comments &&
+          el.sub_comments.map(subEl => {
+            !subEl.is_deleted && result++
+          })
+      })
+      return result
     },
-    methods: {
-        ...mapActions('global/likes', ['putLike', 'deleteLike']),
-        ...mapActions('profile/feeds', ['deleteFeeds', 'recoverFeeds']),
-        toggleText() {
-            this.openText = !this.openText
-        },
-        diffTime(time) {
-            let now = moment()
-            let timePost = moment(time)
-            return timePost.calendar(null, {
-                sameElse: `[через ${timePost.diff(now, 'days')} дней, ${timePost.diff(now, 'hours') % 24} часа]`,
-            })
-        },
-        likeAction(active) {
-            active
-                ? this.deleteLike({ item_id: this.info.id, type: 'Post' })
-                : this.putLike({ item_id: this.info.id, type: 'Post' })
-        },
-        toggleEditNews() {
-            this.isEditNews = !this.isEditNews
-        },
-        deleteNews() {
-            this.deleteFeeds({
-                id: this.getInfo.id,
-                post_id: this.info.id,
-                route: this.$route.name,
-            })
-        },
-        recoverNews() {
-            this.recoverFeeds({
-                id: this.getInfo.id,
-                post_id: this.info.id,
-                route: this.$route.name,
-            })
-        },
+    showTextClose() {
+      if (localStorage.getItem('lang') === 'en') {
+        return this.isOpenTags ? 'hide' : 'show'
+      }
+      return this.isOpenTags ? 'Cкрыть' : 'Показать'
+    }
+  },
+  methods: {
+    ...mapActions('global/likes', ['putLike', 'deleteLike']),
+    ...mapActions('profile/feeds', ['deleteFeeds', 'recoverFeeds']),
+    toggleText() {
+      this.openText = !this.openText
+    },
+    diffTime(time) {
+      let now = moment()
+      let timePost = moment(time)
+      return timePost.calendar(null, {
+        sameElse: `[через ${timePost.diff(now, 'days')} дней, ${timePost.diff(now, 'hours') % 24} часа]`
+      })
+    },
+    likeAction(active) {
+      active
+        ? this.deleteLike({ item_id: this.info.id, type: 'Post' })
+        : this.putLike({ item_id: this.info.id, type: 'Post' })
+    },
+    toggleEditNews() {
+      this.isEditNews = !this.isEditNews
+    },
+    deleteNews() {
+      this.deleteFeeds({
+        id: this.getInfo.id,
+        post_id: this.info.id,
+        route: this.$route.name
+      })
+    },
+    recoverNews() {
+      this.recoverFeeds({
+        id: this.getInfo.id,
+        post_id: this.info.id,
+        route: this.$route.name
+      })
+    },
 
-        openCloseAllTags() {
-            this.isOpenTags = !this.isOpenTags
-        },
-    },
-    mounted() {
-        this.$refs.text.offsetHeight > 100 ? (this.isLotText = true) : (this.isLotText = false)
-    },
-    i18n: {
-        messages: {
-            en: {
-                restore: 'Restore',
-                date: 'Date and time of publication',
-                hide: 'Hide',
-                read: 'Read the entire post',
-            },
-            ru: {
-                restore: 'Восстановить',
-                date: 'Дата и время публикации',
-                hide: 'Скрыть',
-                read: 'Читать весь пост',
-            },
-        },
-    },
+    openCloseAllTags() {
+      this.isOpenTags = !this.isOpenTags
+    }
+  },
+  mounted() {
+    this.$refs.text.offsetHeight > 100 ? (this.isLotText = true) : (this.isLotText = false)
+  },
+  i18n: {
+    messages: {
+      en: {
+        restore: 'Restore',
+        date: 'Date and time of publication',
+        hide: 'Hide',
+        read: 'Read the entire post'
+      },
+      ru: {
+        restore: 'Восстановить',
+        date: 'Дата и время публикации',
+        hide: 'Скрыть',
+        read: 'Читать весь пост'
+      }
+    }
+  }
 }
 </script>
 
