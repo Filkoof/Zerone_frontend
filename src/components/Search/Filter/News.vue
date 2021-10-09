@@ -12,7 +12,7 @@
     .search-filter__block.tags
       add-tags(:tags="tags" @change-tags="onChangeTags")
     .search-filter__block.btn-news
-      button-hover(@click.native="onSearchNews") Применить
+      button-hover(@click.native="clearAndSerchNews") Применить
 </template>
 
 <script>
@@ -34,7 +34,7 @@ export default {
     ...mapGetters('global/search', ['searchText', 'getLoadNews'])
   },
   methods: {
-    ...mapActions('global/search', ['searchNews']),
+    ...mapActions('global/search', ['searchNews', 'clearSearchNews']),
     onChangeTags(tags) {
       this.tags = tags
     },
@@ -51,6 +51,12 @@ export default {
       }).then(() => {
         this.offset += this.itemPerPage
       })
+    },
+    clearAndSerchNews() {
+      this.clearSearchNews(),
+        setTimeout(() => {
+          this.onSearchNews()
+        }, 0)
     }
   },
   watch: {

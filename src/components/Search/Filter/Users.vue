@@ -30,52 +30,58 @@
             select.select.search-filter__select(v-model='city')
                 option(value='null') Город
                 option(v-for='city in getCityFilter', :key='city.countryId') {{ city.country }}
-    .search-filter__block.btn-news(@click.prevent='onSearchUsers')
+    .search-filter__block.btn-news(@click.prevent='clerAndSearchUser')
         button-hover Применить
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 export default {
-    name: 'SearchFilterUsers',
-    data: () => ({
-        first_name: null,
-        last_name: null,
-        age_from: null,
-        age_to: null,
-        country: null,
-        city: null,
-        offset: 0,
-        itemPerPage: 20,
-    }),
-    computed: {
-        ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
-        getCityFilter() {
-            if (!this.country || this.country === 'null') {
-                return this.getCities
-            } else {
-                return this.getCities.filter((el) => el.city === this.country)
-            }
-        },
+  name: 'SearchFilterUsers',
+  data: () => ({
+    first_name: null,
+    last_name: null,
+    age_from: null,
+    age_to: null,
+    country: null,
+    city: null,
+    offset: 0,
+    itemPerPage: 20
+  }),
+  computed: {
+    ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
+    getCityFilter() {
+      if (!this.country || this.country === 'null') {
+        return this.getCities
+      } else {
+        return this.getCities.filter(el => el.city === this.country)
+      }
+    }
+  },
+  methods: {
+    ...mapActions('global/search', ['searchUsers']),
+    ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities', 'clearSearchUsers']),
+    onSearchUsers() {
+      let { first_name, last_name, age_from, age_to, country, city } = this
+      this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
     },
-    methods: {
-        ...mapActions('global/search', ['searchUsers']),
-        ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities']),
-        onSearchUsers() {
-            let { first_name, last_name, age_from, age_to, country, city } = this
-            this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
-        },
-    },
-    created() {
-        this.apiCountries()
-        this.apiAllCities()
-    },
-    watch: {
-        city(value) {
-            if (!value || value === 'null') return
-            const countryId = this.getCities.find((el) => el.country === value).cityId
-            this.country = this.getCountries.find((el) => el.id === countryId).title
-        },
-    },
+    clerAndSearchUser() {
+      this.clearSearchUsers()
+      setInterval(() => {
+        this.onSearchUsers()
+      }, 0)
+    }
+  },
+  created() {
+    this.apiCountries()
+    this.apiAllCities()
+  },
+  watch: {
+    city(value) {
+      if (!value || value === 'null') return
+      const countryId = this.getCities.find(el => el.country === value).cityId
+      this.country = this.getCountries.find(el => el.id === countryId).title
+    }
+  }
 }
 </script>

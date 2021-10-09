@@ -63,22 +63,11 @@ export default {
     setPerPageNews: (s, perPage) => (s.perPageNews = perPage)
   },
   actions: {
-    clearSearch({ commit }) {
-      commit('setSearchText', '')
-      commit('setResult', {
-        id: 'users',
-        value: []
-      })
-      commit('setResult', {
-        id: 'news',
-        value: []
-      })
-    },
     changeTab({ commit }, id) {
       commit('setTabSelect', id)
       commit('routePushWithQuery', id)
     },
-    async searchUsers({ commit }, payload) {
+    async searchUsers({ commit, getters }, payload) {
       let query = []
       payload &&
         Object.keys(payload).map(el => {
@@ -103,6 +92,13 @@ export default {
         })
         .catch(error => {})
     },
+    clearSearchUsers({ commit }) {
+      commit('setSearchText', '')
+      commit('setResult', {
+        id: 'users',
+        value: []
+      })
+    },
     async searchNews({ commit, getters }, payload) {
       let query = []
       payload &&
@@ -114,6 +110,7 @@ export default {
         method: 'GET'
       })
         .then(response => {
+          console.log(response.data.data)
           const previousNews = getters.getResult['news']
           const news = response.data.data
           const newsResp = [...previousNews, ...news]
@@ -127,6 +124,13 @@ export default {
             commit('setloadNews', false)
         })
         .catch(error => {})
+    },
+    clearSearchNews({ commit }) {
+      commit('setSearchText', '')
+      commit('setResult', {
+        id: 'news',
+        value: []
+      })
     }
   }
 }
