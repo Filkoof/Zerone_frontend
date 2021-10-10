@@ -6,10 +6,10 @@ export default {
   state: {
     loadUsers: false,
     totalUsers: 0,
-    perPageUsers: 0,
+    offsetUsers: 0,
     loadNews: false,
     totalNews: 0,
-    perPageNews: 0,
+    offsetNews: 0,
     searchText: '',
     tabs: [
       {
@@ -37,10 +37,10 @@ export default {
     getStatus: s => s.status,
     getLoadUsers: s => s.loadUsers,
     getTotalUsers: s => s.totalUsers,
-    getPerPageUsers: s => s.perPageUsers,
+    getOffsetUsers: s => s.offsetUsers,
     getLoadNews: s => s.loadNews,
     getTotalNews: s => s.totalNews,
-    getPerPageNews: s => s.perPageNews
+    getOffsetNews: s => s.offsetNews
   },
   mutations: {
     setSearchText: (s, value) => (s.searchText = value),
@@ -57,10 +57,10 @@ export default {
     setResult: (s, result) => (s.result[result.id] = result.value),
     setLoadUsers: (s, state) => (s.loadUsers = state),
     setTotalUsers: (s, total) => (s.totalUsers = total),
-    setPerPageUsers: (s, perPage) => (s.perPageUsers = perPage),
+    setOffsetUsers: (s, offsetUsers) => (s.offsetUsers = offsetUsers),
     setloadNews: (s, state) => (s.loadNews = state),
     setTotalNews: (s, total) => (s.totalNews = total),
-    setPerPageNews: (s, perPage) => (s.perPageNews = perPage)
+    setOffsetNews: (s, offsetNews) => (s.offsetNews = offsetNews)
   },
   actions: {
     changeTab({ commit }, id) {

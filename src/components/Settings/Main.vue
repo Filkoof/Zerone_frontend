@@ -215,6 +215,7 @@ export default {
           last_name: this.lastName,
           birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
           phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
+          photo: this.getInfo.photo,
           about: this.about,
           country: this.country.trim() === '' ? null : this.country,
           city: this.city.trim() === '' ? null : this.city

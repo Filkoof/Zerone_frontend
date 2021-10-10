@@ -11,7 +11,7 @@
                 :edit='getInfo.id === feed.author.id',
                 :deleted='getInfo.id === feed.author.id'
             )
-        is-loading(:isLoad='isLoad', :total='total', :itemPerPage='itemPerPage', v-load="loadFeeds")
+        is-loading(v-if="total > offset" :isLoad='isLoad', v-load="loadFeeds")
 
     .inner-page__aside
         friends-request

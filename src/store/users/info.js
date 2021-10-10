@@ -83,14 +83,28 @@ export default {
         .catch(error => {})
     },
 
-    async apiWall({ commit }, { id, offset, itemPerPage }) {
-      console.log('fetch wall', id)
-      await axios({
-        url: `users/${id}/wall${offset ? '?offset=' + offset : ''}${itemPerPage ? '&itemPerPage=' + itemPerPage : ''}`,
+    async apiWall({ getters, commit }, data) {
+      console.log(data.payload)
+      console.log(data.id)
+      let query = []
+
+      data.payload &&
+        Object.keys(data.payload).map(el => {
+          data.payload[el] && query.push(`${el}=${data.payload[el]}`)
+        })
+      return await axios({
+        url: `users/${data.id}/wall?${query.join('&')}`,
         method: 'GET'
       })
         .then(response => {
-          commit('setWall', response.data.data)
+          const previousWall = getters.getWall
+          const wall = response.data.data
+          const newsWall = [...previousWall, ...wall]
+          const chechcDobleWall = newsWall.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
+
+          commit('setWall', chechcDobleWall)
+
+          return response.data.total
         })
         .catch(error => {})
     },

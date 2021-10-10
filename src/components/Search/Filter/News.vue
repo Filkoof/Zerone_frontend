@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import moment from 'moment'
 import AddTags from '@/components/News/AddTags'
 export default {
@@ -35,6 +35,7 @@ export default {
   },
   methods: {
     ...mapActions('global/search', ['searchNews', 'clearSearchNews']),
+    ...mapMutations('global/search', ['setOffsetNews']),
     onChangeTags(tags) {
       this.tags = tags
     },
@@ -48,15 +49,20 @@ export default {
         author: this.author,
         offset: this.offset,
         itemPerPage: this.itemPerPage
-      }).then(() => {
-        this.offset += this.itemPerPage
       })
+        .then(() => {
+          this.offset += this.itemPerPage
+        })
+        .then(() => {
+          this.setOffsetNews(this.offset)
+        })
     },
     clearAndSerchNews() {
-      this.clearSearchNews(),
-        setTimeout(() => {
-          this.onSearchNews()
-        }, 0)
+      this.clearSearchNews(), (this.offset = 0)
+      this.setOffsetNews(this.offset)
+      setTimeout(() => {
+        this.onSearchNews()
+      }, 0)
     }
   },
   watch: {

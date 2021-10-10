@@ -10,7 +10,7 @@
         .friends__list
             template(v-if="friends.length > 0")
                 friends-block(friend, v-for='friend in friends', :key='friend.id', :info='friend')
-        is-loading( :isLoad='isLoad', :total='total', :itemPerPage='itemPerPage', v-load="loadFrends")
+        is-loading(v-if="total > offset", :isLoad='isLoad', v-load="loadFrends")
     .inner-page__aside
         friends-request
         br

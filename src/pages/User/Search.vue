@@ -5,7 +5,7 @@
       component(:is="`search-filter-${tabSelect}`")
     .search__main
       component(:is="`search-${tabSelect}`")
-      is-loading( :isLoad='getData.status', :total='getData.total', :itemPerPage='getData.perPage', v-load="loadData")
+      is-loading(v-if="getData.total> getData.offset", :isLoad='getData.status', v-load="loadData")
 </template>
 
 <script>
@@ -28,23 +28,23 @@ export default {
       'tabSelect',
       'getTotalUsers',
       'getLoadUsers',
-      'getPerPageUsers',
+      'getOffsetUsers',
       'getTotalNews',
       'getLoadNews',
-      'getPerPageNews'
+      'getOffsetNews'
     ]),
 
     getData() {
       if (this.tabSelect == 'users') {
         return {
           total: this.getTotalUsers,
-          perPage: this.getPerPageUsers,
+          offset: this.getOffsetUsers,
           status: this.getLoadUsers
         }
       } else {
         return {
           total: this.getTotalNews,
-          perPage: this.getPerPageNews,
+          offset: this.getOffsetNews,
           status: this.getLoadNews
         }
       }

@@ -15,9 +15,9 @@
             :deleted='getInfo.id === i.author.id',
             @edit-comment='onEditMain'
         )
-        .div(v-if='isOpenComments && commentOffset + commentPerPage < info.total') 
+        .div(v-if='isOpenComments && commentOffset < info.total') 
             button.btn-load-comments-text(type='button', v-if='!isLoad', @click.prevent='loadComments') Показать следующие комментарии
-        is-loading( :isLoad='isLoad', :total='info.total', :itemPerPage='commentPerPage')
+            is-loading(:isLoad='isLoad')
         .comments__add(v-if='!admin')
             comment-add(ref='addComment', :id='id', v-model='commentText', @submited='onSubmitComment')
 </template>

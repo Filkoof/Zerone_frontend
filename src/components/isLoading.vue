@@ -1,6 +1,6 @@
 <template lang="pug">
 .load-block(:class="{isLoad:'load-block'}")
-    .load-anial-container(v-if='isLoad && total > itemPerPage')
+    .load-anial-container(v-if='isLoad')
         span.load-anial-icon
         span.load-anial-icon
         span.load-anial-icon
@@ -9,9 +9,7 @@
 export default {
   name: 'isLoading',
   props: {
-    isLoad: Boolean,
-    total: Number,
-    itemPerPage: Number
+    isLoad: Boolean
   }
 }
 </script>

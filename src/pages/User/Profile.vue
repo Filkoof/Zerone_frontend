@@ -31,6 +31,8 @@
                     :key='news.id',
                     :info='news'
                 )
+            is-loading(v-if="total > offset" :isLoad='isLoad', v-load="loadWall")
+              
     .inner-page__aside
         friends-request
         br
@@ -43,12 +45,17 @@ import FriendsRequest from '@/components/Friends/Request'
 import ProfileInfo from '@/components/Profile/Info'
 import NewsAdd from '@/components/News/Add'
 import NewsBlock from '@/components/News/Block'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import isLoading from '@/components/isLoading'
 export default {
   name: 'Profile',
-  components: { FriendsPossible, FriendsRequest, ProfileInfo, NewsAdd, NewsBlock },
+  components: { FriendsPossible, FriendsRequest, ProfileInfo, NewsAdd, NewsBlock, isLoading },
   data: () => ({
-    activeTab: 'POSTED'
+    activeTab: 'POSTED',
+    offset: 0,
+    itemPerPage: 5,
+    isLoad: true,
+    total: 0
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
@@ -65,18 +72,41 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('users/info', ['setWall']),
     ...mapActions('users/info', ['apiWall']),
+
     changeTab(tab) {
       this.activeTab = tab
+    },
+
+    loadWall() {
+      this.isLoad = true
+      const data = {
+        id: this.getInfo.id,
+        payload: {
+          offset: this.offset,
+          itemPerPage: this.itemPerPage
+        }
+      }
+
+      this.apiWall(data).then(response => {
+        this.total = response
+        this.isLoad = false
+        this.offset = this.offset + this.itemPerPage
+      })
     }
   },
+
   watch: {
     getInfo() {
-      this.apiWall({ id: this.getInfo.id })
+      this.loadWall()
     }
   },
-  created() {
-    if (this.getInfo) this.apiWall({ id: this.getInfo.id })
+  mounted() {
+    if (this.getInfo) {
+      this.setWall([])
+      this.loadWall()
+    }
   },
   i18n: {
     messages: {

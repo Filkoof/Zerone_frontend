@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   name: 'SearchFilterUsers',
   data: () => ({
@@ -46,7 +46,7 @@ export default {
     country: null,
     city: null,
     offset: 0,
-    itemPerPage: 20
+    itemPerPage: 10
   }),
   computed: {
     ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
@@ -60,13 +60,22 @@ export default {
   },
   methods: {
     ...mapActions('global/search', ['searchUsers']),
+    ...mapMutations('global/search', ['setOffsetUsers']),
     ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities', 'clearSearchUsers']),
     onSearchUsers() {
       let { first_name, last_name, age_from, age_to, country, city } = this
       this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
+        .then(() => {
+          this.offset += this.itemPerPage
+        })
+        .then(() => {
+          this.setOffsetUsers(this.offset)
+        })
     },
     clerAndSearchUser() {
       this.clearSearchUsers()
+      this.offset = 0
+      this.setOffsetUsers(this.offset)
       setInterval(() => {
         this.onSearchUsers()
       }, 0)
