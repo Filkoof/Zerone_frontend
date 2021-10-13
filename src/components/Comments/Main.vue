@@ -82,7 +82,7 @@ export default {
           arr.name = el.substr(i).trim()
         }
       })
-      if (str.indexOf('message:') == 1 || str.indexOf('message:') == 16) {
+      if (str.indexOf(',message:') !== -1) {
         const i = str.indexOf('message:') + 8
         arr.messages = str.substr(i)
       } else {
