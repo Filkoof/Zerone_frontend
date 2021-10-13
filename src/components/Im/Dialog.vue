@@ -7,9 +7,9 @@
       span.user-status(:class="{online}") {{statusText}}
     .im-dialog__content
       p.im-dialog__last
-        span.im-dialog__last-me(v-if="me && info.last_message !== null") Вы:
+        span.im-dialog__last-me(v-if="me && info.last_message") Вы:
         | {{info.last_message.message_text}}
-      span.im-dialog__time(v-if="me && info.last_message !== null") {{info.last_message.time - 60*60*3 | moment('from')}}
+      span.im-dialog__time(v-if="me && info.last_message") {{info.last_message.time - 60*60*3 | moment('from')}}
     span.im-dialog__push(v-if="push > 0") {{push}}
 </template>
 

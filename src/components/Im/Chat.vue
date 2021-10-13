@@ -58,14 +58,16 @@ export default {
   },
   computed: {
     statusText() {
-      return this.online ? this.$t('online') : this.$t('was') + moment(this.info.recipient.last_online_time).fromNow()
+      return this.online
+        ? this.$t('online')
+        : this.$t('was') + moment(this.info.recipient_id.last_online_time).fromNow()
     },
     messagesGrouped() {
       let groups = []
       let headerDate = null
 
       for (const msg of this.messages) {
-        let msgDate = moment(msg.time * 1000).format('YYYY-MM-DD')
+        let msgDate = moment(msg.time).format('YYYY-MM-DD')
         if (msgDate !== headerDate) {
           headerDate = msgDate
           groups.push(makeHeader(headerDate))

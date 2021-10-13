@@ -115,13 +115,14 @@ export default {
         Object.keys(payload).map(el => {
           payload[el] && query.push(`${el}=${payload[el]}`)
         })
-      await axios({
+      return await axios({
         url: `dialogs?${query.join('&')}`,
         method: 'GET'
       })
         .then(response => {
           commit('setDialogs', response.data.data)
           commit('dialogsLoaded')
+          return response.data
         })
         .catch(error => {
           console.error(error)

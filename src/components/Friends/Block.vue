@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends']),
-    // ...mapActions('profile/dialogs', ['openDialog']),
+    ...mapActions('profile/dialogs', ['openDialog']),
     ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
     closeModal() {
       this.modalShow = false

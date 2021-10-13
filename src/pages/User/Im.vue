@@ -6,11 +6,13 @@
             :key='dialog.id',
             :info='dialog',
             :push='countPush(dialog.unread_count)',
-            :me='true',
+            :me='dialog.sendByMe',
             :active='getActiveDialog && dialog.id === getActiveDialog.id',
             :online='checkOnlineUser(dialog.recipient_id.last_online_time)',
             @click.native='clickOnDialog(dialog.id)'
         )
+
+        is-loading(v-if="total > offset" :isLoad='isLoad', v-load="loadFeeds")
     .im__chat(v-if='getActiveDialog')
         im-chat(
             :info='getActiveDialog',
@@ -24,12 +26,18 @@ import moment from 'moment'
 import { mapGetters, mapActions } from 'vuex'
 import ImDialog from '@/components/Im/Dialog'
 import ImChat from '@/components/Im/Chat'
+import isLoading from '@/components/isLoading'
+
 export default {
   name: 'Im',
-  components: { ImDialog, ImChat },
+  components: { ImDialog, ImChat, isLoading },
   data: () => ({
-    intervalForMessages: null
+    intervalForMessages: null,
+    total: 0,
+    offset: 0,
+    isLoad: false
   }),
+
   computed: {
     ...mapGetters('profile/dialogs', ['getMessages', 'getActiveDialog', 'getDialogs'])
   },
@@ -58,13 +66,17 @@ export default {
       } else if (vm.getDialogs.length > 0) {
         vm.$router.push({ name: 'Im', query: { getActiveDialog: vm.getDialogs[0].id } })
       } else {
-        await vm.apiLoadAllDialogs()
+        await vm.apiLoadAllDialogs().then(resp => {
+          this.offset = resp
+        })
         if (vm.getDialogs.length > 0) {
           vm.$router.push({ name: 'Im', query: { getActiveDialog: vm.getDialogs[0].id } })
         }
         console.log('No dialogs at all')
       }
-    }
+    },
+
+    loadDialogs() {}
   },
   beforeRouteEnter(to, from, next) {
     next(async vm => {
