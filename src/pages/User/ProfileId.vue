@@ -5,7 +5,7 @@
         profile-info(:info="getUsersInfo" :blocked="getUsersInfo.is_blocked" :friend="getUsersInfo.is_friend" :online="getUsersInfo.is_onlined")
       .profile__news
         .profile__tabs
-          span.profile__tab.active {{ $t('posted') }} {{getUsersInfo.first_name}} ({{getWall.length}})
+          span.profile__tab.active {{ $t('posted') }} {{getUsersInfo.first_name}} ({{total}})
         .profile__news-list
           news-block(v-for="news in getWall" :key="news.id" :info="news")
         is-loading(v-if="total > offset" :isLoad='loading', v-load="loadWall")
@@ -50,6 +50,7 @@ export default {
       }
 
       this.userInfoId(data).then(resp => {
+        console.log(resp)
         this.total = resp
         this.offset = this.getWall.length
         this.loading = false

@@ -42,20 +42,23 @@ export default {
   },
   i18n: {
     messages: {
-      "en": {
-        "placeholder": "Add tag..."
+      en: {
+        placeholder: 'Add tag...'
       },
-      "ru": {
-        "placeholder": "Добавить тег..."
+      ru: {
+        placeholder: 'Добавить тег...'
       }
     }
-  },
+  }
 }
 </script>
 
-
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl';
+
+.add-tags{
+  display: grid !important;
+}
 
 .add-tags__input {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -75,7 +78,7 @@ export default {
 }
 
 .add-tags__item {
-  display: inline-block;
+  display:block;
   align-items: center;
   color: eucalypt;
   font-size: 13px;

@@ -121,7 +121,7 @@ export default {
         id,
         post_id: this.info.post_id,
         offset: 0,
-        perPage: this.perPage + this.offset
+        perPage: this.offset == 0 ? this.perPage + this.offset : this.offset
       })
     },
     onRecoverComment(id) {
@@ -129,7 +129,7 @@ export default {
         id,
         post_id: this.info.post_id,
         offset: 0,
-        perPage: this.perPage + this.offset
+        perPage: this.offset == 0 ? this.perPage + this.offset : this.offset
       })
     },
     onSubmitComment() {

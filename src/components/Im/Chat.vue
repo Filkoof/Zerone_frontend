@@ -1,9 +1,9 @@
 <template lang="pug">
   .im-chat
     .im-chat__user
-      router-link.im-chat__user-pic(:to="{name: 'ProfileId', params: {id: info.recipient.id}}")
-        img(:src="info.recipient.photo" :alt="info.recipient.first_name")
-      router-link.im-chat__user-name(:to="{name: 'ProfileId', params: {id: info.recipient.id}}") {{info.recipient.first_name + ' ' + info.recipient.last_name}}
+      router-link.im-chat__user-pic(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}")
+        img(:src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
+      router-link.im-chat__user-name(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}") {{info.recipient_id.first_name + ' ' + info.recipient_id.last_name}}
       span.user-status(:class="{online}") {{statusText}}
     .im-chat__infitite_list_wrapper
       virtual-list.im-chat__infitite_list.scroll-touch(:size="60"
@@ -58,9 +58,7 @@ export default {
   },
   computed: {
     statusText() {
-      return this.online
-        ? this.$t('online')
-        : this.$t('was') + moment(this.info.recipient.last_online_time).fromNow()
+      return this.online ? this.$t('online') : this.$t('was') + moment(this.info.recipient.last_online_time).fromNow()
     },
     messagesGrouped() {
       let groups = []
@@ -123,22 +121,25 @@ export default {
       }
     }
   },
+  created() {
+    console.log(this.info)
+  },
   i18n: {
     messages: {
-      "en": {
-        "nomore": "No more messages",
-        "placeholder": "Your message...",
-        "online": "Online",
-        "was": "was online "
+      en: {
+        nomore: 'No more messages',
+        placeholder: 'Your message...',
+        online: 'Online',
+        was: 'was online '
       },
-      "ru": {
-        "nomore": "Больше сообщений нет",
-        "placeholder": "Ваше сообщение...",
-        "online": "Онлайн",
-        "was": "был в сети "
+      ru: {
+        nomore: 'Больше сообщений нет',
+        placeholder: 'Ваше сообщение...',
+        online: 'Онлайн',
+        was: 'был в сети '
       }
     }
-  },
+  }
 }
 </script>
 

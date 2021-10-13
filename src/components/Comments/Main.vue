@@ -155,7 +155,7 @@ export default {
     font-weight: 600;
     color: #000;
     margin-bottom: 5px;
-    display: block;
+    display: inline-block;
 }
 
 .comment-main__author-res {

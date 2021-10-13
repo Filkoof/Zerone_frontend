@@ -29,39 +29,35 @@ export default {
   },
   getters: {
     oldestKnownMessageId: s => (s.messages.length > 0 ? s.messages[0]['id'] : null),
-    dialogs: s => {
-      const result = [
-        ...s.dialogs
-      ]
+    getDialogs: s => {
+      const result = [...s.dialogs]
 
-      result.forEach(dialog => {
-        // dialog.last_message = dialog.last_message || {}
-        // dialog.last_message.isSentByMe = dialog.last_message.isSentByMe || true
-        // dialog.last_message.recipient = dialog.last_message.recipient || {}
-        // dialog.last_message.recipient.last_online_time = dialog.last_message.recipient.last_online_time * 1000 || 0
-        // dialog.last_message.recipient.id = dialog.last_message.recipient.id || dialog.last_message.recipient_id
-        // dialog.last_message.recipient.photo = dialog.last_message.recipient.photo || '../static/img/user/default_avatar.svg'
-        // dialog.last_message.recipient.first_name = dialog.last_message.recipient.first_name || 'Name'
-        // dialog.last_message.recipient.last_name = dialog.last_message.recipient.last_name || 'LastName'
-        // dialog.last_message.time = dialog.last_message.time * 1000
-        // dialog.last_message.last_online_time = dialog.last_message.last_online_time * 1000
-        // dialog.last_message.photo = dialog.last_message.photo || '../static/img/user/default_avatar.svg'
-        dialog.recipient.photo = dialog.recipient.photo || '../static/img/user/default_avatar.svg'
-        dialog.recipient.last_online_time = dialog.recipient.last_online_time * 1000 || 0
-      })
+      // result.forEach(dialog => {
+      //   // dialog.last_message = dialog.last_message || {}
+      //   // dialog.last_message.isSentByMe = dialog.last_message.isSentByMe || true
+      //   // dialog.last_message.recipient = dialog.last_message.recipient || {}
+      //   // dialog.last_message.recipient.last_online_time = dialog.last_message.recipient.last_online_time * 1000 || 0
+      //   // dialog.last_message.recipient.id = dialog.last_message.recipient.id || dialog.last_message.recipient_id
+      //   // dialog.last_message.recipient.photo = dialog.last_message.recipient.photo || '../static/img/user/default_avatar.svg'
+      //   // dialog.last_message.recipient.first_name = dialog.last_message.recipient.first_name || 'Name'
+      //   // dialog.last_message.recipient.last_name = dialog.last_message.recipient.last_name || 'LastName'
+      //   // dialog.last_message.time = dialog.last_message.time * 1000
+      //   // dialog.last_message.last_online_time = dialog.last_message.last_online_time * 1000
+      //   // dialog.last_message.photo = dialog.last_message.photo || '../static/img/user/default_avatar.svg'
+      //   dialog.recipient_id.photo = dialog.recipient_id.photo || '../static/img/user/default_avatar.svg'
+      //   dialog.recipient_id.last_online_time = dialog.recipient_id.last_online_time * 1000 || 0
+      // })
 
       return result
     },
-    activeDialog: s => s.dialogs.find(el => el.id == s.activeId),
-    activeDialogId: s => s.activeId,
+    getActiveDialog: s => s.dialogs.find(el => el.id == s.activeId),
+    getActiveDialogId: s => s.activeId,
     dialogsLoaded: s => s.dialogsLoaded,
     unreadedMessages: s => s.unreadedMessages,
     hasOpenedDialog: s => dialogId => !!s.dialogs.find(el => el.id == dialogId),
     isHistoryEndReached: s => s.isHistoryEndReached,
-    messages: s => {
-      const result = [
-        ...s.messages
-      ]
+    getMessages: s => {
+      const result = [...s.messages]
 
       result.forEach(message => {
         // message.last_message = message.last_message || {}

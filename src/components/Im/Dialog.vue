@@ -1,15 +1,15 @@
 <template lang="pug">
   .im-dialog(:class="{active, push}")
-    router-link.im-dailog__pic(:to="{name: 'ProfileId', params: {id: info.recipient.id}}")
-      img(:src="info.recipient.photo" :alt="info.recipient.first_name")
+    router-link.im-dailog__pic(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}")
+      img(:src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
     .im-dialog__info
-      router-link.im-dialog__name(:to="{name: 'ProfileId', params: {id: info.recipient.id}}") {{info.recipient.first_name + ' ' + info.recipient.last_name}}
+      router-link.im-dialog__name(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}") {{info.recipient_id.first_name + ' ' + info.recipient_id.last_name}}
       span.user-status(:class="{online}") {{statusText}}
     .im-dialog__content
       p.im-dialog__last
-        span.im-dialog__last-me(v-if="me") Вы:
+        span.im-dialog__last-me(v-if="me && info.last_message !== null") Вы:
         | {{info.last_message.message_text}}
-      span.im-dialog__time {{info.last_message.time - 60*60*3 | moment('from')}}
+      span.im-dialog__time(v-if="me && info.last_message !== null") {{info.last_message.time - 60*60*3 | moment('from')}}
     span.im-dialog__push(v-if="push > 0") {{push}}
 </template>
 
@@ -28,21 +28,24 @@ export default {
     statusText() {
       return this.online
         ? this.$t('online')
-        : this.$t('was') + moment(this.info.recipient.last_online_time).fromNow()
+        : this.$t('was') + moment(this.info.recipient_id.last_online_time).fromNow()
     }
+  },
+  created() {
+    console.log(this.info.last_message)
   },
   i18n: {
     messages: {
-      "en": {
-        "online": "Online",
-        "was": "was online "
+      en: {
+        online: 'Online',
+        was: 'was online '
       },
-      "ru": {
-        "online": "Онлайн",
-        "was": "был в сети "
+      ru: {
+        online: 'Онлайн',
+        was: 'был в сети '
       }
     }
-  },
+  }
 }
 </script>
 

@@ -2,20 +2,20 @@
 .im
     .im__dialogs
         im-dialog(
-            v-for='dialog in dialogs',
+            v-for='dialog in getDialogs',
             :key='dialog.id',
             :info='dialog',
             :push='countPush(dialog.unread_count)',
-            :me='dialog.last_message.isSentByMe',
-            :active='activeDialog && dialog.id === activeDialog.id',
-            :online='checkOnlineUser(dialog.recipient.last_online_time)',
+            :me='true',
+            :active='getActiveDialog && dialog.id === getActiveDialog.id',
+            :online='checkOnlineUser(dialog.recipient_id.last_online_time)',
             @click.native='clickOnDialog(dialog.id)'
         )
-    .im__chat(v-if='activeDialog')
+    .im__chat(v-if='getActiveDialog')
         im-chat(
-            :info='activeDialog',
-            :messages='messages',
-            :online='checkOnlineUser(activeDialog.recipient.last_online_time)'
+            :info='getActiveDialog',
+            :messages='getMessages',
+            :online='checkOnlineUser(getActiveDialog.recipient_id.last_online_time)'
         )
 </template>
 
@@ -25,59 +25,59 @@ import { mapGetters, mapActions } from 'vuex'
 import ImDialog from '@/components/Im/Dialog'
 import ImChat from '@/components/Im/Chat'
 export default {
-    name: 'Im',
-    components: { ImDialog, ImChat },
-    data: () => ({
-        intervalForMessages: null,
-    }),
-    computed: {
-        ...mapGetters('profile/dialogs', ['messages', 'activeDialog', 'dialogs']),
+  name: 'Im',
+  components: { ImDialog, ImChat },
+  data: () => ({
+    intervalForMessages: null
+  }),
+  computed: {
+    ...mapGetters('profile/dialogs', ['getMessages', 'getActiveDialog', 'getDialogs'])
+  },
+  methods: {
+    ...mapActions('profile/dialogs', [
+      'loadFreshMessages',
+      'switchDialog',
+      'closeDialog',
+      'createDialogWithUser',
+      'apiLoadAllDialogs'
+    ]),
+    countPush(unread) {
+      return unread > 0 ? unread : null
     },
-    methods: {
-        ...mapActions('profile/dialogs', [
-            'loadFreshMessages',
-            'switchDialog',
-            'closeDialog',
-            'createDialogWithUser',
-            'apiLoadAllDialogs',
-        ]),
-        countPush(unread) {
-            return unread > 0 ? unread : null
-        },
-        checkOnlineUser(time) {
-            return moment().diff(moment(time), 'seconds') <= 60
-        },
-        clickOnDialog(dialogId) {
-            this.$router.push({ name: 'Im', query: { activeDialog: dialogId } })
-        },
-        async selectDialogByRoute(route, vm) {
-            if (route.query.activeDialog) {
-                vm.switchDialog(route.query.activeDialog)
-            } else if (route.query.userId) {
-                vm.createDialogWithUser(route.query.userId)
-            } else if (vm.dialogs.length > 0) {
-                vm.$router.push({ name: 'Im', query: { activeDialog: vm.dialogs[0].id } })
-            } else {
-                await vm.apiLoadAllDialogs()
-                if (vm.dialogs.length > 0) {
-                    vm.$router.push({ name: 'Im', query: { activeDialog: vm.dialogs[0].id } })
-                }
-                console.log('No dialogs at all')
-            }
-        },
+    checkOnlineUser(time) {
+      return moment().diff(moment(time), 'seconds') <= 60
     },
-    beforeRouteEnter(to, from, next) {
-        next(async (vm) => {
-            vm.selectDialogByRoute(to, vm)
-        })
+    clickOnDialog(dialogId) {
+      this.$router.push({ name: 'Im', query: { getActiveDialog: dialogId } })
     },
-    beforeRouteUpdate(to, from, next) {
-        this.selectDialogByRoute(to, this)
-        next()
-    },
-    beforeDestroy() {
-        this.closeDialog()
-    },
+    async selectDialogByRoute(route, vm) {
+      if (route.query.getActiveDialog) {
+        vm.switchDialog(route.query.getActiveDialog)
+      } else if (route.query.userId) {
+        vm.createDialogWithUser(route.query.userId)
+      } else if (vm.getDialogs.length > 0) {
+        vm.$router.push({ name: 'Im', query: { getActiveDialog: vm.getDialogs[0].id } })
+      } else {
+        await vm.apiLoadAllDialogs()
+        if (vm.getDialogs.length > 0) {
+          vm.$router.push({ name: 'Im', query: { getActiveDialog: vm.getDialogs[0].id } })
+        }
+        console.log('No dialogs at all')
+      }
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(async vm => {
+      vm.selectDialogByRoute(to, vm)
+    })
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.selectDialogByRoute(to, this)
+    next()
+  },
+  beforeDestroy() {
+    this.closeDialog()
+  }
 }
 </script>
 
