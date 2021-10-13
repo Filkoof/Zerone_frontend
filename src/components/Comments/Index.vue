@@ -42,9 +42,9 @@ export default {
     commentText: '',
     commentEdit: false,
     commentEditInfo: null,
-    isLoad: false,
+    commentPerPage: 5,
     commentOffset: 0,
-    commentPerPage: 5
+    isLoad: false
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
@@ -76,24 +76,35 @@ export default {
         id: this.commentEdit ? this.commentEditInfo.id : null,
         parent_id: null,
         offset: 0,
-        perPage: this.commentPerPage + this.commentOffset
+        perPage:
+          this.commentOffset + this.commentPerPage === 5
+            ? this.commentPerPage * 2
+            : this.commentOffset + this.commentPerPage
       }).then(() => {
-        this.commentOffset = this.commentOffset + this.commentPerPage
+        this.commentOffset + this.commentPerPage === 5
+          ? (this.commentOffset = this.commentPerPage * 2)
+          : (this.commentOffset += this.commentPerPage)
         this.commentText = ''
         this.commentEdit = false
         this.commentEditInfo = null
       })
     },
     loadComments() {
-      if (this.commentOffset < this.info.total) {
+      if (this.info.offset < this.info.total) {
         this.isLoad = true
+        console.log(this.info)
         const data = {
           post_id: this.id,
           offset: 0,
-          perPage: this.commentOffset
+          perPage:
+            this.commentOffset + this.commentPerPage === 5
+              ? this.commentPerPage * 2
+              : this.commentOffset + this.commentPerPage
         }
         this.addCommentsById(data).then(() => {
-          this.commentOffset += this.commentPerPage
+          this.commentOffset + this.commentPerPage === 5
+            ? (this.commentOffset = this.commentPerPage * 2)
+            : (this.commentOffset += this.commentPerPage)
           this.isLoad = false
         })
       }
