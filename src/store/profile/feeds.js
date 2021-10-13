@@ -11,24 +11,62 @@ export default {
     }
   },
   mutations: {
-    setFeeds: (s, feeds) => (s.feeds = feeds),
-    setCommentsById: (s, payload) => {
-      const post = s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))]
-      const newPost = [...payload.value.data, ...post.comments.data]
-      const filteredStrings = newPost.filter((thing, index, self) => index === self.findIndex(t => t.id === thing.id))
-      const revers = filteredStrings.sort(function(a, b) {
-        return new Date(a.time) - new Date(b.time)
-      })
+    setFeeds: (s, payload) => {
+      if (payload.length > 0) {
+        if (s.feeds.length == 0) {
+          const sort = payload
+          sort.forEach(el => {
+            el.comments.data.sort(function(a, b) {
+              return new Date(a.time) - new Date(b.time)
+            })
+            el.comments.data.forEach(elSub => {
+              elSub.sub_comments.sort(function(a, b) {
+                return new Date(a.time) - new Date(b.time)
+              })
+            })
+          })
+          s.feeds = sort
+        } else {
+          let post = s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))]
+          let newPost = [...payload.value.data, ...post.comments.data]
+          let filteredStrings = newPost.filter((thing, index, self) => index === self.findIndex(t => t.id === thing.id))
+          let sort = filteredStrings.sort(function(a, b) {
+            return new Date(a.time) - new Date(b.time)
+          })
 
+          sort.forEach(el => {
+            if (el.sub_comments.length !== 0) {
+              el.sub_comments = el.sub_comments.sort(function(a, b) {
+                return new Date(a.time) - new Date(b.time)
+              })
+            }
+          })
+
+          s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data = [...sort]
+        }
+      } else {
+        s.feeds = payload
+      }
+    },
+    setFeedsCommentsById(s, payload) {
       s.feeds.forEach(el => {
-        if (el.id === payload.post_id) {
-          el.comments.total = payload.value.total
+        if (el.id == payload.post_id) {
+          let newPost = [...payload.value.data, ...el.comments.data]
+          newPost = newPost.filter((thing, index, self) => index === self.findIndex(t => t.id === thing.id))
+          let sortMainComments = payload.value
+          sortMainComments.data = newPost
+          sortMainComments.data = payload.value.data.sort(function(a, b) {
+            return new Date(a.time) - new Date(b.time)
+          })
+          sortMainComments.data.forEach(elSub => {
+            elSub.sub_comments.sort(function(a, b) {
+              return new Date(a.time) - new Date(b.time)
+            })
+          })
+          el.comments = sortMainComments
         }
       })
-
-      s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data = [...revers]
-    },
-    setFeedsById: (s, payload) => (s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.id))] = payload)
+    }
   },
   actions: {
     async apiFeeds({ getters, commit }, payload) {
@@ -37,6 +75,7 @@ export default {
         Object.keys(payload).map(el => {
           payload[el] && query.push(`${el}=${payload[el]}`)
         })
+
       return await axios({
         url: `feeds?${query.join('&')}`,
         method: 'GET'

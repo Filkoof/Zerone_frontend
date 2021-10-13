@@ -47,28 +47,34 @@ export default {
   },
   mutations: {
     setInfo: (s, info) => (s.info = info),
-    setWall: (s, wall) => (s.wall = wall),
-    setWallById: (s, payload) => {
-      s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.id))] = payload.value
+    setWall: (s, payload) => {
+      if (payload.length > 0) {
+        if (s.wall.length == 0) {
+          s.wall = payload
+        } else {
+          let post = s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))]
+          let newPost = [...payload.value.data, ...post.comments.data]
+          let filteredStrings = newPost.filter((thing, index, self) => index === self.findIndex(t => t.id === thing.id))
+          let sort = filteredStrings.sort(function(a, b) {
+            return new Date(a.time) - new Date(b.time)
+          })
+
+          sort.forEach(el => {
+            if (el.sub_comments.length !== 0) {
+              el.sub_comments = el.sub_comments.sort(function(a, b) {
+                return new Date(a.time) - new Date(b.time)
+              })
+            }
+          })
+
+          s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))].comments.data = [...sort]
+        }
+      } else {
+        s.wall = payload
+      }
     },
     setCommentsById: (s, payload) => {
-      const post = s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))]
-      const newPost = [...payload.value.data, ...post.comments.data]
-      const filteredStrings = newPost.filter((thing, index, self) => index === self.findIndex(t => t.id === thing.id))
-      const revers = filteredStrings.sort(function(a, b) {
-        return new Date(a.time) - new Date(b.time)
-      })
-
-      s.wall.forEach(el => {
-        if (el.id === payload.post_id) {
-          el.comments.total = payload.value.total
-        }
-      })
-
-      s.wall[s.wall.indexOf(s.wall.find(el => el.id === payload.post_id))].comments.data = [...revers]
-    },
-    setUsersInfo: (s, info) => {
-      return (s.users = info)
+      console.log(payload)
     }
   },
   actions: {
@@ -84,8 +90,6 @@ export default {
     },
 
     async apiWall({ getters, commit }, data) {
-      console.log(data.payload)
-      console.log(data.id)
       let query = []
 
       data.payload &&
@@ -115,7 +119,7 @@ export default {
         method: 'GET'
       })
         .then(response => {
-          commit('setWallById', {
+          commit('setWall', {
             id,
             value: response.data.data
           })
@@ -129,21 +133,23 @@ export default {
         method: 'GET'
       })
         .then(response => {
-          commit('setCommentsById', response.data.data)
+          commit('setWall', response.data.data)
         })
         .catch(error => {})
     },
 
-    async userInfoId({ commit, dispatch }, id) {
-      await axios({
-        url: `users/${id}`,
+    async userInfoId({ commit, dispatch }, data) {
+      return await axios({
+        url: `users/${data.id}`,
         method: 'GET'
       })
         .then(async response => {
-          await dispatch('apiWall', {
-            id
+          let total
+          commit('setWall', response.data.data)
+          await dispatch('apiWall', data).then(resp => {
+            total = resp
           })
-          commit('setUsersInfo', response.data.data)
+          return total
         })
         .catch(error => {})
     }

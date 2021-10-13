@@ -75,9 +75,10 @@ export default {
         text: this.commentText,
         id: this.commentEdit ? this.commentEditInfo.id : null,
         parent_id: null,
-        offset: this.commentOffset,
-        perPage: this.commentPerPage
+        offset: 0,
+        perPage: this.commentPerPage + this.commentOffset
       }).then(() => {
+        this.commentOffset = this.commentOffset + this.commentPerPage
         this.commentText = ''
         this.commentEdit = false
         this.commentEditInfo = null
@@ -88,19 +89,14 @@ export default {
         this.isLoad = true
         const data = {
           post_id: this.id,
-          offset: this.commentOffset + this.commentPerPage,
-          perPage: this.commentPerPage
+          offset: 0,
+          perPage: this.commentOffset
         }
         this.addCommentsById(data).then(() => {
           this.commentOffset += this.commentPerPage
           this.isLoad = false
         })
       }
-    }
-  },
-  watch: {
-    info: function(val) {
-      this.commentOffset = val.data.length
     }
   },
   i18n: {

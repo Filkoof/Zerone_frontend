@@ -120,16 +120,16 @@ export default {
       this.deleteComment({
         id,
         post_id: this.info.post_id,
-        offset: this.offset,
-        perPage: this.perPage
+        offset: 0,
+        perPage: this.perPage + this.offset
       })
     },
     onRecoverComment(id) {
       this.recoverComment({
         id,
         post_id: this.info.post_id,
-        offset: this.offset,
-        perPage: this.perPage
+        offset: 0,
+        perPage: this.perPage + this.offset
       })
     },
     onSubmitComment() {
@@ -148,8 +148,8 @@ export default {
         parent_id: this.info.id,
         text: this.respongindLink + `,message:${this.commentText}`,
         id: this.commentEditId,
-        offset: this.offset,
-        perPage: this.perPage
+        offset: 0,
+        perPage: this.perPage + this.offset
       }).then(() => {
         this.commentText = ''
         this.respongindLink = ''

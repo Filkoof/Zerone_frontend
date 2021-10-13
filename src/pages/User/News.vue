@@ -3,7 +3,7 @@
     .inner-page__main
         .news__add
             news-add(user)
-        .news__list(v-if='getInfo')
+        .news__list(v-if='getInfo')      
             news-block(
                 v-for='feed in getFeeds',
                 :key='feed.id',

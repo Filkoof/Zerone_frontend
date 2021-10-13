@@ -76,7 +76,7 @@ export default {
       this.clearSearchUsers()
       this.offset = 0
       this.setOffsetUsers(this.offset)
-      setInterval(() => {
+      setTimeout(() => {
         this.onSearchUsers()
       }, 0)
     }
