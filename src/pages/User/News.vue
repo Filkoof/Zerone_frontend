@@ -46,6 +46,7 @@ export default {
       this.isLoad = true
 
       this.apiFeeds({ offset: this.offset, itemPerPage: this.itemPerPage }).then(response => {
+        console.log(response)
         this.total = response
         this.isLoad = false
         this.offset = this.offset + this.itemPerPage

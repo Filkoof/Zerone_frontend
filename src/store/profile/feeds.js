@@ -27,22 +27,40 @@ export default {
           })
           s.feeds = sort
         } else {
-          let post = s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))]
-          let newPost = [...payload.value.data, ...post.comments.data]
-          let filteredStrings = newPost.filter((thing, index, self) => index === self.findIndex(t => t.id === thing.id))
-          let sort = filteredStrings.sort(function(a, b) {
-            return new Date(a.time) - new Date(b.time)
-          })
+          console.log(payload)
+          if (payload.post_id) {
+            let post = s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))]
+            let newPost = [...payload.value.data, ...post.comments.data]
+            let filteredStrings = newPost.filter(
+              (thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+            )
+            let sort = filteredStrings.sort(function(a, b) {
+              return new Date(a.time) - new Date(b.time)
+            })
 
-          sort.forEach(el => {
-            if (el.sub_comments.length !== 0) {
-              el.sub_comments = el.sub_comments.sort(function(a, b) {
+            sort.forEach(el => {
+              if (el.sub_comments.length !== 0) {
+                el.sub_comments = el.sub_comments.sort(function(a, b) {
+                  return new Date(a.time) - new Date(b.time)
+                })
+              }
+            })
+
+            s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data = [...sort]
+          } else {
+            const sort = payload
+            sort.forEach(el => {
+              el.comments.data.sort(function(a, b) {
                 return new Date(a.time) - new Date(b.time)
               })
-            }
-          })
-
-          s.feeds[s.feeds.indexOf(s.feeds.find(el => el.id === payload.post_id))].comments.data = [...sort]
+              el.comments.data.forEach(elSub => {
+                elSub.sub_comments.sort(function(a, b) {
+                  return new Date(a.time) - new Date(b.time)
+                })
+              })
+            })
+            s.feeds = sort
+          }
         }
       } else {
         s.feeds = payload
@@ -87,9 +105,7 @@ export default {
           const newsPost = [...previousPost, ...post]
           //удаление повторяющихся постов
           const chechcDoblePost = newsPost.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
-
           commit('setFeeds', chechcDoblePost)
-
           return response.data.total
         })
         .catch(() => {})
@@ -102,6 +118,7 @@ export default {
         .then(response => {
           console.log('TCL: apiFeeds -> response', response)
           commit('setFeedsById', response.data)
+          return response.data.total
         })
         .catch(() => {})
     },
