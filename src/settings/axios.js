@@ -9,13 +9,13 @@ axios.defaults.headers['content-type'] = 'application/json'
 axios.defaults.withCredentials = true
 switch (NODE_ENV) {
   case 'development':
-    axios.defaults.baseURL = url + 'api/v1/'
+    axios.defaults.baseURL = urlLocal + 'api/v1/'
     break
   case 'production':
-    axios.defaults.baseURL = url + 'api/v1/'
+    axios.defaults.baseURL = urlLocal + 'api/v1/'
     break
   case 'build':
-    axios.defaults.baseURL = url + 'api/v1/'
+    axios.defaults.baseURL = urlLocal + 'api/v1/'
     break
   default:
     axios.defaults.baseURL = 'https://virtserver.swaggerhub.com/andrewleykin/social/1.0.4/api/v1/'
@@ -29,10 +29,9 @@ let timeLastStart = null
 axios.interceptors.response.use(null, error => {
   // добавить проверку на законченный токен и сделать выход из приложения
   // store.dispatch('auth/api/logout')
-  if (error.response.data.error_description === 'unauthorized') {
+  if (error.response.status == 401) {
     store.dispatch('auth/api/logout')
     localStorage.removeItem('user-token')
-    window.location.reload()
   }
 
   const message = error.response.data.error_description || error.response.data.path + ' - ' + error.response.data.error
