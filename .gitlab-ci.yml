@@ -1,0 +1,39 @@
+stages:
+  - build
+  - deploy
+build:
+  artifacts:
+    paths:
+      - /builds/javapro18/javapro_teams_frontend_original/
+  only:
+    - dev
+  except:
+    - tags
+  stage: build
+  when: always
+  script:
+    - npm install -g npm@8.1.3
+    - npm install
+    - npm install chalk
+    - npm install newsapi --save
+    - npm run build
+deploy:
+  stage: deploy
+  only:
+    - dev
+  except:
+    - tags
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $DEV_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $DEV_USER@$DEV_HOST docker-compose stop vue_js_container
+    - ssh $DEV_USER@$DEV_HOST docker-compose rm -f vue_js_container
+    - ssh $DEV_USER@$DEV_HOST  cp -r web web.bac
+    - ssh $DEV_USER@$DEV_HOST  rm -rf web
+    - scp -pr dist $DEV_USER@$DEV_HOST:$DEV_APP_PATH/web
+    - ssh $DEV_USER@$DEV_HOST docker-compose up -d
