@@ -17,6 +17,14 @@
                     simple-svg(:filepath="'/static/img/add.svg'")
               button.link(:class="{ 'is-active': isActive.link() }" @click="openLinkMenu(getMarkAttrs('link'))")
                 simple-svg(:filepath="'/static/img/link.svg'")
+            label.news-add__icon.photo(:class="{ 'is-active': isActive.image() }")
+              input#photo.user-info-form__input-photo(
+                  type='file',
+                  ref='photo',
+                  accept='image/*'
+                  @change="addImage($event, commands.image)"
+              )
+              simple-svg(:filepath='"/static/img/photo.svg"')
       .news-add__settings
         h4.news-add__settings-title {{ $t('title') }}
         add-tags(:tags="tags" @change-tags="onChangeTags")
@@ -40,7 +48,7 @@
 
 <script>
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-import { Bold, Italic, Underline, Link } from 'tiptap-extensions'
+import { Bold, Italic, Underline, Link, Image } from 'tiptap-extensions'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import AddTags from '@/components/News/AddTags'
@@ -95,10 +103,13 @@ export default {
       '21:00',
       '22:00',
       '23:00'
-    ]
+    ],
+    photo: null,
+    src: '',
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+    ...mapGetters('global/storage', ['getStorage']),
     months() {
       if (localStorage.getItem('lang') === 'en') {
         return [
@@ -151,6 +162,7 @@ export default {
   },
   methods: {
     ...mapActions('profile/feeds', ['actionsFeed']),
+    ...mapActions('global/storage', ['apiStorage']),
     onPlaning() {
       this.isPlaning = true
       this.submitForm()
@@ -221,6 +233,28 @@ export default {
       this.day = moment(value).date()
       this.month = this.months[moment(value).month()]
       this.year = moment(value).year()
+    },
+    addImage($event, command) {
+      this.photo = $event.target.files[0]
+      const reader = new window.FileReader()
+      reader.onload = e => {
+        this.src = e.target.result
+        console.log('e.target: ', e.result);
+      }
+      const file = reader.readAsDataURL(this.photo)
+
+     this.apiStorage({
+       file: this.photo,
+       typeImage: 'POSTIMAGE',
+     })
+      .then(() => {
+        const { url } = this.getStorage;
+        console.log('this.getStorage: ', this.getStorage);
+        command({ src: url })
+      })
+      .catch((err) => {
+        console.log('error photo: ', err);
+      })
     }
   },
   mounted() {
@@ -228,9 +262,16 @@ export default {
       this.title = this.info.title
       this.tags = this.info.tags
       this.editor = new Editor({
-        content: `<p>${this.info.post_text}</p>`,
+        content: `
+          <p>${this.info.post_text}</p>`,
         class: 'cursor-text',
-        extensions: [new Bold(), new Italic(), new Underline(), new Link()]
+        extensions: [new Bold(), new Italic(), new Underline(), new Link(), new Image()],
+        editorProps: {
+          attributes: {
+            class: 'cursor-text',
+          },
+        },
+        autofocus: true,
       })
       if (this.deffered) {
         this.day = moment(this.info.time).date()
@@ -240,7 +281,7 @@ export default {
     } else {
       this.editor = new Editor({
         content: `<p>Ваш текст</p>`,
-        extensions: [new Bold(), new Italic(), new Underline(), new Link()],
+        extensions: [new Bold(), new Italic(), new Underline(), new Link(), new Image()],
         editorProps: {
           attributes: {
             class: 'cursor-text',

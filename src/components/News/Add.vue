@@ -5,8 +5,6 @@
         .news-add__pic(v-if="user")
           img(:src="getInfo.photo" :alt="getInfo.fullName")
       span.news-add__placeholder {{ $t('placeholder') }}...
-      .news-add__block.photo
-        simple-svg(:filepath="'/static/img/photo.svg'")
       .news-add__block.add
         simple-svg(:filepath="'/static/img/add.svg'")
     add-form(v-else @submit-complete="closeForm")

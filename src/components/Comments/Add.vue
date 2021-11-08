@@ -3,7 +3,12 @@ form.comment-add(action='#', @submit.prevent='onSubmitComment')
     .comment-add__pic(v-if='getInfo')
         img(:src='getInfo.photo', :alt='getInfo.fullName')
     input.comment-add__input(type='text', :placeholder='$t("placeholder")', ref='addInput', v-model='commentText')
-    .comment-add__icon.photo
+    label.comment-add__icon.photo
+        input#photo.user-info-form__input-photo(
+            type='file',
+            ref='photo',
+            accept='image/*'
+        )
         simple-svg(:filepath='"/static/img/photo.svg"')
     .comment-add__icon.add(@click='onSubmitComment')
         simple-svg(:filepath='"/static/img/add.svg"')

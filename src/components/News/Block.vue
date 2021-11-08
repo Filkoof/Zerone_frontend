@@ -70,7 +70,7 @@
 import AddForm from '@/components/News/AddForm'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
-import Comments from '@/components/Comments'
+import Comments from '@/components/Comments/Index'
 import LikeComment from '@/components/LikeComment'
 export default {
   name: 'NewsBlock',
