@@ -14,11 +14,11 @@ export default {
   actions: {
     async apiStorage({
       commit
-    }, file) {
+    }, { file, typeImage = 'IMAGE' }) {
       let formData = new FormData();
       formData.append('file', file);
       await axios({
-        url: 'storage?type=IMAGE',
+        url: `storage?type=${typeImage}`,
         method: 'POST',
         data: formData,
         headers: {

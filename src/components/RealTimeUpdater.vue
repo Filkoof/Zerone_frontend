@@ -17,7 +17,7 @@ export default {
         // }, INTERVAL_NOTIFICATIONS_MS)
     },
     computed: {
-        ...mapGetters('profile/dialogs', ['activeDialog']),
+        ...mapGetters('profile/dialogs', { activeDialog: 'getActiveDialog' }),
     },
     methods: {
         ...mapActions('profile/dialogs', ['loadFreshMessages']),

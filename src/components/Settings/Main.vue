@@ -197,7 +197,7 @@ export default {
 
     submitHandler() {
       if (this.src !== this.getInfo.photo && this.src !== '') {
-        this.apiStorage(this.photo).then(() => {
+        this.apiStorage({ file: this.photo }).then(() => {
           this.apiChangeInfo({
             photo: this.getStorage && this.getStorage.id,
             first_name: this.name,

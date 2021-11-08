@@ -81,6 +81,9 @@
     color: eucalypt
     font-weight: 600
     cursor: pointer
+  img
+    width: 85%
+    height: auto
 
 .news-add__actions
   padding-top: 20px
@@ -118,6 +121,26 @@
       fill: #747487
   button + button
     margin-left: 10px
+  .news-add__icon
+    width: 26px
+    height: 26px
+    margin-left: 10px
+    display: flex
+    align-items: center
+    justify-content: center
+    background-color: #F5F7FB
+    color: #747487
+    cursor: pointer
+    transition: all 0.2s
+    .simple-svg-wrapper
+      width: 16px
+      font-size: 0
+      line-height: 0
+    &.is-active
+      background-color: #747487
+      color: #F5F7FB
+      .simple-svg
+        fill: #F5F7FB
 
 .news-add__actions-link
   position: relative
