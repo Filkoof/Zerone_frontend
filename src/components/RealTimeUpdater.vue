@@ -12,9 +12,9 @@ export default {
             }
         }, INTERVAL_DIALOG_MS)
 
-        // this.intervalForNotifications = setInterval(() => {
-        //   this.apiNotifications()
-        // }, INTERVAL_NOTIFICATIONS_MS)
+        this.intervalForNotifications = setInterval(() => {
+          this.apiNotifications()
+        }, INTERVAL_NOTIFICATIONS_MS)
     },
     computed: {
         ...mapGetters('profile/dialogs', { activeDialog: 'getActiveDialog' }),
