@@ -15,11 +15,16 @@
             :deleted='getInfo.id === i.author.id',
             @edit-comment='onEditMain'
         )
-        .div(v-if='isOpenComments && commentOffset < info.total') 
+        .div(v-if='isOpenComments && commentOffset < info.total')
             button.btn-load-comments-text(type='button', v-if='!isLoad', @click.prevent='loadComments') Показать следующие комментарии
             is-loading(:isLoad='isLoad')
         .comments__add(v-if='!admin')
-            comment-add(ref='addComment', :id='id', v-model='commentText', @submited='onSubmitComment')
+            comment-add(ref='addComment', :id='id', :photos="photos" v-model='commentText', @updatePhotos='updatePhotos', @submited='onSubmitComment')
+            ul.comments__photos.photos-list
+              li.photos-list__item(v-for="photo in photos" :key="photo.id")
+                img.photos-list__img(:src="photo.url")
+                button.photos-list__btn(@click.prevent="deletePhoto(photo.id)")
+                  simple-svg(:filepath='"/static/img/delete.svg"')
 </template>
 
 <script>
@@ -44,10 +49,12 @@ export default {
     commentEditInfo: null,
     commentPerPage: 5,
     commentOffset: 0,
-    isLoad: false
+    isLoad: false,
+    photos: [],
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+    ...mapGetters('global/storage', ['getStorage']),
     showText() {
       if (localStorage.getItem('lang') === 'en') {
         return this.isOpenComments ? 'hide' : 'show'
@@ -58,8 +65,19 @@ export default {
   methods: {
     ...mapActions('profile/comments', ['commentActions']),
     ...mapActions('profile/comments', ['addCommentsById']),
+    ...mapActions('global/storage', ['deleteFile']),
     showComments() {
       this.isOpenComments = !this.isOpenComments
+    },
+    updatePhotos(photos) {
+      this.photos = photos;
+    },
+    deletePhoto(photoId) {
+      this.deleteFile(photoId)
+        .then(() => {
+          this.photos = this.photos.filter((photo) => photo.id !== photoId)
+        })
+        .catch((err) => console.log('Error delete file:', err))
     },
     onEditMain({ commentInfo, commentText }) {
       this.commentEdit = true
@@ -68,26 +86,29 @@ export default {
       this.$refs.addComment.$refs.addInput.focus()
     },
     onSubmitComment() {
-      if (this.commentText === '') return
-      this.commentActions({
-        edit: this.commentEdit,
-        post_id: this.id,
-        text: this.commentText,
-        id: this.commentEdit ? this.commentEditInfo.id : null,
-        parent_id: null,
-        offset: 0,
-        perPage:
+      if (this.commentText || this.photos.length) {
+        this.commentActions({
+          edit: this.commentEdit,
+          post_id: this.id,
+          text: this.commentText,
+          id: this.commentEdit ? this.commentEditInfo.id : null,
+          parent_id: null,
+          offset: 0,
+          images: this.photos,
+          perPage:
+            this.commentOffset + this.commentPerPage === 5
+              ? this.commentPerPage * 2
+              : this.commentOffset + this.commentPerPage
+        }).then(() => {
           this.commentOffset + this.commentPerPage === 5
-            ? this.commentPerPage * 2
-            : this.commentOffset + this.commentPerPage
-      }).then(() => {
-        this.commentOffset + this.commentPerPage === 5
-          ? (this.commentOffset = this.commentPerPage * 2)
-          : (this.commentOffset += this.commentPerPage)
-        this.commentText = ''
-        this.commentEdit = false
-        this.commentEditInfo = null
-      })
+            ? (this.commentOffset = this.commentPerPage * 2)
+            : (this.commentOffset += this.commentPerPage)
+          this.commentText = ''
+          this.commentEdit = false
+          this.commentEditInfo = null
+          this.photos = []
+        })
+      }
     },
     loadComments() {
       if (this.info.offset < this.info.total) {
@@ -224,6 +245,35 @@ export default {
 
         &:nth-child(3) {
             -webkit-animation-delay: 1.5s;
+        }
+    }
+}
+
+.photos-list {
+    margin-top: 10px;
+    padding-bottom: 10px;
+    .photos-list__item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        &:not(:last-child) {
+          margin-bottom: 10px;
+        }
+    }
+
+    .photos-list__img {
+        flex: 0 0 56px;
+        margin-right 15px;
+    }
+
+    .photos-list__btn {
+      flex: 0 0 22px;
+      padding: 0;
+      background-color: transparent;
+      cursor: pointer;
+        .simple-svg-wrapper {
+            width: 22px;
+            height: 22px;
         }
     }
 }

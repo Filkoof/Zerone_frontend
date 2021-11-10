@@ -28,5 +28,19 @@ export default {
         commit('setStorage', response.data.data)
       }).catch(() => {})
     },
+
+    async deleteFile({
+      commit
+    }, fileId) {
+      await axios({
+        url: `storage/${fileId}`,
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(response => {
+
+      }).catch(() => {})
+    },
   }
 }
