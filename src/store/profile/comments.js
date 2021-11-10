@@ -32,7 +32,8 @@ export default {
         method: 'POST',
         data: {
           parent_id: payload.parent_id,
-          comment_text: payload.text
+          comment_text: payload.text,
+          images: payload.images
         }
       })
         .then(() => {

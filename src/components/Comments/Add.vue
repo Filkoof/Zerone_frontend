@@ -8,6 +8,7 @@ form.comment-add(action='#', @submit.prevent='onSubmitComment')
             type='file',
             ref='photo',
             accept='image/*'
+            @change="addImage($event)"
         )
         simple-svg(:filepath='"/static/img/photo.svg"')
     .comment-add__icon.add(@click='onSubmitComment')
@@ -15,15 +16,20 @@ form.comment-add(action='#', @submit.prevent='onSubmitComment')
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
     name: 'CommentAdd',
     props: {
         value: String,
         id: [Number, String],
+        photos: Array,
     },
+    data: () => ({
+      src: '',
+    }),
     computed: {
         ...mapGetters('profile/info', ['getInfo']),
+        ...mapGetters('global/storage', ['getStorage']),
 
         commentText: {
             get() {
@@ -35,9 +41,30 @@ export default {
         },
     },
     methods: {
+        ...mapActions('global/storage', ['apiStorage']),
         onSubmitComment() {
             this.$emit('submited')
         },
+        addImage($event) {
+          const photos = this.photos;
+          const photo = $event.target.files[0]
+          const reader = new window.FileReader()
+
+          reader.onload = e => this.src = e.target.result
+          reader.readAsDataURL(photo)
+
+          this.apiStorage({
+            file: photo,
+            typeImage: 'COMMENTIMAGE',
+          })
+            .then(() => {
+              photos.push(this.getStorage);
+              this.$emit('updatePhotos', this.photos);
+            })
+            .catch((err) => {
+              console.log('error photo: ', err);
+            })
+        }
     },
     i18n: {
         messages: {
@@ -95,6 +122,7 @@ export default {
     }
 
     &.photo {
+      width: 22px;
         .simple-svg-wrapper {
             width: 22px;
             height: 22px;
@@ -102,6 +130,7 @@ export default {
     }
 
     &.add {
+        width: 15px;
         margin-top: -5px;
 
         .simple-svg-wrapper {
