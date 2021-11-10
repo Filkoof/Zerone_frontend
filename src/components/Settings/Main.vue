@@ -199,7 +199,7 @@ export default {
       if (this.src !== this.getInfo.photo && this.src !== '') {
         this.apiStorage({ file: this.photo }).then(() => {
           this.apiChangeInfo({
-            photo: this.getStorage && this.getStorage.id,
+            photo: this.getStorage && this.getStorage.url,
             first_name: this.name,
             last_name: this.lastName,
             birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
