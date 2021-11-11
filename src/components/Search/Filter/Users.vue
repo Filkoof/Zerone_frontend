@@ -9,17 +9,9 @@
     .search-filter__block.age
         label.search__label Возраст:
         .search__row
-            select.select.search-filter__select(v-model.number='age_from')
-                option(value='null', disabled) От
-                option(value='31') От 31
-                option(value='32') От 32
-                option(value='33') От 33
+            input#search-age-from.search__input.search__input_age(type='number', placeholder="От" v-model.number='age_from')
             span.search__age-defis —
-            select.select.search-filter__select(v-model.number='age_to')
-                option(value='null', disabled) До
-                option(value='34') До 34
-                option(value='35') До 35
-                option(value='36') До 36
+            input#search-age-to.search__input.search__input_age(type='number', placeholder="До" v-model.number='age_to')
     .search-filter__block.region
         label.search__label Регион:
         .search__row
@@ -64,6 +56,13 @@ export default {
     ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities', 'clearSearchUsers']),
     onSearchUsers() {
       let { first_name, last_name, age_from, age_to, country, city } = this
+
+      if (!age_from || !age_to) {
+        return
+      }
+
+      console.log('age_to: ', age_to);
+
       this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
         .then(() => {
           this.offset += this.itemPerPage
