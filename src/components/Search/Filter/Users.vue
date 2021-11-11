@@ -57,12 +57,6 @@ export default {
     onSearchUsers() {
       let { first_name, last_name, age_from, age_to, country, city } = this
 
-      if (!age_from || !age_to) {
-        return
-      }
-
-      console.log('age_to: ', age_to);
-
       this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
         .then(() => {
           this.offset += this.itemPerPage
