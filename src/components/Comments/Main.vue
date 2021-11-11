@@ -17,6 +17,8 @@
                 template(v-if='commentTexts.id && commentTexts.name')
                     router-link.comment-main__author-res(:to='{ name: "ProfileId", params: { id: commentTexts.id } }') {{ commentTexts.name }}:
                 span {{ commentTexts.messages ? commentTexts.messages : info.comment_text }}
+                span(v-for='image in info.images', :key='image.id')
+                  img(:src="image.url")
             .comment-main__actions
                 span.comment-main__time {{ info.time | moment("from") }}
                 template(v-if='!admin')
