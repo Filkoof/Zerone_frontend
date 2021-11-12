@@ -34,9 +34,15 @@
                 v-if='!admin',
                 ref='addComment',
                 :id='info.post_id',
+                :photos="photos"
                 v-model='commentText',
                 @submited='onSubmitComment'
             )
+            ul.comments__photos.photos-list
+              li.photos-list__item(v-for="photo in photos" :key="photo.id")
+                img.photos-list__img(:src="photo.url")
+                button.photos-list__btn(@click.prevent="deletePhoto(photo.id)")
+                  simple-svg(:filepath='"/static/img/delete.svg"')
 </template>
 
 <script>
@@ -62,10 +68,12 @@ export default {
     commentEditId: null,
     commentEditParentId: null,
     respongindLink: '',
-    commentName: ''
+    commentName: '',
+    photos: [],
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+    ...mapGetters('global/storage', ['getStorage']),
     answerText() {
       if (!this.info) return 'ответ'
       return this.info.sub_comments == null ? 'ответа' : 'ответ'
@@ -73,8 +81,19 @@ export default {
   },
   methods: {
     ...mapActions('profile/comments', ['commentActions', 'deleteComment', 'recoverComment']),
+    ...mapActions('global/storage', ['deleteFile']),
     showSubComments() {
       this.isShowSubComments = !this.isShowSubComments
+    },
+    updatePhotos(photos) {
+      this.photos = photos;
+    },
+    deletePhoto(photoId) {
+      this.deleteFile(photoId)
+        .then(() => {
+          this.photos = this.photos.filter((photo) => photo.id !== photoId)
+        })
+        .catch((err) => console.log('Error delete file:', err))
     },
     showSubText() {
       if (localStorage.getItem('lang') === 'en') {
@@ -133,30 +152,33 @@ export default {
       })
     },
     onSubmitComment() {
-      if (this.commentText === '') return
+      if (this.commentText || this.photos.length) {
 
-      const nameLenght = this.commentName.length
-      const nameCheck = this.commentText.substr(0, nameLenght)
+        const nameLenght = this.commentName.length
+        const nameCheck = this.commentText.substr(0, nameLenght)
 
-      if (this.respongindLink !== '' && nameCheck == this.commentName) {
-        this.commentText = this.commentText.substr(nameLenght)
+        if (this.respongindLink !== '' && nameCheck == this.commentName) {
+          this.commentText = this.commentText.substr(nameLenght)
+        }
+
+        this.commentActions({
+          edit: this.commentEdit,
+          post_id: this.info.post_id,
+          parent_id: this.info.id,
+          text: this.respongindLink + `,message:${this.commentText}`,
+          id: this.commentEditId,
+          offset: 0,
+          perPage: this.perPage + this.offset,
+          images: this.photos,
+        }).then(() => {
+          this.commentText = ''
+          this.respongindLink = ''
+          this.commentEdit = false
+          this.commentEditInfo = null
+          this.commentEditParentId = null
+          this.photos = []
+        })
       }
-
-      this.commentActions({
-        edit: this.commentEdit,
-        post_id: this.info.post_id,
-        parent_id: this.info.id,
-        text: this.respongindLink + `,message:${this.commentText}`,
-        id: this.commentEditId,
-        offset: 0,
-        perPage: this.perPage + this.offset
-      }).then(() => {
-        this.commentText = ''
-        this.respongindLink = ''
-        this.commentEdit = false
-        this.commentEditInfo = null
-        this.commentEditParentId = null
-      })
     }
   },
   mounted() {},
