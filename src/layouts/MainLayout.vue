@@ -6,14 +6,17 @@
       main.main-layout__page
         router-view
     real-time-updater
+    push-message
 </template>
 
 <script>
 import MainLayoutHeader from '@/components/MainLayout/Header'
 import MainLayoutSidebar from '@/components/MainLayout/Sidebar'
 import RealTimeUpdater from '@/components/RealTimeUpdater'
+import PushMessage from '../components/Im/pushMessage'
 export default {
   components: {
+    PushMessage,
     MainLayoutHeader,
     MainLayoutSidebar,
     RealTimeUpdater

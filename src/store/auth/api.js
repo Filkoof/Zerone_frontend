@@ -1,5 +1,6 @@
 import axios from 'axios'
 import router from '../../router'
+import { disconnectIo } from '../../api/socetIO'
 
 export default {
   namespaced: true,
@@ -82,6 +83,7 @@ export default {
         });
       })
     },
+
     async login({
       commit
     }, user) {
@@ -104,6 +106,7 @@ export default {
         localStorage.removeItem('user-token')
       })
     },
+
     async logout({
       commit,
       dispatch
@@ -112,8 +115,10 @@ export default {
         url: 'auth/logout',
         method: 'GET'
       }).then(() => {
+        disconnectIo();
         commit('setToken', '')
         commit('setStatus', 'logout')
+
         dispatch('global/alert/setAlert', {
           status: 'success',
           text: 'Вы вышли из системы'

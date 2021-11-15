@@ -7,10 +7,11 @@
 
 <script>
 import { VSnackbar } from 'vuetify/lib'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import FormLayout from '@/layouts/FormLayout'
 import MainLayout from '@/layouts/MainLayout'
 import EmptyLayout from '@/layouts/EmptyLayout'
+import { authorizationIo } from './api/socetIO'
 
 export default {
     name: 'App',
@@ -22,10 +23,16 @@ export default {
     },
     computed: {
         ...mapGetters('global/alert', ['getState']),
+        ...mapGetters('auth/api', ['apiToken']),
         layout() {
             return this.$route.meta.layout + '-layout'
         },
     },
+  async created () {
+    if(this.apiToken !== ''){
+      await authorizationIo();
+    }
+  }
 }
 </script>
 

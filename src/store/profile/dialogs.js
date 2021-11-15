@@ -1,6 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import { sort } from 'semver'
+import { getMessage } from '../../api/socetIO'
 
 const mergeIncomingMessages = ({ commit, state }, response) => {
   const fromServerNewFirst = response.data.data
@@ -25,7 +25,8 @@ export default {
     dialogsLoaded: false,
     activeId: null,
     oldLastKnownMessageId: null,
-    isHistoryEndReached: false
+    isHistoryEndReached: false,
+    newMessage: [],
   },
   getters: {
     oldestKnownMessageId: s => (s.messages.length > 0 ? s.messages[0]['id'] : null),
@@ -74,8 +75,10 @@ export default {
       })
 
       return result
-    }
+    },
+    getNewMessage: s => s.newMessage,
   },
+
   mutations: {
     setUnreadedMessages: (s, unread) => (s.unreadedMessages = unread),
     setDialogs: (s, dialogs) => (s.dialogs = dialogs),
@@ -90,8 +93,16 @@ export default {
       state.messages = []
       state.isHistoryEndReached = false
     },
-    markEndOfHistory: s => (s.isHistoryEndReached = true)
+    markEndOfHistory: s => (s.isHistoryEndReached = true),
+    setNewMessage: (s, messages) => {
+      s.newMessage = [...s.newMessage, ...messages];
+      s.newMessage.sort((a, b) => a.time - b.time);
+    },
+    removeNewMessage: (s, messages) => {
+      s.newMessage = [... messages];
+    }
   },
+
   actions: {
     closeDialog({ commit }) {
       commit('selectDialog', null)
@@ -128,6 +139,7 @@ export default {
           console.error(error)
         })
     },
+
     async createDialogWithUser({ dispatch, commit }, userId) {
       await axios({
         url: 'dialogs',
@@ -145,12 +157,13 @@ export default {
           console.error(error)
         })
     },
+
     async loadFreshMessages({ commit, state, dispatch }, id) {
       await axios({
         url: `dialogs/${id}/messages`,
         method: 'GET',
         params: {
-          itemPerPage: 10
+          itemPerPage: 1000
         }
       })
         .then(response => {
@@ -163,6 +176,7 @@ export default {
           console.error(error)
         })
     },
+
     async loadOlderMessages({ commit, getters, state }) {
       await axios({
         url: `dialogs/${getters.activeDialogId}/messages`,
@@ -183,6 +197,7 @@ export default {
           console.error(error)
         })
     },
+
     async postMessage({ dispatch }, payload) {
       await axios({
         url: `dialogs/${payload.id}/messages`,
@@ -198,6 +213,7 @@ export default {
           console.error(error)
         })
     },
+
     async apiUnreadedMessages({ commit }) {
       await axios({
         url: 'dialogs/unreaded',
@@ -209,6 +225,37 @@ export default {
         .catch(error => {
           console.error(error)
         })
+    },
+
+    loadMessages({state, commit }){
+      console.log('load messages connecting')
+
+      function callback(response){
+        const data = new Object(response.data);
+        data.sendByMe = !data.sendByMe;
+        data.time = new Date(data.time * 1000);
+        data.sid = '' + data.id;
+
+        const messages = [];
+        messages.push(data);
+
+        const total = state.total ? state.total + 1 : 1;
+
+        const recipient = state.dialogs.find(el => el.id == data['dialog_id']);
+
+        const params = {
+          messages,
+          total,
+        }
+
+        const newMessage = [];
+        data.recipient = recipient['recipient_id'];
+        newMessage.push(data);
+
+        commit('addMessages', params)
+        commit('setNewMessage', newMessage)
+      }
+      getMessage(callback);
     }
   }
 }

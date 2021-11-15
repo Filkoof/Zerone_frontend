@@ -14,6 +14,7 @@ import { mapActions } from 'vuex'
 import { required, email, minLength } from 'vuelidate/lib/validators'
 import PasswordField from '@/components/FormElements/PasswordField'
 import EmailField from '@/components/FormElements/EmailField'
+import { authorizationIo } from '../../api/socetIO'
 export default {
     name: 'Login',
     components: {
@@ -41,8 +42,9 @@ export default {
 
             this.login({ email: this.email, password: this.password })
                 .then(() => {
-                    this.apiInfo().then(() => {
-                        this.$router.push({ name: this.redirectUrl || 'News' })
+                    this.apiInfo().then(async () => {
+                        await authorizationIo();
+                        this.$router.push({ name: this.redirectUrl || 'News' });
                     })
                 })
                 .catch((error) => {})

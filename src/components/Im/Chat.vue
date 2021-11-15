@@ -49,7 +49,8 @@ export default {
     fetching: false
   }),
   mounted() {
-    this.follow = true
+    this.follow = true;
+    this.loadMessages();
   },
   watch: {
     messages() {
@@ -78,7 +79,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages']),
+    ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages', 'loadMessages']),
     ...mapGetters('profile/dialogs', ['isHistoryEndReached']),
     onSubmitMessage() {
       this.postMessage({ id: this.info.id, message_text: this.mes })
@@ -122,9 +123,6 @@ export default {
         this.$refs.vsl.scrollToBottom()
       }
     }
-  },
-  created() {
-    console.log(this.info)
   },
   i18n: {
     messages: {
