@@ -99,7 +99,7 @@ export default {
       s.newMessage.sort((a, b) => a.time - b.time);
     },
     removeNewMessage: (s, messages) => {
-      s.newMessage = [... messages];
+        s.newMessage = messages;
     }
   },
 
@@ -228,8 +228,6 @@ export default {
     },
 
     loadMessages({state, commit }){
-      console.log('load messages connecting')
-
       function callback(response){
         const data = new Object(response.data);
         data.sendByMe = !data.sendByMe;

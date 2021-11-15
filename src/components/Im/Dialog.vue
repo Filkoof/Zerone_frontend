@@ -31,9 +31,6 @@ export default {
         : this.$t('was') + moment(this.info.recipient_id.last_online_time).fromNow()
     }
   },
-  created() {
-    console.log(this.info.last_message)
-  },
   i18n: {
     messages: {
       en: {

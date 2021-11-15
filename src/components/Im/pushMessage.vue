@@ -1,13 +1,14 @@
 <template lang='pug'>
 ul.push(v-if='getNewMessage.length > 0')
-  li.push__item(v-for='message in getNewMessage' :key='message.id')
-    .push__header
-      p.push__title Новое сообщение:
-      button.push__btn-close(@click='closeMessage(message.id)')
-    .push__container
-      img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
-      p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
-      p.push__message {{message.message_text}}
+  transition-group(name="item")
+    li.push__item(v-for='message in getNewMessage' :key='message.id')
+      .push__header
+        p.push__title Новое сообщение:
+        button.push__btn-close(@click='closeMessage(message.id)')
+      .push__container
+        img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
+        p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
+        p.push__message {{message.message_text}}
 </template>
 
 <script>
@@ -25,10 +26,17 @@ export default {
     ...mapMutations('profile/dialogs', ['removeNewMessage']),
 
     closeMessage(itemId){
-      const messages = [];
-      messages.push(this.getNewMessage.filter(el => el.id !== itemId));
-      console.log(messages)
+      const messages = this.getNewMessage.filter(el => el.id !== itemId)
       this.removeNewMessage(messages)
+    }
+  },
+  watch: {
+    getNewMessage: function (){
+      this.getNewMessage.forEach(el=>{
+        setTimeout(()=>{
+          this.closeMessage(el.id)
+        },15000)
+      })
     }
   }
 }
@@ -46,11 +54,13 @@ export default {
   right: 20px;
 
   width: 300px;
-  height: 70vh;
+  max-height: 70vh;
 
   background: transparent;
 
   z-index: 100;
+
+  transform height 0.3s
 
   &__item{
     display flex
@@ -63,6 +73,9 @@ export default {
     border-radius 15px
     box-shadow: 0px 2px 8px rgb(0 0 0 / 8%);
     padding 15px
+    height 111px
+
+    overflow hidden
   }
 
   &__header{
@@ -158,5 +171,19 @@ export default {
     white-space: nowrap;
     text-overflow ellipsis
   }
+}
+
+
+.item-enter-active,
+.item-leave-active {
+  transition: height 0.5s;
+}
+.item-enter,
+.item-leave-to {
+  height: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
 }
 </style>
