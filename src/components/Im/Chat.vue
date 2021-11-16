@@ -22,7 +22,7 @@
           .spinner(v-show="!isHistoryEndReached()")
           .finished(v-show="isHistoryEndReached()") {{ $t('nomore') }}
     form.im-chat__enter(action="#" @submit.prevent="onSubmitMessage")
-      input.im-chat__enter-input(type="text" :placeholder="$t('placeholder')" v-model="mes")
+      input.im-chat__enter-input(type="text" @input='typingMessage' @blur='finishedTypingMessage' :placeholder="$t('placeholder')" v-model="mes")
 </template>
 
 <script>
@@ -30,6 +30,7 @@ import moment from 'moment'
 import { mapActions, mapGetters } from 'vuex'
 import ChatMessage from '@/components/Im/ChatMessage'
 import VirtualList from 'vue-virtual-scroll-list'
+import { submitFinishTypingMessage, submitTypingMessage } from '../../api/socetIO'
 
 const makeHeader = msgDate => {
   return { sid: `group-${msgDate}`, stubDate: true, date: msgDate }
@@ -39,18 +40,19 @@ export default {
   props: {
     info: Object,
     messages: Array,
-    online: Boolean
+    online: Boolean,
   },
   components: { VirtualList },
   data: () => ({
     mes: '',
     itemComponent: ChatMessage,
     isUserViewHistory: false,
-    fetching: false
+    fetching: false,
+    offset: 10,
+    itemPrePage: 10,
   }),
   mounted() {
     this.follow = true;
-    this.loadMessages();
   },
   watch: {
     messages() {
@@ -58,6 +60,8 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('profile/dialogs', ['getTotalMessage', 'getActiveDialogId']),
+    ...mapGetters('profile/info', ['getInfo']),
     statusText() {
       return this.online
         ? this.$t('online')
@@ -79,7 +83,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages', 'loadMessages']),
+    ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages']),
     ...mapGetters('profile/dialogs', ['isHistoryEndReached']),
     onSubmitMessage() {
       this.postMessage({ id: this.info.id, message_text: this.mes })
@@ -91,7 +95,9 @@ export default {
           let oldest = this.messagesGrouped[0]
 
           this.fetching = true
-          await this.loadOlderMessages()
+          await this.loadOlderMessages({itemPerPage: this.itemPrePage, offset: this.offset + this.itemPrePage}).then(()=>{
+            this.offset += this.itemPrePage;
+          })
           this.setVirtualListToOffset(1)
 
           this.$nextTick(() => {
@@ -122,6 +128,23 @@ export default {
       if (this.$refs.vsl) {
         this.$refs.vsl.scrollToBottom()
       }
+    },
+
+    typingMessage(){
+      if(this.mes){
+        const data = {
+          author: this.getInfo.id,
+          dialog: this.getActiveDialogId
+        }
+        submitTypingMessage(data)
+      }
+    },
+    finishedTypingMessage(){
+      const data = {
+        author: this.getInfo.id,
+        dialog: this.getActiveDialogId
+      }
+      submitFinishTypingMessage(data)
     }
   },
   i18n: {

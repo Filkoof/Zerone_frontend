@@ -1,6 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import { getMessage } from '../../api/socetIO'
+import { checkFinishTypingMessage, checkTypingMessage, getMessage, setMessageCallback } from '../../api/socetIO'
 
 const mergeIncomingMessages = ({ commit, state }, response) => {
   const fromServerNewFirst = response.data.data
@@ -27,6 +27,7 @@ export default {
     oldLastKnownMessageId: null,
     isHistoryEndReached: false,
     newMessage: [],
+    total:0,
   },
   getters: {
     oldestKnownMessageId: s => (s.messages.length > 0 ? s.messages[0]['id'] : null),
@@ -77,6 +78,7 @@ export default {
       return result
     },
     getNewMessage: s => s.newMessage,
+    getTotalMessage: s => s.total,
   },
 
   mutations: {
@@ -100,7 +102,8 @@ export default {
     },
     removeNewMessage: (s, messages) => {
         s.newMessage = messages;
-    }
+    },
+    setTotalMessage: (s, total) => s.total = total,
   },
 
   actions: {
@@ -158,12 +161,13 @@ export default {
         })
     },
 
-    async loadFreshMessages({ commit, state, dispatch }, id) {
+    async loadFreshMessages({ commit, state, dispatch }, {itemPerPage=10, offset=0}) {
       await axios({
-        url: `dialogs/${id}/messages`,
+        url: `dialogs/${state.activeId}/messages`,
         method: 'GET',
         params: {
-          itemPerPage: 1000
+          itemPerPage: itemPerPage,
+          offset: offset
         }
       })
         .then(response => {
@@ -177,13 +181,13 @@ export default {
         })
     },
 
-    async loadOlderMessages({ commit, getters, state }) {
+    async loadOlderMessages({ commit, getters, state }, {itemPerPage=10, offset=0}) {
       await axios({
-        url: `dialogs/${getters.activeDialogId}/messages`,
+        url: `dialogs/${state.activeId}/messages`,
         params: {
           fromMessageId: getters.oldestKnownMessageId,
-          offset: 1,
-          itemPerPage: 2
+          offset: offset,
+          itemPerPage: itemPerPage
         },
         method: 'GET'
       })
@@ -227,8 +231,9 @@ export default {
         })
     },
 
-    loadMessages({state, commit }){
+    loadMessages({state, commit, rootState }){
       function callback(response){
+        if(response.data.author_id == rootState.profile.info.info.id) return
         const data = new Object(response.data);
         data.sendByMe = !data.sendByMe;
         data.time = new Date(data.time * 1000);
@@ -253,7 +258,22 @@ export default {
         commit('addMessages', params)
         commit('setNewMessage', newMessage)
       }
-      getMessage(callback);
+      setMessageCallback(callback);
+      getMessage();
+    },
+
+    checkTypingMessage(){
+      function callback (response){
+        console.log(response)
+      };
+      checkTypingMessage(callback)
+    },
+
+    checkFinishTypingMessage(){
+      function callback (response){
+        console.log(response)
+      };
+      checkFinishTypingMessage(callback)
     }
   }
 }

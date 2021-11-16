@@ -6,6 +6,12 @@ const socket = io(url, {
   transports: ['websocket'],
 })
 
+socket.removeListener=function(name){
+  if(socket._callbacks[`$${name}`]){
+    delete socket._callbacks[`$${name}`];
+  }
+};
+
 export function authorizationIo(){
   const token = localStorage.getItem('user-token');
 
@@ -21,88 +27,73 @@ export function authorizationIo(){
   })
 }
 
-function checkAuthorization(){
-  socket.on('auth-response', response=>{
-    if(response !== 'ok'){
-      authorizationIo();
-    }
-  });
-}
-
 export function disconnectIo(){
   socket.disconnect();
 }
 
-let callbackMessages = null;
+let messageCallback;
 
-export async function getMessage(callback){
+export function setMessageCallback(callback){
   if(typeof callback !== 'function') throw new TypeError('callback is not function')
-  if(callbackMessages) return;
-  await checkAuthorization();
+  if(messageCallback) return;
 
-  socket.on('message', response=>{
-    callback(response);
-  });
-
-  callbackMessages = callback;
+  messageCallback = callback;
 }
 
-//****************
+export async function getMessage(){
+  socket.emit('newListener')
 
-export function emit(eventName, data) {
-  socket.emit(
-    eventName,
-    typeof data === 'object' && !Array.isArray(data) ? data : undefined
-  )
-}
-
-
-export function on(eventName, callback) {
-  socket.on(eventName, responseListener(callback))
-}
-
-
-export function once(eventName, callback) {
-  socket.once(eventName, responseListener(callback))
-}
-
-export function ask(eventName, { data, callback }) {
-  once(eventName + '-response', async response => {
-    if (response.message === 'AUTHORIZATION_ERROR') {
-      try {
-        reRequestsOrder.push(() => ask(eventName, { data, callback }))
-        await reAuthorization()
-        return
-      } catch (e) {
-        if (window.location.pathname !== '/authorization') {
-          router.push({ name: 'authorization' })
-        }
-      }
+  socket.on('auth-response', response=>{
+    if(response == 'not'){
+      authorizationIo();
+    }else{
+      socket.removeListener('message')
+      socket.on('message', response=>{
+        messageCallback(response);
+      });
     }
-    callback(response)
-  })
-  emit(eventName, data)
+  });
 }
 
-export function reAuthorization() {
-  if (reAuthorization.reAuthorizationPromise)
-    return reAuthorization.reAuthorizationPromise
-
-  reAuthorization.reAuthorizationPromise = new Promise((resolve, reject) => {
-    once('admin-auth-by-auth-code-response', res => {
-      reAuthorization.reAuthorizationPromise = null
-      if (res.message === 'USER_NOT_FOUND_ERROR') {
-        return reject()
-      }
-      if (typeof reconnectionsCallback == 'function') {
-        reconnectionsCallback(res)
-      }
-      executeReRequests()
-      return resolve(res)
-    })
-    emit('admin-auth-by-auth-code', {
-      authCode: sessionStorage.getItem('token'),
-    })
-  })
-  return reAuthorization.reAuthorizationPromise
+export function submitTypingMessage(data){
+  socket.emit('start-typing', data)
 }
+
+export function submitFinishTypingMessage(data){
+  socket.emit('stop-typing', data)
+}
+
+export function checkTypingMessage(callback){
+  if(typeof callback !== 'function') throw new TypeError('callback is not function')
+
+  socket.emit('newListener')
+
+  socket.on('auth-response', response=>{
+    if(response == 'not'){
+      authorizationIo();
+    }else{
+      socket.removeListener('start-typing', callback);
+      socket.on('start-typing', response=>{
+        callback(response);
+      });
+    }
+  });
+}
+
+export function checkFinishTypingMessage(callback){
+  if(typeof callback !== 'function') throw new TypeError('callback is not function')
+
+  socket.emit('newListener')
+
+  socket.on('auth-response', response=>{
+    if(response == 'not'){
+      authorizationIo();
+    }else{
+      socket.removeListener('stop-typing', callback);
+      socket.on('stop-typing', response=>{
+        callback(response);
+      });
+    }
+  });
+}
+

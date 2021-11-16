@@ -1,14 +1,13 @@
 <template lang='pug'>
-ul.push(v-if='getNewMessage.length > 0')
-  transition-group(name="item")
-    li.push__item(v-for='message in getNewMessage' :key='message.id')
-      .push__header
-        p.push__title Новое сообщение:
-        button.push__btn-close(@click='closeMessage(message.id)')
-      .push__container
-        img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
-        p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
-        p.push__message {{message.message_text}}
+transition-group.push(v-if='getNewMessage.length > 0' name="item" tag='ul' )
+  li.push__item(v-for='message in getNewMessage' :key='message.id')
+    .push__header
+      p.push__title Новое сообщение:
+      button.push__btn-close(@click='closeMessage(message.id)')
+    .push__container
+      img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
+      p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
+      p.push__message {{message.message_text}}
 </template>
 
 <script>
@@ -30,15 +29,15 @@ export default {
       this.removeNewMessage(messages)
     }
   },
-  watch: {
-    getNewMessage: function (){
-      this.getNewMessage.forEach(el=>{
-        setTimeout(()=>{
-          this.closeMessage(el.id)
-        },15000)
-      })
-    }
-  }
+  // watch: {
+  //   getNewMessage: function (){
+  //     this.getNewMessage.forEach(el=>{
+  //       setTimeout(()=>{
+  //         this.closeMessage(el.id)
+  //       },15000)
+  //     })
+  //   }
+  // }
 }
 </script>
 

@@ -12,7 +12,6 @@
             @click.native='clickOnDialog(dialog.id)'
         )
 
-        is-loading(v-if="total > offset" :isLoad='isLoad', v-load="loadFeeds")
     .im__chat(v-if='getActiveDialog')
         im-chat(
             :info='getActiveDialog',
@@ -33,8 +32,6 @@ export default {
   components: { ImDialog, ImChat, isLoading },
   data: () => ({
     intervalForMessages: null,
-    total: 0,
-    offset: 0,
     isLoad: false
   }),
 
@@ -43,6 +40,9 @@ export default {
   },
   methods: {
     ...mapActions('profile/dialogs', [
+      'loadMessages',
+      'checkTypingMessage',
+      'checkFinishTypingMessage',
       'loadFreshMessages',
       'switchDialog',
       'closeDialog',
@@ -75,8 +75,6 @@ export default {
         console.log('No dialogs at all')
       }
     },
-
-    loadDialogs() {}
   },
   beforeRouteEnter(to, from, next) {
     next(async vm => {
@@ -89,6 +87,11 @@ export default {
   },
   beforeDestroy() {
     this.closeDialog()
+  },
+  mounted() {
+    this.loadMessages();
+    this.checkTypingMessage();
+    this.checkFinishTypingMessage();
   }
 }
 </script>
