@@ -40,9 +40,6 @@ export default {
   },
   methods: {
     ...mapActions('profile/dialogs', [
-      'loadMessages',
-      'checkTypingMessage',
-      'checkFinishTypingMessage',
       'loadFreshMessages',
       'switchDialog',
       'closeDialog',
@@ -88,11 +85,6 @@ export default {
   beforeDestroy() {
     this.closeDialog()
   },
-  mounted() {
-    this.loadMessages();
-    this.checkTypingMessage();
-    this.checkFinishTypingMessage();
-  }
 }
 </script>
 

@@ -4,6 +4,12 @@
       router-link.im-chat__user-pic(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}")
         img(:src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
       router-link.im-chat__user-name(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}") {{info.recipient_id.first_name + ' ' + info.recipient_id.last_name}}
+      .typing(v-if='getTypeMessage.length > 0' )
+        .typing__animations-block
+          .typing__animations-item
+          .typing__animations-item
+          .typing__animations-item
+        p.typing__text {{getTypeMessage[0].author}} набирает сообщение
       span.user-status(:class="{online}") {{statusText}}
     .im-chat__infitite_list_wrapper
       virtual-list.im-chat__infitite_list.scroll-touch(:size="60"
@@ -53,14 +59,15 @@ export default {
   }),
   mounted() {
     this.follow = true;
+    this.setVirtualListToBottom();
   },
   watch: {
     messages() {
       if (this.follow) this.setVirtualListToBottom()
-    }
+    },
   },
   computed: {
-    ...mapGetters('profile/dialogs', ['getTotalMessage', 'getActiveDialogId']),
+    ...mapGetters('profile/dialogs', ['getTotalMessage', 'getActiveDialogId', 'getTypeMessage']),
     ...mapGetters('profile/info', ['getInfo']),
     statusText() {
       return this.online
@@ -88,6 +95,7 @@ export default {
     onSubmitMessage() {
       this.postMessage({ id: this.info.id, message_text: this.mes })
       this.mes = ''
+      this.finishedTypingMessage()
     },
     async onScrollToTop() {
       if (this.$refs.vsl) {
@@ -101,18 +109,15 @@ export default {
           this.setVirtualListToOffset(1)
 
           this.$nextTick(() => {
-            let offset = 0
-            for (const groupedMsg of this.messagesGrouped) {
-              if (groupedMsg.sid === oldest.sid) break
-              offset += this.$refs.vsl.getSize(groupedMsg.sid)
-            }
-
-            this.setVirtualListToOffset(offset)
+            const scrollSize = this.$refs.vsl.getScrollSize()
+            const scrollOffset = scrollSize / this.offset;
+            this.setVirtualListToOffset(scrollOffset * this.itemPrePage)
             this.fetching = false
           })
         }
       }
     },
+
     onScroll() {
       this.follow = false
     },
@@ -141,8 +146,8 @@ export default {
     },
     finishedTypingMessage(){
       const data = {
-        author: this.getInfo.id,
-        dialog: this.getActiveDialogId
+        author: Number(this.getInfo.id),
+        dialog: Number(this.getActiveDialogId)
       }
       submitFinishTypingMessage(data)
     }
@@ -198,6 +203,52 @@ export default {
   font-weight: 600;
   color: steel-gray;
   margin-right: auto;
+}
+
+.typing{
+  margin-right auto
+  display flex
+  &__animations-block{
+    display flex
+    align-items flex-end
+    padding-bottom 2px
+    margin-right 5px
+  }
+
+  &__animations-item{
+      display block
+      width 4px
+      height 4px
+      background grey
+      border-radius 50%
+
+      &:not(:last-child){
+        margin-right 2px
+      }
+
+      animation-name: loadAnimations;
+      animation-duration: 1.8s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+
+      &:nth-child(1) {
+        -webkit-animation-delay: 0.0s;
+      }
+
+      &:nth-child(2) {
+        -webkit-animation-delay: 0.6s;
+      }
+
+      &:nth-child(3) {
+        -webkit-animation-delay: 1.2s;
+      }
+  }
+
+  &__text{
+    &:first-letter{
+      text-transform uppercase
+    }
+  }
 }
 
 .im-chat__user-status {
@@ -305,6 +356,18 @@ export default {
     100% {
       transform: rotate(360deg);
     }
+  }
+}
+
+@keyframes loadAnimations {
+  0% {
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  70% {
+    opacity: 1;
+    transition: opacity 0.3s;
   }
 }
 </style>

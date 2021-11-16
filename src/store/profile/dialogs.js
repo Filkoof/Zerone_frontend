@@ -1,6 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import { checkFinishTypingMessage, checkTypingMessage, getMessage, setMessageCallback } from '../../api/socetIO'
+import { checkFinishTypingMessage, checkTypingMessage, getMessage } from '../../api/socetIO'
 
 const mergeIncomingMessages = ({ commit, state }, response) => {
   const fromServerNewFirst = response.data.data
@@ -28,6 +28,7 @@ export default {
     isHistoryEndReached: false,
     newMessage: [],
     total:0,
+    typeMessage: [],
   },
   getters: {
     oldestKnownMessageId: s => (s.messages.length > 0 ? s.messages[0]['id'] : null),
@@ -79,6 +80,7 @@ export default {
     },
     getNewMessage: s => s.newMessage,
     getTotalMessage: s => s.total,
+    getTypeMessage: s => s.typeMessage,
   },
 
   mutations: {
@@ -104,6 +106,18 @@ export default {
         s.newMessage = messages;
     },
     setTotalMessage: (s, total) => s.total = total,
+    setTypeMessage: (s, typeMessage) => {
+      let typeArr = [...s.typeMessage, typeMessage];
+      const result = typeArr.filter((item, index, self) =>
+          index === self.findIndex((t) => (
+            t.authorId === item.authorId && t.dialog === item.dialog
+          ))
+      )
+      s.typeMessage = [...result];
+    },
+    removeTypeMessage: (s, typeMessage) =>{
+      s.typeMessage = [...s.typeMessage].filter(i => i.authorId !== typeMessage.authorId && i.dialog !== typeMessage.dialog )
+    }
   },
 
   actions: {
@@ -258,20 +272,19 @@ export default {
         commit('addMessages', params)
         commit('setNewMessage', newMessage)
       }
-      setMessageCallback(callback);
-      getMessage();
+      getMessage(callback);
     },
 
-    checkTypingMessage(){
+    checkTypingMessage({commit}){
       function callback (response){
-        console.log(response)
+        commit('setTypeMessage', response)
       };
       checkTypingMessage(callback)
     },
 
-    checkFinishTypingMessage(){
+    checkFinishTypingMessage({commit}){
       function callback (response){
-        console.log(response)
+        commit('removeTypeMessage', response)
       };
       checkFinishTypingMessage(callback)
     }

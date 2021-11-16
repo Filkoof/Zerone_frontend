@@ -1,6 +1,6 @@
 <template lang='pug'>
 transition-group.push(v-if='getNewMessage.length > 0' name="item" tag='ul' )
-  li.push__item(v-for='message in getNewMessage' :key='message.id')
+  li.push__item(v-for='message in getNewMessage' :key='message.id' @click='openChatMethods(message.dialog_id)')
     .push__header
       p.push__title Новое сообщение:
       button.push__btn-close(@click='closeMessage(message.id)')
@@ -8,18 +8,22 @@ transition-group.push(v-if='getNewMessage.length > 0' name="item" tag='ul' )
       img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
       p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
       p.push__message {{message.message_text}}
+      p.push__time {{message.time | moment('YYYY-MM-DD hh:mm')}}
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import moment from 'moment';
 
 export default {
-  name: 'pushMessage',
+  name: 'NotificationsMessages',
+  props: ['openChat'],
   data: () => ({
 
   }),
   computed: {
     ...mapGetters('profile/dialogs', ['getNewMessage']),
+
   },
   methods:{
     ...mapMutations('profile/dialogs', ['removeNewMessage']),
@@ -27,6 +31,11 @@ export default {
     closeMessage(itemId){
       const messages = this.getNewMessage.filter(el => el.id !== itemId)
       this.removeNewMessage(messages)
+    },
+    openChatMethods(dialogId){
+      const dialogs = [];
+      dialogs.push(dialogId);
+      this.$emit('updateOpenChat', dialogs)
     }
   },
   // watch: {
@@ -42,6 +51,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+
 .push{
   position: fixed;
 
@@ -72,7 +82,7 @@ export default {
     border-radius 15px
     box-shadow: 0px 2px 8px rgb(0 0 0 / 8%);
     padding 15px
-    height 111px
+    height 130px
 
     overflow hidden
   }
@@ -142,11 +152,11 @@ export default {
 
   &__container{
     display grid;
-    grid-template-areas "img name" "img message";
-    grid-template-rows repeat(2, auto)
+    grid-template-areas "img name" "img message" "time time";
+    grid-template-rows repeat(3, auto)
     grid-template-columns 50px 1fr
     grid-column-gap 5px
-    grid-row-gap 15px
+    grid-row-gap 5px
     width 100%
   }
 
@@ -160,6 +170,7 @@ export default {
   &__name{
     grid-area: name;
     text-align right
+    font-weight 600
   }
 
   &__message{
@@ -169,6 +180,22 @@ export default {
     overflow hidden
     white-space: nowrap;
     text-overflow ellipsis
+    font-style italic
+    padding-right 3px
+  }
+  &__time{
+    grid-area: time;
+
+    display: inline;
+    box-shadow: 27px 3px 20px 5px rgba(0, 0, 0, .2);
+    padding 2px;
+    border-top solid 1px solid 1px rgba(0, 0, 0, .2)
+    border-right: solid 1px rgba(0, 0, 0, .2);
+    margin-left: auto !important;
+    text-align: end;
+    font-style italic
+    padding-right 10px
+    border-radius 45%
   }
 }
 

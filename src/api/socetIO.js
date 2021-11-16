@@ -6,11 +6,21 @@ const socket = io(url, {
   transports: ['websocket'],
 })
 
-socket.removeListener=function(name){
-  if(socket._callbacks[`$${name}`]){
-    delete socket._callbacks[`$${name}`];
-  }
-};
+function ask(name, callback){
+  if(typeof callback !== 'function') throw new TypeError('callback is not function');
+  socket.emit('newListener')
+
+  socket.on('auth-response', response=>{
+    if(response == 'not'){
+      authorizationIo();
+    }else{
+      socket.removeListener(name);
+      socket.on(name, response=>{
+        callback(response);
+      });
+    }
+  });
+}
 
 export function authorizationIo(){
   const token = localStorage.getItem('user-token');
@@ -31,28 +41,8 @@ export function disconnectIo(){
   socket.disconnect();
 }
 
-let messageCallback;
-
-export function setMessageCallback(callback){
-  if(typeof callback !== 'function') throw new TypeError('callback is not function')
-  if(messageCallback) return;
-
-  messageCallback = callback;
-}
-
-export async function getMessage(){
-  socket.emit('newListener')
-
-  socket.on('auth-response', response=>{
-    if(response == 'not'){
-      authorizationIo();
-    }else{
-      socket.removeListener('message')
-      socket.on('message', response=>{
-        messageCallback(response);
-      });
-    }
-  });
+export async function getMessage(callback){
+  ask('message', callback)
 }
 
 export function submitTypingMessage(data){
@@ -64,36 +54,10 @@ export function submitFinishTypingMessage(data){
 }
 
 export function checkTypingMessage(callback){
-  if(typeof callback !== 'function') throw new TypeError('callback is not function')
-
-  socket.emit('newListener')
-
-  socket.on('auth-response', response=>{
-    if(response == 'not'){
-      authorizationIo();
-    }else{
-      socket.removeListener('start-typing', callback);
-      socket.on('start-typing', response=>{
-        callback(response);
-      });
-    }
-  });
+  ask('start-typing-response', callback)
 }
 
 export function checkFinishTypingMessage(callback){
-  if(typeof callback !== 'function') throw new TypeError('callback is not function')
-
-  socket.emit('newListener')
-
-  socket.on('auth-response', response=>{
-    if(response == 'not'){
-      authorizationIo();
-    }else{
-      socket.removeListener('stop-typing', callback);
-      socket.on('stop-typing', response=>{
-        callback(response);
-      });
-    }
-  });
+  ask('stop-typing-response', callback)
 }
 
