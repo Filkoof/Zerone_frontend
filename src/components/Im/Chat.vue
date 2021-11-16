@@ -2,14 +2,15 @@
   .im-chat
     .im-chat__user
       router-link.im-chat__user-pic(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}")
-        img(:src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
+        img(v-if='info.recipient_id.photo' :src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
+        img(v-else src="../../../static/img/user/default_avatar.svg" :alt="info.recipient_id.first_name")
       router-link.im-chat__user-name(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}") {{info.recipient_id.first_name + ' ' + info.recipient_id.last_name}}
-      .typing(v-if='getTypeMessage.length > 0' )
+      .typing(v-if='checkTypingMessage' )
         .typing__animations-block
           .typing__animations-item
           .typing__animations-item
           .typing__animations-item
-        p.typing__text {{getTypeMessage[0].author}} набирает сообщение
+        p.typing__text {{checkTypingMessage}} набирает сообщение
       span.user-status(:class="{online}") {{statusText}}
     .im-chat__infitite_list_wrapper
       virtual-list.im-chat__infitite_list.scroll-touch(:size="60"
@@ -87,6 +88,15 @@ export default {
         groups.push(msg)
       }
       return groups
+    },
+    checkTypingMessage() {
+      let user
+      this.getTypeMessage.forEach(el=> {
+        if (el.dialog == this.getActiveDialogId) {
+          user = el.author
+        }
+      })
+      return user
     }
   },
   methods: {
@@ -117,7 +127,6 @@ export default {
         }
       }
     },
-
     onScroll() {
       this.follow = false
     },
@@ -134,7 +143,6 @@ export default {
         this.$refs.vsl.scrollToBottom()
       }
     },
-
     typingMessage(){
       if(this.mes){
         const data = {
@@ -150,7 +158,7 @@ export default {
         dialog: Number(this.getActiveDialogId)
       }
       submitFinishTypingMessage(data)
-    }
+    },
   },
   i18n: {
     messages: {

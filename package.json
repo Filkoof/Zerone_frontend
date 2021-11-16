@@ -29,6 +29,7 @@
     "v-tooltip": "^2.0.2",
     "vue": "^2.5.2",
     "vue-click-outside": "^1.1.0",
+    "vue-drag-resize": "^1.5.4",
     "vue-i18n": "^8.25.0",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.1",

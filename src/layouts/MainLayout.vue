@@ -8,7 +8,7 @@
     real-time-updater
     notifications-messages(:openChat='openChat'  @updateOpenChat="openChat = $event")
     .mini-chat(v-if='openAllChats.length > 0')
-      mini-chat(v-for='item in openAllChats' :key='item' :chatID='item')
+      mini-chat(v-for='item in openAllChats' :key='item' :chatID='item' :close='closeMiniChat')
 </template>
 
 <script>
@@ -35,15 +35,16 @@ export default {
       'apiLoadAllDialogs',
       'loadMessages',
       'checkTypingMessage',
-      'checkFinishTypingMessage',])
+      'checkFinishTypingMessage',]),
+
+    closeMiniChat(chatID){
+      console.log(chatID)
+      this.openChat = this.openChat.filter(el => el !== chatID);
+    }
   },
   computed:{
     openAllChats(){
-      return this.openChat = this.openChat.filter((thing, index, self) =>
-          index === self.findIndex((t) => (
-            t.place === thing.place
-          ))
-      )
+      return this.openChat.filter((e,i,a)=>a.indexOf(e)==i)
     }
   },
   mounted() {
@@ -60,6 +61,7 @@ export default {
 @import '../assets/stylus/base/vars.styl';
 
 .main-layout {
+  position relative
   display: flex;
   height: 100%;
 }

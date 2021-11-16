@@ -2,11 +2,12 @@
 transition-group.push(v-if='getNewMessage.length > 0' name="item" tag='ul' )
   li.push__item(v-for='message in getNewMessage' :key='message.id')
     button.push__btn-close(@click='closeMessage(message.id)')
-    .push__wraper(@click='openChatMethods(message.dialog_id)')
+    .push__wraper(@click='openChatMethods(message)')
       .push__header
         p.push__title Новое сообщение:
       .push__container
-        img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
+        img.push__img(v-if='message.recipient.photo' :src='message.recipient.photo' :alt='message.recipient.first_name')
+        img(v-else src="../../../static/img/user/default_avatar.svg" :alt="message.recipient.first_name")
         p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
         p.push__message {{message.message_text}}
         p.push__time {{message.time | moment('YYYY-MM-DD hh:mm')}}
@@ -33,20 +34,21 @@ export default {
       const messages = this.getNewMessage.filter(el => el.id !== itemId)
       this.removeNewMessage(messages)
     },
-    openChatMethods(dialogId){
-      const dialogs = [...this.openChat, dialogId];
+    openChatMethods(messages){
+      const dialogs = [...this.openChat, messages.dialog_id];
       this.$emit('updateOpenChat', dialogs)
+      this.closeMessage(messages.id)
     }
   },
-  // watch: {
-  //   getNewMessage: function (){
-  //     this.getNewMessage.forEach(el=>{
-  //       setTimeout(()=>{
-  //         this.closeMessage(el.id)
-  //       },15000)
-  //     })
-  //   }
-  // }
+  watch: {
+    getNewMessage: function (){
+      this.getNewMessage.forEach(el=>{
+        setTimeout(()=>{
+          this.closeMessage(el.id)
+        },5000)
+      })
+    }
+  }
 }
 </script>
 
@@ -76,10 +78,11 @@ export default {
     display flex
     flex-direction column
 
+    background whitesmoke
+
     width 100%
     margin 0
 
-    background white
     border-radius 15px
     box-shadow: 0px 2px 8px rgb(0 0 0 / 8%);
     padding 15px

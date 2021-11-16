@@ -88,6 +88,7 @@ export default {
     setDialogs: (s, dialogs) => (s.dialogs = dialogs),
     dialogsLoaded: s => (s.dialogsLoaded = true),
     addMessages: (s, { messages, total }) => {
+      if(messages.length == 1) s.messages = [...s.messages, ...messages]
       let message = messages.reverse();
       s.messages = [...message, ...s.messages]
       s.total = total

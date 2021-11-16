@@ -1,7 +1,8 @@
 <template lang="pug">
   .im-dialog(:class="{active, push}")
     router-link.im-dailog__pic(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}")
-      img(:src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
+      img(v-if='info.recipient_id.photo' :src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
+      img(v-else src="../../../static/img/user/default_avatar.svg" :alt="info.recipient_id.first_name")
     .im-dialog__info
       router-link.im-dialog__name(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}") {{info.recipient_id.first_name + ' ' + info.recipient_id.last_name}}
       span.user-status(:class="{online}") {{statusText}}
