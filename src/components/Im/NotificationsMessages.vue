@@ -1,14 +1,15 @@
 <template lang='pug'>
 transition-group.push(v-if='getNewMessage.length > 0' name="item" tag='ul' )
-  li.push__item(v-for='message in getNewMessage' :key='message.id' @click='openChatMethods(message.dialog_id)')
-    .push__header
-      p.push__title Новое сообщение:
-      button.push__btn-close(@click='closeMessage(message.id)')
-    .push__container
-      img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
-      p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
-      p.push__message {{message.message_text}}
-      p.push__time {{message.time | moment('YYYY-MM-DD hh:mm')}}
+  li.push__item(v-for='message in getNewMessage' :key='message.id')
+    button.push__btn-close(@click='closeMessage(message.id)')
+    .push__wraper(@click='openChatMethods(message.dialog_id)')
+      .push__header
+        p.push__title Новое сообщение:
+      .push__container
+        img.push__img(:src='message.recipient.photo' :alt='message.recipient.first_name')
+        p.push__name {{message.recipient.first_name}} {{message.recipient.last_name}}
+        p.push__message {{message.message_text}}
+        p.push__time {{message.time | moment('YYYY-MM-DD hh:mm')}}
 </template>
 
 <script>
@@ -33,8 +34,7 @@ export default {
       this.removeNewMessage(messages)
     },
     openChatMethods(dialogId){
-      const dialogs = [];
-      dialogs.push(dialogId);
+      const dialogs = [...this.openChat, dialogId];
       this.$emit('updateOpenChat', dialogs)
     }
   },
@@ -72,6 +72,7 @@ export default {
   transform height 0.3s
 
   &__item{
+    position relative
     display flex
     flex-direction column
 
@@ -87,17 +88,8 @@ export default {
     overflow hidden
   }
 
-  &__header{
-    display flex
+  &__wraper{
     width 100%
-    justify-content space-between
-    align-items center
-    margin-bottom 15px
-  }
-
-  &__title{
-    width 100%
-    text-align left
   }
 
   &__btn-close{
@@ -106,7 +98,10 @@ export default {
     cursor: pointer;
     display block
 
-    position relative
+    position absolute
+    top 15px
+    right 15px
+
     width 15px
     height 15px
     background transparent
@@ -114,16 +109,16 @@ export default {
     transition transform 0.3s
     &:after,
     &:before{
-        content ''
-        display block
-        width 1px
-        height 100%
-        background black
-        position absolute
-        top 50%
-        left 50%
-        transition background 0.3s
-      }
+      content ''
+      display block
+      width 1px
+      height 100%
+      background black
+      position absolute
+      top 50%
+      left 50%
+      transition background 0.3s
+    }
 
 
     &:before{
@@ -148,6 +143,20 @@ export default {
       transition transform 0.3s
     }
 
+  }
+
+
+  &__header{
+    display flex
+    width 100%
+    justify-content space-between
+    align-items center
+    margin-bottom 15px
+  }
+
+  &__title{
+    width 100%
+    text-align left
   }
 
   &__container{

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import { checkFinishTypingMessage, checkTypingMessage, getMessage } from '../../api/socetIO'
+import { checkFinishTypingMessage, checkTypingMessage, getMessage, unreadCount } from '../../api/socetIO'
 
 const mergeIncomingMessages = ({ commit, state }, response) => {
   const fromServerNewFirst = response.data.data
@@ -88,8 +88,8 @@ export default {
     setDialogs: (s, dialogs) => (s.dialogs = dialogs),
     dialogsLoaded: s => (s.dialogsLoaded = true),
     addMessages: (s, { messages, total }) => {
-      s.messages = [...s.messages, ...messages]
-      s.messages.sort((a, b) => a.time - b.time)
+      let message = messages.reverse();
+      s.messages = [...message, ...s.messages]
       s.total = total
     },
     selectDialog: (state, dialogId) => {
@@ -287,6 +287,13 @@ export default {
         commit('removeTypeMessage', response)
       };
       checkFinishTypingMessage(callback)
+    },
+
+    checkUnreadCount({commit}){
+      function callback(response){
+        console.log(response)
+      }
+      unreadCount(callback)
     }
   }
 }

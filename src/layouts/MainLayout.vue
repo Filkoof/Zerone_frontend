@@ -7,8 +7,8 @@
         router-view
     real-time-updater
     notifications-messages(:openChat='openChat'  @updateOpenChat="openChat = $event")
-    .mini-chat(v-if='openChat.length > 0')
-      mini-chat(v-for='chatID in openChat' :key='chatID' :chatID='chatID')
+    .mini-chat(v-if='openAllChats.length > 0')
+      mini-chat(v-for='item in openAllChats' :key='item' :chatID='item')
 </template>
 
 <script>
@@ -31,19 +31,23 @@ export default {
   }),
   methods:{
     ...mapActions('profile/dialogs', [
+      'checkUnreadCount',
       'apiLoadAllDialogs',
       'loadMessages',
       'checkTypingMessage',
       'checkFinishTypingMessage',])
   },
-  watch:{
-    openChat:()=>{
-      this.openChat = this.openChat.filter(function(item, pos, self) {
-        return self.indexOf(item) == pos;
-      })
+  computed:{
+    openAllChats(){
+      return this.openChat = this.openChat.filter((thing, index, self) =>
+          index === self.findIndex((t) => (
+            t.place === thing.place
+          ))
+      )
     }
   },
   mounted() {
+    this.checkUnreadCount();
     this.apiLoadAllDialogs();
     this.loadMessages();
     this.checkTypingMessage();

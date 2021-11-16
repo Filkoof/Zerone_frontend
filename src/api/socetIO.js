@@ -61,3 +61,7 @@ export function checkFinishTypingMessage(callback){
   ask('stop-typing-response', callback)
 }
 
+export function unreadCount(callback){
+  ask('unread-response', callback)
+}
+
