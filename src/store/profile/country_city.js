@@ -17,24 +17,22 @@ export default {
   actions: {
     async apiCountries({
       commit
-    }) {
+    }, params) {
       await axios({
         url: 'platform/countries',
         method: 'GET',
-        params: {}
+        params,
       }).then(response => {
         commit('setCountries', response.data)
       }).catch(() => {})
     },
     async apiCities({
       commit
-    }, id) {
+    }, params) {
       await axios({
         url: 'platform/cities',
         method: 'GET',
-        params: {
-          'countryId': id
-        }
+        params,
       }).then(response => {
         commit('setCities', response.data)
       }).catch(() => {})
