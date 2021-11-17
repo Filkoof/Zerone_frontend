@@ -1,9 +1,9 @@
 <template lang="pug">
   .search
-    .search__tabs
+    .search__tabs(ref="searchTabs")
       search-tabs
       component(:is="`search-filter-${tabSelect}`")
-    .search__main
+    .search__main(:style="styleMain")
       component(:is="`search-${tabSelect}`")
       is-loading(v-if="getData.total> getData.offset", :isLoad='getData.status', v-load="loadData")
 </template>
@@ -20,7 +20,8 @@ export default {
   name: 'Search',
   components: { SearchTabs, SearchUsers, SearchNews, SearchFilterUsers, SearchFilterNews, isLoading },
   data: () => ({
-    hasSearchText: true
+    hasSearchText: true,
+    searchTabHeigth: 0,
   }),
   computed: {
     ...mapGetters('global/search', [
@@ -48,12 +49,30 @@ export default {
           status: this.getLoadNews
         }
       }
-    }
+    },
+
+    styleMain() {
+      const pt = this.searchTabHeigth ? this.searchTabHeigth + 50 : 250;
+      return {
+        paddingTop: `${pt}px`,
+      }
+    },
+  },
+  mounted() {
+    this.getSearchTabHeight();
   },
   watch: {
     searchText() {
       this.routePushWithQuery(this.tabSelect)
-    }
+    },
+    tabSelect: {
+      handler() {
+        this.$nextTick(() => {
+          this.getSearchTabHeight();
+        })
+      },
+      immediate: true,
+    },
   },
   methods: {
     ...mapMutations('global/search', ['setTabSelect', 'routePushWithQuery', 'setLoadUsers', 'setloadNews']),
@@ -64,6 +83,9 @@ export default {
       } else {
         this.setloadNews(true)
       }
+    },
+    getSearchTabHeight() {
+      this.searchTabHeigth = this.$refs.searchTabs.offsetHeight;
     }
   },
   beforeDestroy() {

@@ -6,42 +6,23 @@
 
     .user-info-form__block
         span.user-info-form__label {{ $t("country") }}
-        .user-info-form__wrap.countries(v-click-outside='countriesClose')
-            input.user-info-form__input(
-                type='text',
-                v-model='country',
-                :placeholder='$t("entCountry")',
-                @input='countriesOpen'
-            )
 
-            ul.countries__list(v-if='countries && countries.length > 0 && isCountriesShow')
-                li.countries__item(
-                    v-for='item in countries',
-                    :key='item.id',
-                    tabindex=0,
-                    @click='setCountry(item.title)',
-                    @keyup.enter='setCountry(item.title)'
-                ) {{ item.title }}
+        select-location.user-info-form__wrap.countries(
+          v-model="country",
+          :placeholder='$t("entCountry")',
+          :options-list="countries"
+          @selectOoption="setCountry"
+        )
 
     .user-info-form__block
         span.user-info-form__label {{ $t("city") }}
-        .user-info-form__wrap.countries(v-click-outside='citiesClose')
-            input.user-info-form__input(
-                type='text',
-                v-model='city',
-                :placeholder='$t("entCity")',
-                @input='citiesOpen',
-                @keyup.enter='setCity(city)'
-            )
 
-            ul.countries__list(v-if='cities && cities.length > 0 && isCitiesShow')
-                li.countries__item(
-                    v-for='item in cities',
-                    :key='item.id',
-                    @click='setCity(item)',
-                    @keyup.enter='setCity(item)',
-                    tabindex=0
-                ) {{ item.title }}
+        select-location.user-info-form__wrap.countries(
+          v-model="city",
+          :placeholder='$t("entCity")',
+          :options-list="cities"
+          @selectOoption="setCity"
+        )
 
     .user-info-form__block
         span.user-info-form__label {{ $t("birthDay") }}
@@ -83,10 +64,54 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import ClickOutside from 'vue-click-outside'
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue'
+import SelectLocation from '@/components/FormElements/SelectLocation.vue'
 
 export default {
   name: 'SettingsMain',
-  components: { UserInfoFormBlock },
+  components: { UserInfoFormBlock, SelectLocation },
+  directives: {
+    ClickOutside
+  },
+  i18n: {
+    messages: {
+      en: {
+        tel: 'Phone:',
+        entTel: 'Enter your phone',
+        lastName: 'Last name:',
+        entLastName: 'Enter last name',
+        name: 'Name:',
+        entName: 'Enter name',
+        country: 'Country:',
+        entCountry: 'Enter country',
+        city: 'City:',
+        entCity: 'Enter city',
+        birthDay: 'Date of Birth:',
+        photo: 'Photo:',
+        myself: 'About myself:',
+        download: 'Download',
+        cancel: 'Cancel',
+        save: 'Save'
+      },
+      ru: {
+        tel: 'Телефон:',
+        entTel: 'Введите телефон',
+        lastName: 'Фамилия:',
+        entLastName: 'Введите фамилию',
+        name: 'Имя:',
+        entName: 'Введите имя',
+        country: 'Страна:',
+        entCountry: 'Введите страну',
+        city: 'Город:',
+        entCity: 'Введите город',
+        birthDay: 'Дата рождения:',
+        photo: 'Фотография:',
+        myself: 'О себе:',
+        download: 'Загрузить',
+        cancel: 'Отмена',
+        save: 'Сохранить'
+      }
+    }
+  },
   data: () => ({
     name: '',
     lastName: '',
@@ -99,9 +124,6 @@ export default {
     src: '',
     country: '',
     city: '',
-    isCountriesShow: false,
-    isCitiesShow: false,
-    isCountryShow: false,
     country_city: {
       country: '',
       city: ''
@@ -113,14 +135,18 @@ export default {
     ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
 
     countries() {
-      if (this.country !== '') {
-        return this.getCountries.filter(c => c.title.toUpperCase().includes(this.country.toUpperCase()))
-      }
+      return this.getCountries.data || [];
     },
     cities() {
-      if (this.city !== '') {
-        return this.getCities.filter(c => c.title.toUpperCase().includes(this.city.toUpperCase()))
-      }
+      return this.getCities.data || [];
+    },
+    selectedCountryId() {
+      const country = this.countries.find(
+        (item) => item.title.toUpperCase() === this.country.toUpperCase()
+      )
+
+      console.log('country: ', country);
+      return country ? country.id : 0;
     },
     phoneNumber() {
       return this.phone.replace(/\D+/g, '')
@@ -188,6 +214,24 @@ export default {
         case 11:
           return 31
       }
+    }
+  },
+  mounted() {
+    this.getInfo ? this.setInfo() : (this.month = this.months[0])
+
+    this.apiCountries()
+    this.apiCities({ countryId: 1 })
+  },
+  watch: {
+    country(newVal) {
+      this.apiCountries({ country: newVal });
+      this.apiCities({ countryId: this.selectedCountryId });
+    },
+    city(newVal) {
+      this.apiCities({
+        countryId: this.selectedCountryId,
+        city: newVal,
+      });
     }
   },
   methods: {
@@ -258,92 +302,14 @@ export default {
       this.country = this.getInfo.country !== null ? this.getInfo.country : ''
       this.city = this.getInfo.city !== null ? this.getInfo.city : ''
     },
-    countriesOpen() {
-      this.isCountriesShow = true
-    },
-    countriesClose() {
-      if (this.city === '') {
-        this.isCountryShow = false
-      }
-      this.isCountriesShow = false
-    },
-    setCountry(value) {
-      this.country = value
-      this.countriesClose()
 
-      if (this.countries[0].id && this.countries.length == 1) {
-        this.apiCities(this.countries[0].id)
-      }
-    },
-    citiesOpen() {
-      this.isCitiesShow = true
-    },
-    citiesClose() {
-      this.isCitiesShow = false
+    setCountry(countryData) {
+      this.country = countryData.title;
     },
     setCity(value) {
-      if (value === '') {
-        this.country = ''
-        this.isCountryShow = false
-        return
-      }
-      if (this.cities.length === 0) {
-        this.country = ''
-        this.isCountryShow = true
-        return
-      }
       this.city = value.title
-      this.citiesClose()
     }
   },
-  mounted() {
-    this.getInfo ? this.setInfo() : (this.month = this.months[0])
-
-    this.apiCountries()
-  },
-  directives: {
-    ClickOutside
-  },
-  i18n: {
-    messages: {
-      en: {
-        tel: 'Phone:',
-        entTel: 'Enter your phone',
-        lastName: 'Last name:',
-        entLastName: 'Enter last name',
-        name: 'Name:',
-        entName: 'Enter name',
-        country: 'Country:',
-        entCountry: 'Enter country',
-        city: 'City:',
-        entCity: 'Enter city',
-        birthDay: 'Date of Birth:',
-        photo: 'Photo:',
-        myself: 'About myself:',
-        download: 'Download',
-        cancel: 'Cancel',
-        save: 'Save'
-      },
-      ru: {
-        tel: 'Телефон:',
-        entTel: 'Введите телефон',
-        lastName: 'Фамилия:',
-        entLastName: 'Введите фамилию',
-        name: 'Имя:',
-        entName: 'Введите имя',
-        country: 'Страна:',
-        entCountry: 'Введите страну',
-        city: 'Город:',
-        entCity: 'Введите город',
-        birthDay: 'Дата рождения:',
-        photo: 'Фотография:',
-        myself: 'О себе:',
-        download: 'Загрузить',
-        cancel: 'Отмена',
-        save: 'Сохранить'
-      }
-    }
-  }
 }
 </script>
 
