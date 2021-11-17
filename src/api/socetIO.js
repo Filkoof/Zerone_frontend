@@ -65,3 +65,7 @@ export function unreadCount(callback){
   ask('unread-response', callback)
 }
 
+export function readMessages (idDialogs){
+  socket.emit('read-messages', idDialogs)
+}
+

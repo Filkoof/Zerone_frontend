@@ -14,7 +14,7 @@
       span {{ $t('settings') }}
     a.main-layout__link(@click.prvent="onLogout" href="#")
       simple-svg(:filepath="'/static/img/sidebar/exit.svg'")
-      span {{ $t('logout') }}
+      span.main-layout__span {{ $t('logout') }}
 </template>
 
 <script>
@@ -137,7 +137,7 @@ export default {
       position: absolute;
       right: 10px;
       top: 50%;
-      transform: translateY(-50%);
+      transform: translate(-50%, -50%);
     }
 
     &.big {

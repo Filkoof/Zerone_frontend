@@ -1,5 +1,5 @@
 <template lang="pug">
-  .im-chat
+  .im-chat(@click='resetCounterUnreadedDialogs')
     .im-chat__user
       router-link.im-chat__user-pic(:to="{name: 'ProfileId', params: {id: info.recipient_id.id}}")
         img(v-if='info.recipient_id.photo' :src="info.recipient_id.photo" :alt="info.recipient_id.first_name")
@@ -12,7 +12,7 @@
           .typing__animations-item
         p.typing__text {{checkTypingMessage}} набирает сообщение
       span.user-status(:class="{online}") {{statusText}}
-    .im-chat__infitite_list_wrapper
+    .im-chat__infitite_list_wrapper(v-if='messages')
       virtual-list.im-chat__infitite_list.scroll-touch(:size="60"
         :keeps="120"
         :data-key="'sid'"
@@ -34,7 +34,7 @@
 
 <script>
 import moment from 'moment'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChatMessage from '@/components/Im/ChatMessage'
 import VirtualList from 'vue-virtual-scroll-list'
 import { submitFinishTypingMessage, submitTypingMessage } from '../../api/socetIO'
@@ -78,7 +78,6 @@ export default {
     messagesGrouped() {
       let groups = []
       let headerDate = null
-
       for (const msg of this.messages) {
         let msgDate = moment(msg.time).format('YYYY-MM-DD')
         if (msgDate !== headerDate) {
@@ -102,6 +101,7 @@ export default {
   methods: {
     ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages']),
     ...mapGetters('profile/dialogs', ['isHistoryEndReached']),
+    ...mapMutations('profile/dialogs', ['setUnreadedDialogs']),
     onSubmitMessage() {
       this.postMessage({ id: this.info.id, message_text: this.mes })
       this.mes = ''
@@ -159,6 +159,13 @@ export default {
       }
       submitFinishTypingMessage(data)
     },
+    resetCounterUnreadedDialogs(){
+      const params = {
+        id: this.getActiveDialogId,
+        unread_count: 0
+      }
+      this.setUnreadedDialogs(params)
+    }
   },
   i18n: {
     messages: {

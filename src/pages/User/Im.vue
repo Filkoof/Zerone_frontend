@@ -12,10 +12,10 @@
             @click.native='clickOnDialog(dialog.id)'
         )
 
-    .im__chat(v-if='getActiveDialog')
+    .im__chat(v-if='getActiveDialog && messages')
         im-chat(
             :info='getActiveDialog',
-            :messages='getMessages',
+            :messages='messages',
             :online='checkOnlineUser(getActiveDialog.recipient_id.last_online_time)'
         )
 </template>
@@ -36,7 +36,11 @@ export default {
   }),
 
   computed: {
-    ...mapGetters('profile/dialogs', ['getMessages', 'getActiveDialog', 'getDialogs'])
+    ...mapGetters('profile/dialogs', ['getMessages', 'getActiveDialog', 'getDialogs', 'getActiveDialogId']),
+    messages(){
+      const active = Number(this.getActiveDialogId)
+      return this.getMessages[active];
+    }
   },
   methods: {
     ...mapActions('profile/dialogs', [

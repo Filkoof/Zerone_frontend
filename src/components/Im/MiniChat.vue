@@ -3,17 +3,32 @@
     .chat__dragging-block(@mousedown='dragTrue' @mouseup='dragFalse')
     .chat__wraper
       .chat__header
-        router-link.chat__link-img(:to="{name: 'ProfileId', params: {id: messages[0].recipient_id.id}}")
-          img.chat__img(v-if='messages[0].recipient_id.photo' :src='messages[0].recipient_id.photo' :alt='messages[0].recipient_id.first_name')
-          img.chat__img(v-else src='../../../static/img/user/default_avatar.svg' :alt='messages[0].recipient_id.first_name')
+        router-link.chat__link-img(:to="{name: 'ProfileId', params: {id: dialog[0].recipient_id.id}}")
+          img.chat__img(v-if='dialog[0].recipient_id.photo' :src='dialog[0].recipient_id.photo' :alt='dialog[0].recipient_id.first_name')
+          img.chat__img(v-else src='../../../static/img/user/default_avatar.svg' :alt='dialog[0].recipient_id.first_name')
         .chat__info-container
-          p.chat__name {{messages[0].recipient_id.first_name}} {{messages[0].recipient_id.last_name}}
-          span.user-status(:class="{online: checkOnlineUser(messages[0].recipient_id.last_online_time)}") {{statusText}}
+          p.chat__name {{dialog[0].recipient_id.first_name}} {{dialog[0].recipient_id.last_name}}
+          span.user-status(:class="{online: checkOnlineUser(dialog[0].recipient_id.last_online_time)}") {{statusText}}
         button.chat__btn-close(@click='closeChat')
       .chat__main
-      form.chat__footer
-        input.chat__input(@click='focus')
-        button.chat__btn
+        virtual-list.chat__infitite_list.scroll-touch(:size="60"
+          :keeps="120"
+          :data-key="'sid'"
+          :data-sources="messagesGrouped"
+          :data-component="itemComponent"
+          :wrap-class="'chat__message'"
+          :root-tag="'section'"
+          @totop="onScrollToTop"
+          @scroll.passive="onScroll"
+          @tobottom="onScrollToBottom"
+          ref="vsl"
+        )
+          .im-chat__loader(slot="header", v-show="fetching")
+            .spinner(v-show="!isHistoryEndReached()")
+            .finished(v-show="isHistoryEndReached()") {{ $t('nomore') }}
+      form.chat__footer(@submit.prevent="onSubmitMessage")
+        input.chat__input(@click='focus' type="text" @input='typingMessage' @blur='finishedTypingMessage' :placeholder="$t('placeholder')" v-model="mes")
+        button.chat__btn(type='submit')
     .chat__dragging-bottom-block(@mousedown='dragResizeTrue' @mouseup='dragResizeFalse')
       .span
 </template>
@@ -21,14 +36,22 @@
 
 
 <script>
-  import { mapGetters } from 'vuex'
-  import VueDragResize from 'vue-drag-resize'
-  import moment from 'moment'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import VueDragResize from 'vue-drag-resize'
+import ChatMessage from '@/components/Im/ChatMessage'
+import moment from 'moment'
+import VirtualList from 'vue-virtual-scroll-list'
+import { submitFinishTypingMessage, submitTypingMessage } from '../../api/socetIO'
 
-  export default {
+const makeHeader = msgDate => {
+  return { sid: `group-${msgDate}`, stubDate: true, date: msgDate }
+}
+
+export default {
     name: 'miniChat',
     components: {
-      VueDragResize
+      VueDragResize,
+      VirtualList
     },
     props: {
       chatID:{
@@ -39,17 +62,28 @@
       }
     },
     data: () => ({
-      x: 50,
-      y: 50,
+      x: window.innerWidth - 350,
+      y: window.innerHeight - 400,
       minW: 300,
       minH: 350,
       dragStatus: false,
       resizeStatus: false,
+
+      mes: '',
+      itemComponent: ChatMessage,
+      isUserViewHistory: false,
+      fetching: false,
+      offset: 10,
+      itemPrePage: 10,
     }),
-      computed:{
-      ...mapGetters('profile/dialogs', ['getDialogs']),
-        messages(){
+    computed:{
+      ...mapGetters('profile/dialogs', ['getDialogs', 'getMessages']),
+      ...mapGetters('profile/info', ['getInfo']),
+        dialog(){
           return this.getDialogs.filter(i => i.id == this.chatID)
+        },
+        dialogMessages(){
+          return this.getMessages[this.chatID]
         },
         statusText() {
         const time = this.getDialogs[0].recipient_id.last_online_time;
@@ -57,6 +91,29 @@
             ? this.$t('online')
             : this.$t('was') + moment(time).fromNow()
         },
+        messagesGrouped() {
+        const message = this.dialogMessages;
+        let groups = []
+        let headerDate = null
+        for (const msg of message) {
+          let msgDate = moment(msg.time).format('YYYY-MM-DD')
+          if (msgDate !== headerDate) {
+            headerDate = msgDate
+            groups.push(makeHeader(headerDate))
+          }
+          groups.push(msg)
+        }
+        return groups
+      },
+        checkTypingMessage() {
+        let user
+        this.getTypeMessage.forEach(el=> {
+          if (el.dialog == this.getActiveDialogId) {
+            user = el.author
+          }
+        })
+        return user
+      },
 
         dragFunctions(){
           if(this.dragStatus){
@@ -95,13 +152,81 @@
         }
       },
     methods: {
+      ...mapActions('profile/dialogs', ['loadOlderMessages', 'postMessage', 'apiLoadAllDialogs', 'loadFreshMessages']),
+      ...mapMutations('profile/dialogs', ['setUnreadedDialogs']),
+      ...mapGetters('profile/dialogs', ['isHistoryEndReached']),
+
+      onSubmitMessage() {
+        this.postMessage({ id: this.chatID, message_text: this.mes, })
+        this.mes = ''
+        this.finishedTypingMessage()
+      },
+      async onScrollToTop() {
+        if (this.$refs.vsl) {
+          if (!this.isHistoryEndReached()) {
+            let oldest = this.messagesGrouped[0]
+
+            this.fetching = true
+            await this.loadOlderMessages({itemPerPage: this.itemPrePage, offset: this.offset + this.itemPrePage}).then(()=>{
+              this.offset += this.itemPrePage;
+            })
+            this.setVirtualListToOffset(1)
+
+            this.$nextTick(() => {
+              const scrollSize = this.$refs.vsl.getScrollSize()
+              const scrollOffset = scrollSize / this.offset;
+              this.setVirtualListToOffset(scrollOffset * this.itemPrePage)
+              this.fetching = false
+            })
+          }
+        }
+      },
+      onScroll() {
+        this.follow = false
+      },
+      onScrollToBottom() {
+        this.follow = true
+      },
+      setVirtualListToOffset(offset) {
+        if (this.$refs.vsl) {
+          this.$refs.vsl.scrollToOffset(offset)
+        }
+      },
+      setVirtualListToBottom() {
+        if (this.$refs.vsl) {
+          this.$refs.vsl.scrollToBottom()
+        }
+      },
+      typingMessage(){
+        if(this.mes){
+          const data = {
+            author: this.getInfo.id,
+            dialog: this.getActiveDialogId
+          }
+          submitTypingMessage(data)
+        }
+      },
+      finishedTypingMessage(){
+        const data = {
+          author: Number(this.getInfo.id),
+          dialog: Number(this.chatID)
+        }
+        submitFinishTypingMessage(data)
+      },
+      resetCounterUnreadedDialogs(){
+        const params = {
+          id: this.getActiveDialogId,
+          unread_count: 0
+        }
+        this.setUnreadedDialogs(params)
+      },
+
       checkOnlineUser(time) {
         return moment().diff(moment(time), 'seconds') <= 60
       },
       closeChat(){
         this.close(this.chatID)
       },
-
       resize(newRect) {
         this.width = newRect.width;
         this.height = newRect.height;
@@ -124,6 +249,23 @@
         e.target.focus()
       }
     },
+    watch: {
+      dialogMessages() {
+        if (this.follow) this.setVirtualListToBottom()
+      },
+    },
+
+    mounted() {
+      const params = {
+        id: this.chatID,
+        unread_count: 0
+      }
+      this.setUnreadedDialogs(params)
+      this.setVirtualListToBottom()
+
+      this.apiLoadAllDialogs()
+      this.loadFreshMessages({id:this.chatID})
+    },
     i18n: {
       messages: {
         en: {
@@ -140,14 +282,14 @@
         }
       }
     }
-
   }
 
 </script>
 
-<style scoped lang='stylus'>
+<style lang='stylus'>
 @import '../../assets/stylus/base/vars.styl';
 .chat{
+  position fixed
   background white
   border-radius 10px
   overflow hidden
@@ -198,10 +340,6 @@
     text-align right
     color: #9EA4AD;
   }
-    .online {
-      color: eucalypt;
-    }
-
 
   &__btn-close{
     width 20px
@@ -251,7 +389,6 @@
     }
   }
 
-
   &__dragging-bottom-block{
     position absolute
     bottom 0
@@ -289,7 +426,7 @@
   }
 
   &__main{
-    height 100%
+    overflow hidden
     background #f2f5f9
     padding 5px
     border-radius 5px
@@ -324,4 +461,25 @@
     background-repeat no-repeat
   }
 }
+
+.online {
+  color: eucalypt;
+}
+
+.chat__infitite_list{
+  overflow-y auto
+  height 100%
+}
+
+.chat__message > div {
+  &:not(:last-child){
+    margin-bottom 10px
+  }
+}
+.chat__message > div .im-chat__message-text{
+  padding 5px 15px
+}
+.chat__message > div .im-chat__message-time{
+    margin-left 0
+  }
 </style>

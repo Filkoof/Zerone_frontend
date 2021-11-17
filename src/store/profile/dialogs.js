@@ -1,15 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import { checkFinishTypingMessage, checkTypingMessage, getMessage, unreadCount } from '../../api/socetIO'
-
-const mergeIncomingMessages = ({ commit, state }, response) => {
-  const fromServerNewFirst = response.data.data
-  fromServerNewFirst.forEach(m => (m.sid = '' + m.id))
-  const onlyNewMessages = fromServerNewFirst.filter(msgServer => !state.messages.some(m => m.id === msgServer.id))
-  if (onlyNewMessages.length > 0) {
-    commit('addMessages', { messages: onlyNewMessages, total: response.data.total })
-  }
-}
+import { checkFinishTypingMessage, checkTypingMessage, getMessage, readMessages, unreadCount } from '../../api/socetIO'
 
 //  [msg 0] [msg 1] .... [msg 10]
 //                          ^
@@ -31,7 +22,7 @@ export default {
     typeMessage: [],
   },
   getters: {
-    oldestKnownMessageId: s => (s.messages.length > 0 ? s.messages[0]['id'] : null),
+    oldestKnownMessageId: s => (s.messages.length > 0 ? s.messages[s.activeId][0]['id'] : null),
     getDialogs: s => {
       const result = [...s.dialogs]
 
@@ -59,38 +50,64 @@ export default {
     unreadedMessages: s => s.unreadedMessages,
     hasOpenedDialog: s => dialogId => !!s.dialogs.find(el => el.id == dialogId),
     isHistoryEndReached: s => s.isHistoryEndReached,
-    getMessages: s => {
-      const result = [...s.messages]
-
-      result.forEach(message => {
-        // message.last_message = message.last_message || {}
-        // message.last_message.isSentByMe = message.last_message.isSentByMe || true
-        // message.last_message.recipient = message.last_message.recipient || {}
-        // message.last_message.recipient.last_online_time = message.last_message.recipient.last_online_time * 1000 || 0
-        // message.last_message.recipient.id = message.last_message.recipient.id || message.last_message.recipient_id
-        // message.last_message.recipient.photo = message.last_message.recipient.photo || '../static/img/user/default_avatar.svg'
-        // message.last_message.recipient.first_name = message.last_message.recipient.first_name || 'Name'
-        // message.last_message.recipient.last_name = message.last_message.recipient.last_name || 'LastName'
-        // message.recipient.photo = message.recipient.photo || '../static/img/user/default_avatar.svg'
-        // message.time = message.time * 1000
-        // message.recipient.last_online_time = message.recipient.last_online_time * 1000
-      })
-
-      return result
-    },
+    getMessages: s => s.messages,
     getNewMessage: s => s.newMessage,
     getTotalMessage: s => s.total,
     getTypeMessage: s => s.typeMessage,
   },
-
   mutations: {
     setUnreadedMessages: (s, unread) => (s.unreadedMessages = unread),
-    setDialogs: (s, dialogs) => (s.dialogs = dialogs),
+    setUnreadedDialogs: (s, dialog) => {
+      readMessages({dialog:dialog.id})
+
+      s.messages[dialog.id].forEach(el=>{
+        el.read_status = "READ"
+      })
+      s.dialogs.forEach(el=>{
+        if(el.id == dialog.id) el.unread_count = dialog.unread_count
+      })
+    },
+    setDialogs: (s, dialogs) => {
+      const dialog = dialogs.sort((a, b) => new Date(a.last_message.time) - new Date(b.last_message.time)).reverse();
+      s.activeId = s.activeId ? s.activeId : Number(dialog[0].id)
+      s.dialogs = dialog
+    },
     dialogsLoaded: s => (s.dialogsLoaded = true),
     addMessages: (s, { messages, total }) => {
-      if(messages.length == 1) s.messages = [...s.messages, ...messages]
-      let message = messages.reverse();
-      s.messages = [...message, ...s.messages]
+      const mn = messages;
+
+      mn.forEach(el=>{
+        el.sid = '' + el.dialog_id + '-' + el.id;
+      })
+
+      let message;
+      const id = mn[0].dialog_id
+
+      if(mn.length == 1){
+        if(s.messages[id]){
+          message = [...s.messages[id], ...mn]
+        }else{
+          message = [...mn]
+        }
+      }else{
+        message = mn.reverse();
+        if(s.messages[id]){
+          message = [...message, ...s.messages[id]]
+        }else{
+          message = [...message]
+        }
+      }
+
+      console.log(message)
+
+      let mess = [];
+      message.forEach(el =>{
+        if(el) mess[el.dialog_id] = [];
+      })
+      message.forEach(el =>{
+        if(el) mess[el.dialog_id].push(el);
+      })
+      s.messages = mess
       s.total = total
     },
     selectDialog: (state, dialogId) => {
@@ -120,7 +137,6 @@ export default {
       s.typeMessage = [...s.typeMessage].filter(i => i.authorId !== typeMessage.authorId && i.dialog !== typeMessage.dialog )
     }
   },
-
   actions: {
     closeDialog({ commit }) {
       commit('selectDialog', null)
@@ -176,9 +192,9 @@ export default {
         })
     },
 
-    async loadFreshMessages({ commit, state, dispatch }, {itemPerPage=10, offset=0}) {
+    async loadFreshMessages({ commit, state, dispatch }, {itemPerPage=10, offset=0, id=state.activeId}) {
       await axios({
-        url: `dialogs/${state.activeId}/messages`,
+        url: `dialogs/${id}/messages`,
         method: 'GET',
         params: {
           itemPerPage: itemPerPage,
@@ -186,19 +202,16 @@ export default {
         }
       })
         .then(response => {
-          mergeIncomingMessages({ commit, state }, response)
-          if (state.chaseHistoryUnitilMessageId !== null) {
-            // dispatch('')
-          }
+          commit('addMessages', { messages: response.data.data, total: response.data.total })
         })
         .catch(error => {
           console.error(error)
         })
     },
 
-    async loadOlderMessages({ commit, getters, state }, {itemPerPage=10, offset=0}) {
+    async loadOlderMessages({ commit, getters, state }, {itemPerPage=10, offset=0, id=state.activeId}) {
       await axios({
-        url: `dialogs/${state.activeId}/messages`,
+        url: `dialogs/${id}/messages`,
         params: {
           fromMessageId: getters.oldestKnownMessageId,
           offset: offset,
@@ -207,10 +220,11 @@ export default {
         method: 'GET'
       })
         .then(response => {
-          mergeIncomingMessages({ commit, state }, response)
-          if (response.data.data.length == 0) {
-            commit('markEndOfHistory')
-          }
+          console.log(response)
+          // mergeIncomingMessages({ commit, state }, response)
+          // if (response.data.data.length == 0) {
+          //   commit('markEndOfHistory')
+          // }
         })
         .catch(error => {
           console.error(error)
@@ -226,7 +240,7 @@ export default {
         }
       })
         .then(response => {
-          dispatch('loadFreshMessages', payload.id)
+          dispatch('loadFreshMessages', {itemPerPage:1, offset:0, id:payload.id})
         })
         .catch(error => {
           console.error(error)
@@ -246,7 +260,7 @@ export default {
         })
     },
 
-    loadMessages({state, commit, rootState }){
+    loadMessages({state, commit, rootState, dispatch }){
       function callback(response){
         if(response.data.author_id == rootState.profile.info.info.id) return
         const data = new Object(response.data);
@@ -259,6 +273,7 @@ export default {
 
         const total = state.total ? state.total + 1 : 1;
 
+        console.log(data['dialog_id'])
         const recipient = state.dialogs.find(el => el.id == data['dialog_id']);
 
         const params = {
@@ -270,6 +285,7 @@ export default {
         data.recipient = recipient['recipient_id'];
         newMessage.push(data);
 
+        dispatch('apiLoadAllDialogs')
         commit('addMessages', params)
         commit('setNewMessage', newMessage)
       }
@@ -292,9 +308,9 @@ export default {
 
     checkUnreadCount({commit}){
       function callback(response){
-        console.log(response)
+        commit('setUnreadedMessages', response)
       }
       unreadCount(callback)
     }
-  }
+  },
 }
