@@ -112,8 +112,6 @@ export default {
     },
     selectDialog: (state, dialogId) => {
       state.activeId = dialogId
-      state.messages = []
-      state.isHistoryEndReached = false
     },
     markEndOfHistory: s => (s.isHistoryEndReached = true),
     setNewMessage: (s, messages) => {

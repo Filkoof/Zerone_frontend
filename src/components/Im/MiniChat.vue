@@ -112,7 +112,6 @@ export default {
         })
         return user
       },
-
         dragFunctions(){
           if(this.dragStatus){
             return {
