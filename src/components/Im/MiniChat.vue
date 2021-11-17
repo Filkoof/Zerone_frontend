@@ -33,8 +33,6 @@
       .span
 </template>
 
-
-
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VueDragResize from 'vue-drag-resize'
