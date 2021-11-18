@@ -61,9 +61,12 @@ export default {
     setUnreadedDialogs: (s, dialog) => {
       readMessages({dialog:dialog.id})
 
-      s.messages[dialog.id].forEach(el=>{
-        el.read_status = "READ"
-      })
+      if(s.messages[dialog.id]){
+        s.messages[dialog.id].forEach(el=>{
+          el.read_status = "READ"
+        })
+      }
+
       s.dialogs.forEach(el=>{
         if(el.id == dialog.id) el.unread_count = dialog.unread_count
       })
