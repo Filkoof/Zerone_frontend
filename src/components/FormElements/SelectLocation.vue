@@ -53,7 +53,7 @@ export default {
   data: () => ({
     isShowOptions: false,
     inputTimerId: null,
-    inputTimer: 300,
+    inputTimer: 450,
     options: [],
   }),
 
