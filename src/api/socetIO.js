@@ -2,7 +2,7 @@ import io from 'socket.io-client'
 
 const url = 'http://147.78.64.57:1111';
 
-const socket = io(url, {
+export const socket = io(url, {
   transports: ['websocket'],
 })
 

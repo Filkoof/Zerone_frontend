@@ -18,6 +18,7 @@ import RealTimeUpdater from '@/components/RealTimeUpdater'
 import NotificationsMessages from '../components/Im/NotificationsMessages'
 import { mapActions } from 'vuex'
 import MiniChat from '../components/Im/MiniChat'
+import { socket } from '../api/socetIO'
 export default {
   components: {
     MiniChat,
@@ -45,7 +46,14 @@ export default {
   computed:{
     openAllChats(){
       return this.openChat.filter((e,i,a)=>a.indexOf(e)==i)
-    }
+    },
+    socketStatus(){
+      if(!socket.connected){
+        console.log('socet reconnect')
+        socket.connect()
+      }
+      return socket.connected
+    },
   },
   mounted() {
     this.checkUnreadCount();

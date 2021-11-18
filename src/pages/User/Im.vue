@@ -39,7 +39,8 @@ export default {
     ...mapGetters('profile/dialogs', ['getMessages', 'getActiveDialog', 'getDialogs', 'getActiveDialogId']),
     messages(){
       const active = Number(this.getActiveDialogId)
-      return this.getMessages[active];
+      const message = this.getMessages[active] ? this.getMessages[active] : [];
+      return message;
     }
   },
   methods: {

@@ -75,6 +75,7 @@ export default {
     dialogsLoaded: s => (s.dialogsLoaded = true),
     addMessages: (s, { messages, total }) => {
       const mn = messages;
+      if(!mn[0]) return
 
       mn.forEach(el=>{
         el.sid = '' + el.dialog_id + '-' + el.id;
@@ -98,8 +99,6 @@ export default {
         }
       }
 
-      console.log(message)
-
       let mess = [];
       message.forEach(el =>{
         if(el) mess[el.dialog_id] = [];
@@ -107,6 +106,8 @@ export default {
       message.forEach(el =>{
         if(el) mess[el.dialog_id].push(el);
       })
+      mess[id][0].total = total;
+      console.log(mess[id][0])
       s.messages = mess
       s.total = total
     },
@@ -218,11 +219,7 @@ export default {
         method: 'GET'
       })
         .then(response => {
-          console.log(response)
-          // mergeIncomingMessages({ commit, state }, response)
-          // if (response.data.data.length == 0) {
-          //   commit('markEndOfHistory')
-          // }
+          commit('addMessages', {messages:response.data.data, total:response.data.total})
         })
         .catch(error => {
           console.error(error)

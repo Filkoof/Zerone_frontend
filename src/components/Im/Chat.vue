@@ -103,13 +103,15 @@ export default {
     ...mapGetters('profile/dialogs', ['isHistoryEndReached']),
     ...mapMutations('profile/dialogs', ['setUnreadedDialogs']),
     onSubmitMessage() {
+      if(this.mes == '') return
       this.postMessage({ id: this.info.id, message_text: this.mes })
       this.mes = ''
       this.finishedTypingMessage()
     },
     async onScrollToTop() {
       if (this.$refs.vsl) {
-        if (!this.isHistoryEndReached()) {
+
+        if (this.messages.length -1 < this.messages[0].total) {
           let oldest = this.messagesGrouped[0]
 
           this.fetching = true
