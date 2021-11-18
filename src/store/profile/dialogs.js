@@ -85,27 +85,37 @@ export default {
         el.sid = '' + el.dialog_id + '-' + el.id;
       })
 
-     const mySet = new Set();
-      s.messages.forEach(el=>{
-        if(el){
-          for(let i in el){
-            mySet.add(i)
-          }
+      if(messages.length == 1){
+        const messageId = messages[0].dialog_id;
+        if(s.messages[messageId]){
+          s.messages[messageId].push(...messages)
+        }else{
+          s.messages[messageId] = [...messages]
         }
-      })
-      messages.forEach(el=>{
-        mySet.add(el)
-      })
+      }else{
+        const mySet = new Set();
 
-      const mess = [];
-      mySet.forEach(el=>{
-        mess[el.dialog_id] = [];
-      })
-      mySet.forEach(el=>{
-        mess[el.dialog_id].push(el);
-      })
+        s.messages.forEach(el=>{
+          if(el){
+            for(let i in el){
+              mySet.add(i)
+            }
+          }
+        })
+        messages.forEach(el=>{
+          mySet.add(el)
+        })
 
-      s.messages = mess
+        const mess = [];
+        mySet.forEach(el=>{
+          mess[el.dialog_id] = [];
+        })
+        mySet.forEach(el=>{
+          mess[el.dialog_id].push(el);
+        })
+
+        s.messages = mess
+      }
       s.total = total
     },
     selectDialog: (state, dialogId) => {
@@ -256,9 +266,7 @@ export default {
     loadMessages({state, commit, rootState, dispatch }){
       function callback(response){
         if(response.data.author_id == rootState.profile.info.info.id) return
-        console.log('message add start 1')
         dispatch('apiLoadAllDialogs').then(()=>{
-          console.log('message add start 2')
           const data = new Object(response.data);
           data.sendByMe = !data.sendByMe;
           data.time = new Date(data.time * 1000);
@@ -282,15 +290,17 @@ export default {
 
           commit('addMessages', params)
           commit('setNewMessage', newMessage)
-          console.log('message adds')
         })
       }
       getMessage(callback);
     },
 
-    checkTypingMessage({commit}){
+    checkTypingMessage({commit, state}){
       function callback (response){
-        commit('setTypeMessage', response)
+        const dialogId = response.dialog;
+        if(state.dialogs[dialogId]){
+          commit('setTypeMessage', response)
+        }
       };
       checkTypingMessage(callback)
     },
