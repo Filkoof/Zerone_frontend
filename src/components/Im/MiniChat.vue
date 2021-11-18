@@ -71,7 +71,7 @@ export default {
       itemComponent: ChatMessage,
       isUserViewHistory: false,
       fetching: false,
-      offset: 10,
+      offset: 0,
       itemPrePage: 10,
     }),
     computed:{
@@ -81,7 +81,7 @@ export default {
           return this.getDialogs.filter(i => i.id == this.chatID)
         },
         dialogMessages(){
-          return this.getMessages[this.chatID]
+          return this.getMessages[this.chatID] ? this.getMessages[this.chatID] : []
         },
         statusText() {
         const time = this.getDialogs[0].recipient_id.last_online_time;
@@ -161,7 +161,7 @@ export default {
       },
       async onScrollToTop() {
         if (this.$refs.vsl) {
-          if (this.dialogMessages.length - 1 < this.dialogMessages[0].total) {
+          if (this.dialogMessages.length < this.dialogMessages[0].total) {
             let oldest = this.messagesGrouped[0]
 
             this.fetching = true

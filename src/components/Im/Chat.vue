@@ -55,7 +55,7 @@ export default {
     itemComponent: ChatMessage,
     isUserViewHistory: false,
     fetching: false,
-    offset: 10,
+    offset: 0,
     itemPrePage: 10,
   }),
   mounted() {
@@ -111,7 +111,7 @@ export default {
     async onScrollToTop() {
       if (this.$refs.vsl) {
 
-        if (this.messages.length -1 < this.messages[0].total) {
+        if (this.messages.length < this.messages[0].total) {
           let oldest = this.messagesGrouped[0]
 
           this.fetching = true

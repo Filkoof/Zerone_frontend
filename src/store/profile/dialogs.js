@@ -1,6 +1,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import { checkFinishTypingMessage, checkTypingMessage, getMessage, readMessages, unreadCount } from '../../api/socetIO'
+import {MySet} from '../../api/mySetFunction'
 
 //  [msg 0] [msg 1] .... [msg 10]
 //                          ^
@@ -81,33 +82,26 @@ export default {
         el.sid = '' + el.dialog_id + '-' + el.id;
       })
 
-      let message;
-      const id = mn[0].dialog_id
-
-      if(mn.length == 1){
-        if(s.messages[id]){
-          message = [...s.messages[id], ...mn]
-        }else{
-          message = [...mn]
+     const mySet = new Set();
+      s.messages.forEach(el=>{
+        if(el){
+          for(let i in el){
+            mySet.add(i)
+          }
         }
-      }else{
-        message = mn.reverse();
-        if(s.messages[id]){
-          message = [...message, ...s.messages[id]]
-        }else{
-          message = [...message]
-        }
-      }
+      })
+      messages.forEach(el=>{
+        mySet.add(el)
+      })
 
-      let mess = [];
-      message.forEach(el =>{
-        if(el) mess[el.dialog_id] = [];
+      const mess = [];
+      mySet.forEach(el=>{
+        mess[el.dialog_id] = [];
       })
-      message.forEach(el =>{
-        if(el) mess[el.dialog_id].push(el);
+      mySet.forEach(el=>{
+        mess[el.dialog_id].push(el);
       })
-      mess[id][0].total = total;
-      console.log(mess[id][0])
+
       s.messages = mess
       s.total = total
     },
@@ -164,6 +158,7 @@ export default {
         method: 'GET'
       })
         .then(response => {
+          if(response.data.total == 0) return
           commit('setDialogs', response.data.data)
           commit('dialogsLoaded')
           return response.data
@@ -258,31 +253,34 @@ export default {
     loadMessages({state, commit, rootState, dispatch }){
       function callback(response){
         if(response.data.author_id == rootState.profile.info.info.id) return
-        const data = new Object(response.data);
-        data.sendByMe = !data.sendByMe;
-        data.time = new Date(data.time * 1000);
-        data.sid = '' + data.id;
+        console.log('message add start 1')
+        dispatch('apiLoadAllDialogs').then(()=>{
+          console.log('message add start 2')
+          const data = new Object(response.data);
+          data.sendByMe = !data.sendByMe;
+          data.time = new Date(data.time * 1000);
+          data.sid = '' + data.id;
 
-        const messages = [];
-        messages.push(data);
+          const messages = [];
+          messages.push(data);
 
-        const total = state.total ? state.total + 1 : 1;
+          const total = state.total ? state.total + 1 : 1;
 
-        console.log(data['dialog_id'])
-        const recipient = state.dialogs.find(el => el.id == data['dialog_id']);
+          let recipient = state.dialogs.find(el => el.id == data['dialog_id']);
 
-        const params = {
-          messages,
-          total,
-        }
+          const params = {
+            messages,
+            total,
+          }
 
-        const newMessage = [];
-        data.recipient = recipient['recipient_id'];
-        newMessage.push(data);
+          const newMessage = [];
+          data.recipient = recipient['recipient_id'];
+          newMessage.push(data);
 
-        dispatch('apiLoadAllDialogs')
-        commit('addMessages', params)
-        commit('setNewMessage', newMessage)
+          commit('addMessages', params)
+          commit('setNewMessage', newMessage)
+          console.log('message adds')
+        })
       }
       getMessage(callback);
     },

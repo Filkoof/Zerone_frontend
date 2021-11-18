@@ -36,6 +36,7 @@ export default {
     ...mapMutations('global/search', ['setSearchText']),
     ...mapActions('profile/info', ['apiInfo']),
     ...mapActions('global/search', ['searchUsers']),
+    ...mapActions('profile/notifications', ['socketNotifications']),
     onSearch() {
       if (this.searchText === '') this.$router.push({ name: 'Search' })
       this.searchUsers(this.searchText).then(() => {
@@ -48,6 +49,7 @@ export default {
   },
   mounted() {
     if (!this.getInfo) this.apiInfo()
+    this.socketNotifications()
   },
   i18n: {
     messages: {

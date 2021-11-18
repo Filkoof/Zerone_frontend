@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { responseNotification } from '../../api/socetIO'
 
 export default {
   namespaced: true,
@@ -90,6 +91,13 @@ export default {
           method: 'PUT'
         }).then(response => {}).catch(() => {})
       }
+    },
+
+    socketNotifications(){
+      function callback(response){
+        console.log(response)
+      }
+      responseNotification(callback)
     }
   }
 }
