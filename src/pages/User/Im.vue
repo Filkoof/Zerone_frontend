@@ -37,11 +37,12 @@ export default {
 
   computed: {
     ...mapGetters('profile/dialogs', ['getMessages', 'getActiveDialog', 'getDialogs', 'getActiveDialogId']),
+
     messages(){
-      const active = Number(this.getActiveDialogId)
+      const active = Number(this.getActiveDialogId);
       const message = this.getMessages[active] ? this.getMessages[active] : [];
       return message;
-    }
+    },
   },
   methods: {
     ...mapActions('profile/dialogs', [
@@ -51,6 +52,7 @@ export default {
       'createDialogWithUser',
       'apiLoadAllDialogs'
     ]),
+
     countPush(unread) {
       return unread > 0 ? unread : null
     },
@@ -78,20 +80,20 @@ export default {
       }
     },
   },
-  beforeRouteEnter(to, from, next) {
-    next(async vm => {
-      vm.selectDialogByRoute(to, vm)
-    })
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.selectDialogByRoute(to, this)
-    next()
-  },
-  beforeDestroy() {
-    this.closeDialog()
-  },
-}
-</script>
+    beforeRouteEnter(to, from, next) {
+      next(async vm => {
+        vm.selectDialogByRoute(to, vm)
+      })
+    },
+    beforeRouteUpdate(to, from, next) {
+      this.selectDialogByRoute(to, this)
+      next()
+    },
+    beforeDestroy() {
+      this.closeDialog()
+    },
+  }
+  </script>
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl';

@@ -2,7 +2,15 @@
 export function MySet() {
   let collection = []
   this.has = function(element) {
-    return (collection.indexOf(element) !== -1)
+    if(collection.length == 0) return false;
+    let result = false;
+    collection.forEach(el=>{
+      if(el.id == element.id){
+        result = true;
+        return;
+      }
+    })
+    return result;
   }
 
   this.values = function() {
@@ -16,6 +24,7 @@ export function MySet() {
   this.add = function(element) {
     if (!this.has(element)) {
       collection.push(element)
+      collection.sort((a,b)=> a.time - b.time);
       return true
     }
     return false
@@ -23,7 +32,7 @@ export function MySet() {
 
   this.remove = function(element) {
     if (this.has(element)) {
-      index = collection.indexOf(element)
+      let index = collection.indexOf(element)
       collection.splice(index, 1)
       return true
     }

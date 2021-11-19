@@ -85,39 +85,42 @@ export default {
         el.sid = '' + el.dialog_id + '-' + el.id;
       })
 
-      if(messages.length == 1){
-        const messageId = messages[0].dialog_id;
-        if(s.messages[messageId]){
-          s.messages[messageId].push(...messages)
-        }else{
-          s.messages[messageId] = [...messages]
-        }
-      }else{
-        const mySet = new Set();
+      const dialogId = mn[0].dialog_id + '';
+      const messArr = [...s.messages];
+      const messIdArr = [];
+      const newMessIdArr = [];
 
-        s.messages.forEach(el=>{
-          if(el){
-            for(let i in el){
-              mySet.add(i)
-            }
-          }
+      if(messArr[dialogId]){
+        messArr[dialogId].forEach(el=>{
+          messIdArr.push(el)
         })
-        messages.forEach(el=>{
-          mySet.add(el)
-        })
-
-        const mess = [];
-        mySet.forEach(el=>{
-          mess[el.dialog_id] = [];
-        })
-        mySet.forEach(el=>{
-          mess[el.dialog_id].push(el);
-        })
-
-        s.messages = mess
       }
+      mn.forEach(el=>{
+        let status = true;
+
+        for(let i = 0; i < messIdArr.length; i++){
+          if(el.dialog_id == messIdArr[i].dialog_id
+          && el.id == messIdArr[i].id){
+            status = false;
+            return;
+          }
+        }
+        if(status) newMessIdArr.push(el);
+      })
+
+      newMessIdArr.reverse();
+      console.log(newMessIdArr)
+
+      if(mn.length > 1) messArr[dialogId] = [...newMessIdArr, ...messIdArr];
+      if(mn.length == 1)  messArr[dialogId] = [...messIdArr, ...newMessIdArr];
+
+
+      messArr[dialogId][0].total = total;
+
+      s.messages = [... messArr];
       s.total = total
     },
+
     selectDialog: (state, dialogId) => {
       state.activeId = dialogId
     },
@@ -305,9 +308,12 @@ export default {
       checkTypingMessage(callback)
     },
 
-    checkFinishTypingMessage({commit}){
+    checkFinishTypingMessage({commit, state}){
       function callback (response){
-        commit('removeTypeMessage', response)
+        const dialogId = response.dialog;
+        if(state.dialogs[dialogId]){
+          commit('removeTypeMessage', response)
+        }
       };
       checkFinishTypingMessage(callback)
     },

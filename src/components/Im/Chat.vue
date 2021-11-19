@@ -68,7 +68,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile/dialogs', ['getTotalMessage', 'getActiveDialogId', 'getTypeMessage']),
+    ...mapGetters('profile/dialogs', ['getTotalMessage', 'getActiveDialogId', 'getTypeMessage', 'getMessages']),
     ...mapGetters('profile/info', ['getInfo']),
     statusText() {
       return this.online
@@ -78,14 +78,14 @@ export default {
     messagesGrouped() {
       let groups = []
       let headerDate = null
-      for (const msg of this.messages) {
+      this.messages.forEach( msg => {
         let msgDate = moment(msg.time).format('YYYY-MM-DD')
         if (msgDate !== headerDate) {
           headerDate = msgDate
           groups.push(makeHeader(headerDate))
         }
         groups.push(msg)
-      }
+      })
       return groups
     },
     checkTypingMessage() {
