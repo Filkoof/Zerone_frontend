@@ -63,7 +63,7 @@
             .news-block__actions-block
                 like-comment(:quantity='commentsLength', width='16px', height='16px', font-size='15px', comment)
         .news-block__comments(v-if='!deffered')
-            comments(:admin='admin', :info='info.comments', :id='info.id', :edit='edit', :deleted='deleted')
+            comments(:admin='admin', :info='info.comments', :id='info.id', :edit='edit', :deleted='deleted' :commentOpen='commentOpen')
 </template>
 
 <script>
@@ -92,7 +92,8 @@ export default {
     deffered: Boolean,
     admin: Boolean,
     blocked: Boolean,
-    deleted: Boolean
+    deleted: Boolean,
+    commentOpen: Boolean,
   },
   data: () => ({
     isLotText: false,

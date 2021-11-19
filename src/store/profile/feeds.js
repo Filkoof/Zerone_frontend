@@ -3,7 +3,8 @@ import axios from 'axios'
 export default {
   namespaced: true,
   state: {
-    feeds: []
+    feeds: [],
+    feedsId: [],
   },
   getters: {
     getFeeds(state) {
@@ -84,7 +85,7 @@ export default {
           el.comments = sortMainComments
         }
       })
-    }
+    },
   },
   actions: {
     async apiFeeds({ getters, commit }, payload) {

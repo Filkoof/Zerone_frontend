@@ -109,7 +109,6 @@ export default {
       })
 
       newMessIdArr.reverse();
-      console.log(newMessIdArr)
 
       if(mn.length > 1) messArr[dialogId] = [...newMessIdArr, ...messIdArr];
       if(mn.length == 1)  messArr[dialogId] = [...messIdArr, ...newMessIdArr];

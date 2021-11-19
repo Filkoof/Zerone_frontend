@@ -4,7 +4,9 @@ import { responseNotification } from '../../api/socetIO'
 export default {
   namespaced: true,
   state: {
-    notifications: []
+    notifications: [],
+    feeds: [],
+    openModal: null,
   },
   getters: {
     getNotifications: s => s.notifications,
@@ -43,21 +45,40 @@ export default {
             return 'sent a message'
         }
       }
-    }
+    },
+    getOpenModal: s => s.openModal,
+    getFeeds: s => s.feeds,
   },
   mutations: {
-    setNotifications: (s, value) => s.notifications = value
-  },
+    setNotifications: (s, value) => {
+      s.notifications = [...value]
+    },
+    setOncNotifications: (s,value) => {
+      const result = [...s.notifications, ...value]
+      s.notifications = result;
+    },
+    setOpenModal: (s, value) => s.openModal = value,
+    setFeedsById(s, payload){
+      const feeds = [payload.data];
+      feeds[0].id = s.openModal[0].parent_entity_id;
+      s.feeds = [...feeds];
+    },
+    setFeedsByIdComments(s, payload){
+      s.feeds[0].comments = payload;
+    },
+    removeFeeds(s, payload){
+      s.feeds = payload
+    }
+  }
+  ,
   actions: {
-    async apiNotifications({
-      state,
-      commit,
-      dispatch
-    }) {
+    async apiNotifications({ state, commit, }) {
+      console.log('apiNotifications')
       await axios({
         url: 'notifications',
         method: 'GET'
       }).then(response => {
+        console.log(response)
         if (`${response.data.data.map(z => z.sent_time)}` !== `${state.notifications.map(z => z.sent_time)}`) {
           const result = response.data.data.map(el => {
             if (!el.entity_author) el.entity_author = {}
@@ -69,35 +90,60 @@ export default {
           });
           commit('setNotifications', result)
         }
-        // добавить когда будет прод
-        // setTimeout(() => {
-        //   dispatch('apiNotifications')
-        // }, 5000)
       }).catch(() => {})
     },
-    async readNotifications({
-      state,
-      commit,
-      dispatch
-    }, notificationId) {
+    async readNotifications({ state, commit, dispatch }, notificationId) {
       if (!notificationId) {
         await axios({
           url: 'notifications?all=true',
           method: 'PUT'
-        }).then(response => {}).catch(() => {})
+        }).then(()=> {
+          dispatch('apiNotifications')
+        }).catch(() => {})
       } else {
         await axios({
           url: `notifications?id=${notificationId}`,
           method: 'PUT'
-        }).then(response => {}).catch(() => {})
+        }).then(()=> {
+          dispatch('apiNotifications')
+        }).catch(() => {})
       }
     },
-
-    socketNotifications(){
+    socketNotifications({commit}){
       function callback(response){
-        console.log(response)
+        const res = [response]
+        const result = res.map(el => {
+          if (!el.entity_author) el.entity_author = {}
+          if (!el.entity_author.photo) el.entity_author.photo = '../static/img/user/default_avatar.svg'
+          if (!el.entity_author.first_name) el.entity_author.first_name = `Имя автора с ID: ${el.id}`
+          if (!el.entity_author.last_name) el.entity_author.last_name = `Фамилия автора с ID: ${el.id}`
+          if (!el.event_type) el.event_type = 'POST'
+          return el;
+        });
+        commit('setOncNotifications', result)
       }
       responseNotification(callback)
-    }
+    },
+    async addPostById({commit, dispatch}, id){
+      await axios({
+        url: `post/${id}`,
+        method: 'GET'
+      })
+        .then(async response => {
+          await commit('setFeedsById', response.data)
+          await dispatch('addCommentsById',id)
+        })
+        .catch(() => {})
+    },
+    async addCommentsById({ commit, dispatch }, id) {
+      await axios({
+        url: `post/${id}/comments?offset=0&itemPerPage=10000`,
+        method: 'GET'
+      })
+        .then(response => {
+          commit('setFeedsByIdComments', response.data)
+        })
+        .catch(() => {})
+    },
   }
 }

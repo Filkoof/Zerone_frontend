@@ -7,20 +7,24 @@
           .push__img
             img(:src="info.entity_author.photo" :alt="info.entity_author.first_name")
           p.push__content
-            router-link.push__content-name(:to="getRouteByNotification(info)")
-              | {{info.entity_author.first_name + ' ' + info.entity_author.last_name}}
+            router-link.push__content-name(v-if='info.event_type !== "COMMENT_COMMENT" && info.event_type !== "POST_COMMENT"' :to="getRouteByNotification(info)")
+              |{{info.entity_author.first_name + ' ' + info.entity_author.last_name}}
               |
-              | {{getNotificationsTextType(info.event_type)}}
+              |{{getNotificationsTextType(info.event_type)}}
+            button.push__content-name(v-else @click='openModalNotifications(info)')
+              |{{info.entity_author.first_name + ' ' + info.entity_author.last_name}}
+              |
+              |{{getNotificationsTextType(info.event_type)}}
           span.push__time {{info.sent_time | moment('from')}}
-          .push__del(@click="readNotifications(info.id)")
+          .push__del(@click.stop="readNotifications(info.id)")
             simple-svg(:filepath="'/static/img/delete.svg'")
       router-link.push__btn(:to="{name: 'Push'}" v-if="getNotificationsLength > 1") {{ $t('show') }} ({{getNotificationsLength}})
-      a.push__btn(href="#" v-if="getNotificationsLength > 1" @click.prevent="readNotifications()") {{ $t('delete') }} ({{getNotificationsLength}})
+      a.push__btn(href="#" v-if="getNotificationsLength > 1" @click="readNotifications()") {{ $t('delete') }} ({{getNotificationsLength}})
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { getRouteByNotification } from '@/utils/notifications.utils.js';
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { getRouteByNotification } from '../../utils/notifications.utils'
 export default {
   name: 'Push',
   props: {
@@ -38,11 +42,16 @@ export default {
   },
   methods: {
     ...mapActions('profile/notifications', ['apiNotifications', 'readNotifications']),
+    ...mapMutations('profile/notifications', ['setOpenModal']),
     getRouteByNotification,
     closePush() {
       if (!this.isOpen) return
       this.$emit('close-push')
     },
+    openModalNotifications(item){
+      console.log(item)
+      this.setOpenModal([{entity_id :item.entity_id, parent_entity_id: item.parent_entity_id }])
+    }
   },
   mounted() {
     if (this.getNotificationsLength === 0) this.apiNotifications()
@@ -149,6 +158,11 @@ export default {
   &+& {
     border-top: 1px solid #E7E7E7;
   }
+}
+
+.push__content-name{
+  cursor pointer
+  background transparent
 }
 
 .push__content-name:hover {

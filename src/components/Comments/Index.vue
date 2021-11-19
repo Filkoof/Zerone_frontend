@@ -15,7 +15,7 @@
             :deleted='getInfo.id === i.author.id',
             @edit-comment='onEditMain'
         )
-        .div(v-if='isOpenComments && commentOffset < info.total')
+        .div(v-if='isOpenComments && commentOffset < info.total && info.perPage < info.total')
             button.btn-load-comments-text(type='button', v-if='!isLoad', @click.prevent='loadComments') Показать следующие комментарии
             is-loading(:isLoad='isLoad')
         .comments__add(v-if='!admin')
@@ -39,7 +39,8 @@ export default {
     info: Object,
     id: Number,
     edit: Boolean,
-    deleted: Boolean
+    deleted: Boolean,
+    commentOpen: Boolean,
   },
   components: { CommentBlock, CommentAdd, isLoading },
   data: () => ({
@@ -113,7 +114,6 @@ export default {
     loadComments() {
       if (this.info.offset < this.info.total) {
         this.isLoad = true
-        console.log(this.info)
         const data = {
           post_id: this.id,
           offset: 0,
@@ -139,6 +139,11 @@ export default {
       ru: {
         title: 'Комментарии'
       }
+    }
+  },
+  mounted() {
+    if(this.commentOpen){
+      this.isOpenComments = this.commentOpen
     }
   }
 }

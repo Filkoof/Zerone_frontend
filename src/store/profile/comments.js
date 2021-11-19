@@ -83,13 +83,10 @@ export default {
         method: 'GET'
       })
         .then(response => {
-          console.log(response)
           let dataComments = {
             post_id: data.post_id,
             value: response.data
           }
-
-          console.log(dataComments)
 
           router.history.current.name === 'News'
             ? commit('profile/feeds/setFeedsCommentsById', dataComments, {
@@ -100,6 +97,6 @@ export default {
               })
         })
         .catch(() => {})
-    }
+    },
   }
 }

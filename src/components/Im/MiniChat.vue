@@ -447,6 +447,7 @@ export default {
 
   &__btn{
     position absolute
+    cursor pointer
     top 50%
     right 15px
     transform translateY(-50%) rotate(-90deg)

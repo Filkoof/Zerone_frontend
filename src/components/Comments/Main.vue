@@ -1,5 +1,5 @@
 <template lang="pug">
-.comment-main
+.comment-main(:id='postId')
     template(v-if='info.is_deleted')
         p.comment-main__text {{ $t("del") }}.
             a(href='#', @click.prevent='onRecoverComment', v-if='edit') {{ $t("restore") }}
@@ -93,7 +93,10 @@ export default {
 
       return arr
     },
-
+    postId(){
+      const id = '' + this.info.post_id + '-' + this.info.id;
+      return id;
+    },
     commText() {
       return this.info.comment_text
     }
