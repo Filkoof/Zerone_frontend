@@ -119,7 +119,6 @@ export default {
       s.messages = [... messArr];
       s.total = total
     },
-
     selectDialog: (state, dialogId) => {
       state.activeId = dialogId
     },

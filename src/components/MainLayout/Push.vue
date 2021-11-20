@@ -5,13 +5,10 @@
       .push__list(ref="list")
         .push__item(v-for="info in getNotifications.slice(0,10)" :key="info.id")
           .push__img
-            img(:src="info.entity_author.photo" :alt="info.entity_author.first_name")
+            router-link(:to='{ name: "ProfileId", params: { id: info.entity_author.id } }')
+              img(:src="info.entity_author.photo" :alt="info.entity_author.first_name")
           p.push__content
-            router-link.push__content-name(v-if='info.event_type !== "COMMENT_COMMENT" && info.event_type !== "POST_COMMENT"' :to="getRouteByNotification(info)")
-              |{{info.entity_author.first_name + ' ' + info.entity_author.last_name}}
-              |
-              |{{getNotificationsTextType(info.event_type)}}
-            button.push__content-name(v-else @click='openModalNotifications(info)')
+            button.push__content-name(@click='routerLink(info)')
               |{{info.entity_author.first_name + ' ' + info.entity_author.last_name}}
               |
               |{{getNotificationsTextType(info.event_type)}}
@@ -38,19 +35,41 @@ export default {
       if (!val) {
         this.$refs.list.scrollTop = 0
       }
-    }
+    },
   },
   methods: {
     ...mapActions('profile/notifications', ['apiNotifications', 'readNotifications']),
     ...mapMutations('profile/notifications', ['setOpenModal']),
+    ...mapMutations('profile/dialogs', ['selectDialog']),
     getRouteByNotification,
     closePush() {
       if (!this.isOpen) return
       this.$emit('close-push')
     },
-    openModalNotifications(item){
-      console.log(item)
-      this.setOpenModal([{entity_id :item.entity_id, parent_entity_id: item.parent_entity_id }])
+    routerLink(info){
+      console.log(info)
+
+      switch (info.event_type) {
+        case 'MESSAGE':
+          this.selectDialog(info.parent_entity_id)
+          this.$router.push({ name: 'Im', params: { id: info.entity_id } })
+          return
+        case 'FRIEND_REQUEST':
+          this.$router.push({ name: 'ProfileId', params: { id: info.entity_id } })
+          return
+        case 'POST_COMMENT':
+        case 'COMMENT_COMMENT':
+          this.setOpenModal([{entity_id :info.entity_id, parent_entity_id: info.parent_entity_id }])
+          return
+        default:
+          return { name: 'ProfileId', params: { id: info.entity_id } }
+      }
+
+    },
+    setActiveDialog(item){
+      if(item.event_type == "MESSAGE"){
+        this.selectDialog(item.parent_entity_id)
+      }
     }
   },
   mounted() {

@@ -68,7 +68,12 @@ export default {
       } else if (route.query.userId) {
         vm.createDialogWithUser(route.query.userId)
       } else if (vm.getDialogs.length > 0) {
-        vm.$router.push({ name: 'Im', query: { getActiveDialog: vm.getDialogs[0].id } })
+        if(this.getActiveDialogId){
+          const activeDialogID = this.getActiveDialogId;
+          vm.$router.push({ name: 'Im', query: { getActiveDialog: activeDialogID } })
+        }else{
+          vm.$router.push({ name: 'Im', query: { getActiveDialog: vm.getDialogs[0].id } })
+        }
       } else {
         await vm.apiLoadAllDialogs().then(resp => {
           this.offset = resp

@@ -50,18 +50,36 @@ export default {
       }
 
       this.userInfoId(data).then(resp => {
-        console.log(resp)
         this.total = resp
         this.offset = this.getWall.length
         this.loading = false
       })
     }
   },
+  beforeRouteUpdate (to, from, next) {
+    this.setWall([])
+    this.loading = true
+    const data = {
+      id: to.params.id,
+      payload: {
+        offset: 0,
+        itemPerPage: 5
+      }
+    }
+    this.userInfoId(data).then(resp => {
+      this.total = resp
+      this.offset = this.getWall.length
+      this.loading = false
+      this.apiFriends()
+    })
+    next()
+  },
   created() {
     this.setWall([])
     this.loadWall()
     this.apiFriends()
   },
+
   i18n: {
     messages: {
       en: {

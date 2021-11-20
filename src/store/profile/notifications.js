@@ -51,7 +51,9 @@ export default {
   },
   mutations: {
     setNotifications: (s, value) => {
-      s.notifications = [...value]
+      const notifications = [...value];
+      notifications.reverse();
+      s.notifications = [...notifications]
     },
     setOncNotifications: (s,value) => {
       const result = [...s.notifications, ...value]

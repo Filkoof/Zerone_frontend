@@ -1,13 +1,13 @@
 <template lang='pug'>
 .modal-n
   .modal-n__close(@click='closeModal')
-  .modal-n__wrapper(v-if='this.getFeeds[0]')
-    news-block(
-      edit,
-      deleted,
-      :info='this.getFeeds[0]'
-      :commentOpen='true'
-    )
+  .modal-n__content(v-if='this.getFeeds[0]')
+      news-block(
+        edit,
+        deleted,
+        :info='this.getFeeds[0]'
+        :commentOpen='true'
+      )
 </template>
 
 <script>
@@ -38,6 +38,7 @@ export default {
     if(this.getOpenModal[0].entity_id){
       const id = '' + this.getOpenModal[0].parent_entity_id + '-' + this.getOpenModal[0].entity_id;
       const el = document.getElementById(id);
+      console.log(id)
       setTimeout(()=>{
         console.log(el)
         if(el) el.scrollIntoView({behavior: "smooth"});
@@ -75,7 +76,7 @@ export default {
       }
   }
 
-  &__wrapper{
+  &__content{
     position absolute
     top: 50%;
     left: 50%;
@@ -85,7 +86,7 @@ export default {
 
     padding 25px;
     max-height 80vh;
-    overflow-y auto
+    overflow auto
   }
 }
 </style>
