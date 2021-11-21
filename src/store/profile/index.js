@@ -6,6 +6,7 @@ import dialogs from './dialogs'
 import comments from './comments'
 import notifications from './notifications'
 import country_city from './country_city'
+import tags from './tags'
 
 export default {
   namespaced: true,
@@ -17,6 +18,7 @@ export default {
     dialogs,
     comments,
     notifications,
-    country_city
+    country_city,
+    tags,
   }
 }
