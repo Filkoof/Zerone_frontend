@@ -32,18 +32,21 @@ export default {
     },
   },
   mounted() {
-    const postId = this.getOpenModal[0].parent_entity_id
-    this.addPostById(postId);
-
-    if(this.getOpenModal[0].entity_id){
-      const id = '' + this.getOpenModal[0].parent_entity_id + '-' + this.getOpenModal[0].entity_id;
-      const el = document.getElementById(id);
-      console.log(id)
-      setTimeout(()=>{
-        console.log(el)
-        if(el) el.scrollIntoView({behavior: "smooth"});
-      },1000)
-    }
+    const postId = this.getOpenModal[0].parent_id
+    this.addPostById(postId).then(()=>{
+      if(this.getOpenModal[0].entity_id){
+        console.log(this.getOpenModal[0])
+        const id = '' + this.getOpenModal[0].parent_id + '-' + this.getOpenModal[0].entity_id
+        const el = document.getElementById(id);
+        console.log(id)
+        setTimeout(()=>{
+          if(el) {
+            el.scrollIntoView({block: "center", behavior: "smooth"});
+            el.parentElement.classList.add('new-comment')
+          }
+        },1000)
+      }
+    });
   }
 
 }

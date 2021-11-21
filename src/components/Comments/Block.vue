@@ -289,4 +289,23 @@ export default {
         height: 30px;
     }
 }
+.new-comment{
+  position relative;
+  background transparent
+
+  &:after{
+    content '';
+    display block
+    position absolute
+    top 14px
+    left 50%
+    transform translateX(-50%)
+    width 106%;
+    height 100% + 18px
+    background grey
+    opacity 0.5
+    z-index 0
+
+  }
+}
 </style>

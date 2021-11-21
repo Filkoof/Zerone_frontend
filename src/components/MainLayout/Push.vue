@@ -47,8 +47,6 @@ export default {
       this.$emit('close-push')
     },
     routerLink(info){
-      console.log(info)
-
       switch (info.event_type) {
         case 'MESSAGE':
           this.selectDialog(info.parent_entity_id)
@@ -59,7 +57,7 @@ export default {
           return
         case 'POST_COMMENT':
         case 'COMMENT_COMMENT':
-          this.setOpenModal([{entity_id :info.entity_id, parent_entity_id: info.parent_entity_id }])
+          this.setOpenModal([{entity_id :info.entity_id, parent_id: info.parent_entity_id }])
           return
         default:
           return { name: 'ProfileId', params: { id: info.entity_id } }

@@ -50,13 +50,15 @@ export default {
     getFeeds: s => s.feeds,
   },
   mutations: {
-    setNotifications: (s, value) => {
+    setNotifications: (s, value) => {s
       const notifications = [...value];
       notifications.reverse();
       s.notifications = [...notifications]
     },
     setOncNotifications: (s,value) => {
-      const result = [...s.notifications, ...value]
+      console.log(value[0])
+      value[0].sent_time = new Date(value[0].sent_time * 1000)
+      const result = [...value, ...s.notifications]
       s.notifications = result;
     },
     setOpenModal: (s, value) => s.openModal = value,

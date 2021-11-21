@@ -129,6 +129,7 @@ export default {
 @import '../../assets/stylus/base/vars.styl';
 
 .comment-main {
+    z-index 1;
     display: flex;
     font-size: 13px;
     position: relative;
