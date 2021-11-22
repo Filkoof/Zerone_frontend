@@ -16,7 +16,6 @@ export default {
           }
 
           router.history.current.name === 'News'
-          console.log(dataComments)
             ? commit('profile/feeds/setFeedsById', dataComments, {
                 root: true
               })
@@ -26,7 +25,7 @@ export default {
         })
         .catch(() => {})
     },
-    async newComment({ dispatch }, payload) {
+    async newComment({ dispatch, rootState }, payload) {
       await axios({
         url: `post/${payload.post_id}/comments`,
         method: 'POST',
@@ -38,10 +37,13 @@ export default {
       })
         .then(() => {
           dispatch('addCommentsById', payload)
+          if(rootState.profile.notifications.feeds.length > 0){
+            dispatch('profile/notifications/addCommentsById', payload.post_id, {root: true})
+          }
         })
         .catch(() => {})
     },
-    async editComment({ dispatch }, payload) {
+    async editComment({ dispatch, rootState }, payload) {
       await axios({
         url: `post/${payload.post_id}/comments/${payload.id}`,
         method: 'PUT',
@@ -51,33 +53,42 @@ export default {
       })
         .then(() => {
           dispatch('addCommentsById', payload)
+          if(rootState.profile.notifications.feeds.length > 0){
+            dispatch('profile/notifications/addCommentsById', payload.post_id, {root: true})
+          }
         })
         .catch(() => {})
     },
-    async deleteComment({ dispatch }, payload) {
+    async deleteComment({ dispatch,rootState }, payload) {
       await axios({
         url: `post/${payload.post_id}/comments/${payload.id}`,
         method: 'DELETE'
       })
         .then(() => {
           dispatch('addCommentsById', payload)
+          if(rootState.profile.notifications.feeds.length > 0){
+            dispatch('profile/notifications/addCommentsById', payload.post_id, {root: true})
+          }
         })
         .catch(() => {})
     },
-    async recoverComment({ dispatch }, payload) {
+    async recoverComment({ dispatch,rootState }, payload) {
       await axios({
         url: `post/${payload.post_id}/comments/${payload.id}/recover`,
         method: 'PUT'
       })
         .then(() => {
           dispatch('addCommentsById', payload)
+          if(rootState.profile.notifications.feeds.length > 0){
+            dispatch('profile/notifications/addCommentsById', payload.post_id, {root: true})
+          }
         })
         .catch(() => {})
     },
     async commentActions({ dispatch }, payload) {
       payload.edit ? await dispatch('editComment', payload) : await dispatch('newComment', payload)
     },
-    async addCommentsById({ commit }, data) {
+    async addCommentsById({ commit, dispatch,rootState }, data) {
       await axios({
         url: `post/${data.post_id}/comments?offset=${data.offset}&itemPerPage=${data.perPage}`,
         method: 'GET'
@@ -95,6 +106,9 @@ export default {
             : commit('users/info/setCommentsById', dataComments, {
                 root: true
               })
+          if(rootState.profile.notifications.feeds.length > 0){
+            dispatch('profile/notifications/addCommentsById', payload.post_id, {root: true})
+          }
         })
         .catch(() => {})
     },

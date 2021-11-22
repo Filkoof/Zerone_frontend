@@ -145,6 +145,7 @@ export default {
         method: 'GET'
       })
         .then(response => {
+          console.log(response)
           commit('setFeedsByIdComments', response.data)
         })
         .catch(() => {})

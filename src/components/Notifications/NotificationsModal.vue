@@ -7,12 +7,14 @@
         deleted,
         :info='this.getFeeds[0]'
         :commentOpen='true'
+        :edit='getInfo.id === this.getFeeds[0].author.id',
+        :deleted='getInfo.id === this.getFeeds[0].author.id'
       )
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import NewsBlock from '@/components/News/Block';
+import NewsBlock from '../News/Block';
 
 export default {
   name: 'NotificationsModal',
@@ -22,6 +24,10 @@ export default {
   }),
   computed:{
     ...mapGetters('profile/notifications', ['getOpenModal', 'getFeeds']),
+    ...mapGetters('profile/info', ['getInfo']),
+    watchTrigger(){
+      return this.getOpenModal[0].components
+    },
   },
   methods:{
     ...mapActions('profile/notifications', ['addPostById']),
@@ -31,14 +37,22 @@ export default {
       this.removeFeeds([]);
     },
   },
+  watch:{
+    watchTrigger:{
+      handler: function(after, before){
+        console.log(after)
+      },
+      deep: true
+    },
+  },
   mounted() {
-    const postId = this.getOpenModal[0].parent_id
+    const postId = this.getOpenModal[0].entity_id
     this.addPostById(postId).then(()=>{
       if(this.getOpenModal[0].entity_id){
         console.log(this.getOpenModal[0])
-        const id = '' + this.getOpenModal[0].parent_id + '-' + this.getOpenModal[0].entity_id
+        const id = '' + this.getOpenModal[0].entity_id + '-' + this.getOpenModal[0].parent_id
         const el = document.getElementById(id);
-        console.log(id)
+        console.log(el)
         setTimeout(()=>{
           if(el) {
             el.scrollIntoView({block: "center", behavior: "smooth"});

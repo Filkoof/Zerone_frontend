@@ -16,7 +16,7 @@
         @recover-comment='onRecoverComment'
     )
     .comment-block__reviews
-        a.comment-block__reviews-show(href='#', v-if='info.sub_comments.length > 1', @click.prevent='showSubComments') {{ showSubText() }} {{ info.sub_comments.length }} {{ answerText }}
+        a.comment-block__reviews-show(href='#', v-if='info.sub_comments.length > 0', @click.prevent='showSubComments') {{ showSubText() }} {{ info.sub_comments.length }} {{ answerText }}
         .comment-block__reviews-list(v-if='isShowSubComments')
             comment-main(
                 v-for='i in info.sub_comments',
@@ -77,7 +77,12 @@ export default {
     answerText() {
       if (!this.info) return 'ответ'
       return this.info.sub_comments == null ? 'ответа' : 'ответ'
+    },
+    thisScrollY(){
+      const el = document.querySelector('.modal-n__content');
+      return el.scrollTop;
     }
+
   },
   methods: {
     ...mapActions('profile/comments', ['commentActions', 'deleteComment', 'recoverComment']),
@@ -154,12 +159,14 @@ export default {
     onSubmitComment() {
       if (this.commentText || this.photos.length) {
 
-        const nameLenght = this.commentName.length
-        const nameCheck = this.commentText.substr(0, nameLenght)
+        const nameLength = this.commentName.length
+        const nameCheck = this.commentText.substr(0, nameLength)
 
         if (this.respongindLink !== '' && nameCheck == this.commentName) {
-          this.commentText = this.commentText.substr(nameLenght)
+          this.commentText = this.commentText.substr(nameLength)
         }
+
+        const target = event.target.parentElement.parentElement.parentElement
 
         this.commentActions({
           edit: this.commentEdit,
@@ -177,6 +184,7 @@ export default {
           this.commentEditInfo = null
           this.commentEditParentId = null
           this.photos = []
+          target.scrollIntoView({block: "center", behavior: "smooth"});
         })
       }
     }
@@ -243,6 +251,8 @@ export default {
 }
 
 .comment-block__reviews {
+    position relative
+    z-index 1
     margin-top: 10px;
     max-width: calc(100% - 50px);
     margin-left: auto;

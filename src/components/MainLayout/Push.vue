@@ -57,6 +57,8 @@ export default {
           return
         case 'POST_COMMENT':
         case 'COMMENT_COMMENT':
+          console.log(info)
+          console.log({entity_id :info.entity_id, parent_id: info.parent_entity_id })
           this.setOpenModal([{entity_id :info.entity_id, parent_id: info.parent_entity_id }])
           return
         default:
