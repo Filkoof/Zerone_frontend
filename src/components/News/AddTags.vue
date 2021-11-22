@@ -1,16 +1,18 @@
 <template lang="pug">
   .add-tags
-    //- input.add-tags__input(type="text" :placeholder="$t('placeholder')" v-model="tag" ref="input" @change="addTag")
     .add-tags__field(v-click-outside='hideOptions')
-      input.add-tags__input(
-        type="text",
-        v-model="tag",
-        :placeholder="$t('placeholder')",
-        @focus="showOptions",
-        @input="addTag",
-        @blur="resetTag"
-        ref="input"
-      )
+      label.add-tags__label
+        input.add-tags__input(
+          type="text",
+          v-model="tag",
+          :placeholder="$t('placeholder')",
+          @focus="showOptions",
+          @input="eventInput",
+          @keyup.enter.prevent="addTag"
+          ref="input"
+        )
+        button.add-tags__btn(type="button" @click.prevent="addTag")
+          simple-svg(:filepath='"/static/img/add.svg"')
 
       ul.custom-select__options.options__list.add-tags__select(
         v-if="isShowOptions"
@@ -31,7 +33,7 @@
 
     .add-tags__block
       .add-tags__item(v-for="(tag,index) in tags" :key="index") {{'#'+tag}}
-        span.add-tags__delete(@click="deleteTag(index)") &#10005;
+        span.add-tags__delete(@click="deleteTag(tag, index)") &#10005;
 </template>
 
 <script>
@@ -85,14 +87,14 @@ export default {
   },
 
   methods: {
-    ...mapActions('profile/tags', ['getTags', 'createTag', 'deleteTag']),
+    ...mapActions('profile/tags', ['getTags', 'createTag', 'removeTag']),
     showOptions() {
       this.isShowOptions = true;
     },
     hideOptions() {
       this.isShowOptions = false;
-      this.resetTag();
     },
+
     loadTags() {
       const { tag, offset, itemPerPage } = this;
 
@@ -103,42 +105,58 @@ export default {
           this.isLoading = false;
         })
     },
-    deleteTag(index) {
-      this.tagsComponent.splice(index, 1)
-      this.$emit('change-tags', this.tagsComponent)
+    deleteTag(tag, index) {
+      this.getTags({tag})
+        .then(() => {
+          const tagId = this.listTags[0].id
+          this.removeTag(tagId)
+          this.tagsComponent.splice(index, 1)
+          this.$emit('change-tags', this.tagsComponent)
+        })
+    },
+
+
+    eventInput() {
+      this.offset = 0;
+      clearTimeout(this.inputTimerId)
+      this.inputTimerId = setTimeout(() => {
+        this.loadTags()
+      }, this.inputTimer)
     },
     addTag() {
-      clearTimeout(this.inputTimerId);
-      this.inputTimerId = setTimeout(() => {
-        this.saveTag();
-
-        const notHasTag = !this.listTags.length || !this.listTags.includes(this.tag);
-
-        if (notHasTag) {
-          this.createTag(this.tag);
-        }
-      }, this.inputTimer);
-    },
-    saveTag() {
       if (!this.tag) return
+      this.saveTag()
+      this.createNewTag()
+      this.hideOptions()
+      this.resetTag()
+    },
+    selectHandler(option) {
+      this.tag = option.tag
+      this.saveTag()
+      this.hideOptions()
+      this.resetTag()
+    },
+
+
+    saveTag() {
       if (this.tagsComponent.includes(this.tag)) return
 
       this.tagsComponent.push(this.tag)
       this.$emit('change-tags', this.tagsComponent)
       this.offset = 0
-      this.loadTags();
+    },
+    createNewTag() {
+      const notHasTag = !this.listTags.length || !this.listTags.includes(this.tag);
+      if (notHasTag) {
+        this.createTag(this.tag)
+      } else {
+        this.loadTags();
+      }
+      this.resetTag()
     },
     resetTag() {
       if (!this.tag) return
-      this.tag = '';
-      this.offset = 0
-      this.loadTags();
-    },
-    selectHandler(option) {
-      this.tag = option.tag;
-      this.saveTag();
-      this.resetTag();
-      this.hideOptions();
+      this.tag = ''
     },
   },
   i18n: {
@@ -199,6 +217,34 @@ export default {
 .add-tags__field {
     position: relative;
 
+    .add-tags__label {
+      position: relative;
+
+      .add-tags__btn {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        padding: 5px;
+        font-size: 0;
+        line-height: 0;
+        background-color: transparent;
+        cursor: pointer;
+      }
+
+      .simple-svg-wrapper {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .add-tags__input {
+      width: 100%;
+      padding-right: 25px;
+      box-sizing: border-box;
+    }
     .options__list {
         position: absolute;
         bottom: 10px;

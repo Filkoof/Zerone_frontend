@@ -117,17 +117,19 @@ const actions = {
   async createTag(context, tag) {
     const { commit, dispatch } = context;
     try {
-      await TagsService.postTags({ id: 0, tag });
-      dispatch('getTags', {tag});
+      await TagsService.postTags({ id: 0, tag })
+        .then(() => dispatch('getTags'));
+      return true;
     } catch(error) {
       saveTagsError(commit, error);
     }
   },
-  async deleteTag(context, tagId) {
+  async removeTag(context, tagId) {
     const { commit, dispatch } = context;
     try {
-      await TagsService.deleteTag(tagId);
-      dispatch('getTags');
+      await TagsService.deleteTag(tagId)
+        .then(() => dispatch('getTags'));
+      return true;
     } catch(error) {
       saveTagsError(commit, error);
     }
