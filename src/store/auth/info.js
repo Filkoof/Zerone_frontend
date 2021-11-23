@@ -86,7 +86,16 @@ export default {
             link: '',
             text: 'Go to e-mail'
           }
-        }
+        },
+        support: {
+          title: 'Hello!',
+          text:
+            'We have created this place so that you can develop, feel as comfortable as possible in the circle of nice people. This is a community of professionals united by one idea - with the help of code, magic will become a reality!',
+          btn: {
+            link: 'Registration',
+            text: 'Registration'
+          }
+        },
       },
       ru: {
         login: {
@@ -181,7 +190,16 @@ export default {
             link: '',
             text: 'Перейти в почту'
           }
-        }
+        },
+        support: {
+          title: 'Привет!',
+          text:
+            'Мы создали это место, чтобы вы смогли развиваться, чувствую себя максимально комфортно в кругу приятных людей. Это сообщество профессионалов, объединённых одной идеей — с помощью кода, магия станет реальностью!',
+          btn: {
+            link: 'Registration',
+            text: 'Регистрация'
+          }
+        },
       }
     }
   },

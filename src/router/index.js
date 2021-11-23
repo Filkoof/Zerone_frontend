@@ -5,6 +5,7 @@ import authRoutes from './modules/auth'
 import shiftRoutes from './modules/shift'
 import userRoutes from './modules/user'
 import adminRoutes from './modules/admin'
+import supportRoutes from './modules/support'
 
 Vue.use(Router)
 
@@ -13,7 +14,7 @@ const routes = [{
   redirect: {
     name: 'News'
   }
-}].concat(authRoutes, shiftRoutes, userRoutes, adminRoutes)
+}].concat(authRoutes, shiftRoutes, userRoutes, adminRoutes, supportRoutes)
 export default new Router({
   routes,
   mode: 'history'
