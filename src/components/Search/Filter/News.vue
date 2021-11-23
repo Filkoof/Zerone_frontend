@@ -33,7 +33,7 @@ export default {
   computed: {
     ...mapGetters('global/search', ['searchText', 'getLoadNews', 'tagForSearch']),
     formattedTags() {
-      return this.tags.join('|');
+      return this.tags.join('_');
     }
   },
   methods: {
