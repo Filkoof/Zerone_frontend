@@ -36,14 +36,20 @@
                     template(v-else) {{ $t("read") }}
 
                 .news-block__tags-block(v-if='info.tags.length > 0')
-                    h3.news-block__tags-title тэги
+                    //- h3.news-block__tags-title тэги
                     ul.news-block__content-tags
                         template(v-if='!isOpenTags')
                             li.news-block__item-tag(v-for='(tag, index) in info.tags.slice(0, 5)', :key='index')
-                                a.news-block__content-tag(:class='{ "news-block__content-tag_close": !isOpenTags }') {{ "#" + tag }}
+                                a.news-block__content-tag(
+                                  :class='{ "news-block__content-tag_close": !isOpenTags }'
+                                  @click.prevent="goToSearch(tag)"
+                                ) {{ "#" + tag }}
                         template(v-else)
                             li.news-block__item-tag(v-for='(tag, index) in info.tags', :key='index')
-                                a.news-block__content-tag(:class='{ "news-block__content-tag_close": !isOpenTags }') {{ "#" + tag }}
+                                a.news-block__content-tag(
+                                  :class='{ "news-block__content-tag_close": !isOpenTags }'
+                                  @click.prevent="goToSearch(tag)"
+                                ) {{ "#" + tag }}
 
                         li.news-block__item-tag(v-if='info.tags.length > 5')
                             a.news-block__content-tag(@click.prevent='openCloseAllTags') {{ showTextClose }}
@@ -68,7 +74,7 @@
 
 <script>
 import AddForm from '@/components/News/AddForm'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import moment from 'moment'
 import Comments from '@/components/Comments/Index'
 import LikeComment from '@/components/LikeComment'
@@ -124,6 +130,8 @@ export default {
   methods: {
     ...mapActions('global/likes', ['putLike', 'deleteLike']),
     ...mapActions('profile/feeds', ['deleteFeeds', 'recoverFeeds']),
+    ...mapMutations('global/search', ['setTagForSearch']),
+    ...mapActions('global/search', ['changeTab']),
     toggleText() {
       this.openText = !this.openText
     },
@@ -156,9 +164,12 @@ export default {
         route: this.$route.name
       })
     },
-
     openCloseAllTags() {
       this.isOpenTags = !this.isOpenTags
+    },
+    goToSearch(tag) {
+      this.setTagForSearch(tag);
+      this.changeTab('news');
     }
   },
   mounted() {
