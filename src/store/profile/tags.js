@@ -1,54 +1,4 @@
-import axios from 'axios';
-
-class TagsError extends Error {
-  constructor(errorCode, message) {
-    super(message);
-    this.name = this.constructor.name;
-    this.errorCode = errorCode;
-    this.message = message;
-  }
-}
-
-const TagsService = {
-  async request(requestData) {
-    try {
-      const { data } = await axios(requestData);
-      return data;
-    } catch(error) {
-      const { status, data } = error.response;
-      throw new TagsError(status, data.error_description);
-    }
-  },
-
-  async getTags(params) {
-    const requestData = {
-      method: 'get',
-      url: 'tags',
-      params,
-    }
-    return this.request(requestData);
-  },
-
-  async postTags(data) {
-    const requestData = {
-      method: 'post',
-      url: 'tags',
-      data,
-    }
-    return this.request(requestData);
-  },
-
-  async deleteTag(tagId) {
-    const requestData = {
-      method: 'delete',
-      url: 'tags',
-      params: {
-        id: tagId
-      },
-    }
-    return this.request(requestData);
-  }
-};
+import { TagsError, TagsApi } from '@/api/tags.api'
 
 const concatTags = ({ tags, data, offset}) => {
   if (!offset) {
@@ -107,7 +57,7 @@ const actions = {
     const { state, commit } = context;
 
     try {
-      const response = await TagsService.getTags(params);
+      const response = await TagsApi.getTags(params);
       saveTagsData({ state, commit, response });
       return true;
     } catch(error) {
@@ -117,7 +67,7 @@ const actions = {
   async createTag(context, tag) {
     const { commit, dispatch } = context;
     try {
-      await TagsService.postTags({ id: 0, tag })
+      await TagsApi.postTags({ id: 0, tag })
         .then(() => dispatch('getTags'));
       return true;
     } catch(error) {
@@ -127,7 +77,7 @@ const actions = {
   async removeTag(context, tagId) {
     const { commit, dispatch } = context;
     try {
-      await TagsService.deleteTag(tagId)
+      await TagsApi.deleteTag(tagId)
         .then(() => dispatch('getTags'));
       return true;
     } catch(error) {

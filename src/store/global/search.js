@@ -26,7 +26,8 @@ export default {
       users: [],
       news: []
     },
-    status: ''
+    status: '',
+    tagForSearch: ''
   },
   getters: {
     searchText: s => s.searchText,
@@ -40,7 +41,8 @@ export default {
     getOffsetUsers: s => s.offsetUsers,
     getLoadNews: s => s.loadNews,
     getTotalNews: s => s.totalNews,
-    getOffsetNews: s => s.offsetNews
+    getOffsetNews: s => s.offsetNews,
+    tagForSearch: s => s.tagForSearch,
   },
   mutations: {
     setSearchText: (s, value) => (s.searchText = value),
@@ -60,7 +62,8 @@ export default {
     setOffsetUsers: (s, offsetUsers) => (s.offsetUsers = offsetUsers),
     setloadNews: (s, state) => (s.loadNews = state),
     setTotalNews: (s, total) => (s.totalNews = total),
-    setOffsetNews: (s, offsetNews) => (s.offsetNews = offsetNews)
+    setOffsetNews: (s, offsetNews) => (s.offsetNews = offsetNews),
+    setTagForSearch: (s, tag) => (s.tagForSearch = tag),
   },
   actions: {
     changeTab({ commit }, id) {

@@ -31,7 +31,10 @@ export default {
     author: ''
   }),
   computed: {
-    ...mapGetters('global/search', ['searchText', 'getLoadNews'])
+    ...mapGetters('global/search', ['searchText', 'getLoadNews', 'tagForSearch']),
+    formattedTags() {
+      return this.tags.join('|');
+    }
   },
   methods: {
     ...mapActions('global/search', ['searchNews', 'clearSearchNews']),
@@ -48,7 +51,8 @@ export default {
         date_to: this.date_to,
         author: this.author,
         offset: this.offset,
-        itemPerPage: this.itemPerPage
+        itemPerPage: this.itemPerPage,
+        tag: this.formattedTags,
       })
         .then(() => {
           this.offset += this.itemPerPage
@@ -70,6 +74,15 @@ export default {
       if (val) {
         this.onSearchNews()
       }
+    },
+    tagForSearch: {
+      handler(newVal) {
+        if (newVal) {
+          this.tags.push(newVal);
+          this.onSearchNews();
+        }
+      },
+      immediate: true,
     }
   },
   mounted() {
