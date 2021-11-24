@@ -5,7 +5,7 @@
 
 <script>
 export default {
-  name: 'RegisterSuccess'
+  name: 'RegisterLetter'
 }
 </script>
 

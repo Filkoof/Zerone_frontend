@@ -4,8 +4,23 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
-  name: 'RegisterSuccess'
+  name: 'RegisterSuccess',
+
+  watch: {
+    $route: {
+      handler(newVal) {
+        this.completeRegister(newVal.query);
+      },
+      immediate: true,
+    }
+  },
+
+  methods: {
+    ...mapActions('auth/api', ['completeRegister']),
+  },
 }
 </script>
 

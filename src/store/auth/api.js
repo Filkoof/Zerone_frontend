@@ -84,6 +84,16 @@ export default {
       })
     },
 
+    async completeRegister(context, params) {
+      const requestData = {
+        url: 'account/registration_complete',
+        method: 'get',
+        params,
+      };
+
+      await axios(requestData).catch((err) => console.log(err))
+    },
+
     async login({
       commit
     }, user) {
