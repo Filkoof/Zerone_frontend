@@ -30,11 +30,11 @@ const mutations = {
 };
 
 const actions = {
-  async sendMessage(context, data) {
+  async sendMessage(context, formData) {
     const { commit } = context;
     try {
-      const { message } = await SupportApi.postSupport(data);
-      commit('updateSupportMessage', message);
+      const { data } = await SupportApi.postSupport(formData);
+      commit('updateSupportMessage', data.message);
       return true;
     } catch(error) {
       saveSupportError(commit, error);

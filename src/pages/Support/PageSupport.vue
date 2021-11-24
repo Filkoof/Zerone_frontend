@@ -1,7 +1,7 @@
 <template lang="pug">
 .support
     h2.support__title.form__title {{ $t("title") }}
-    form.support__form(@submit.prevent='submitHandler')
+    form.support__form(@submit.prevent='submitHandler', ref="form")
         name-field#support-firstName(v-model='firstName', :v='$v.firstName', :label='$t("name")')
         name-field#support-lastName(v-model='lastName', :v='$v.lastName', :label='$t("lastname")')
         email-field#support-email(v-model='email', :v='$v.email')
@@ -15,12 +15,12 @@
       v-show="supportMessage"
     ) {{ $t("successMessage") }}
     p.form__title.support__message.support__message_error(
-      v-show="supportError && supportError.errorCode"
+      v-show="isSendError"
     ) {{ $t("errorMessage") }}
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { required, email, minLength } from 'vuelidate/lib/validators'
 import NameField from '@/components/FormElements/NameField'
 import EmailField from '@/components/FormElements/EmailField'
@@ -37,14 +37,16 @@ export default {
         firstName: '',
         lastName: '',
         message: '',
+        isSendError: false,
     }),
     computed: {
-      ...mapGetters('global/support', ['supportMessage', 'supportError']),
+      ...mapGetters('global/support', ['supportMessage']),
       redirectUrl() {
         return this.$route.query.redirect
       },
     },
     methods: {
+        ...mapMutations('global/support', ['updateSupportMessage']),
         ...mapActions('global/support', ['sendMessage']),
         ...mapActions('profile/info', ['apiInfo']),
 
@@ -60,8 +62,27 @@ export default {
               last_name: lastName,
               message,
             }
-            this.sendMessage(formData);
+            this.sendMessage(formData)
+              .then(() => this.resetForm())
+              .catch(() => this.isSendError = true);
         },
+
+        resetForm() {
+            this.$refs.form.reset();
+            this.email = '';
+            this.firstName = '';
+            this.lastName = '';
+            this.message = '';
+            this.$v.$reset();
+            this.hideSendMessages();
+        },
+
+        hideSendMessages() {
+          setTimeout(() => {
+            this.updateSupportMessage(null);
+            this.isSendError = false;
+          }, 30000);
+        }
     },
     validations: {
         email: { required, email },
