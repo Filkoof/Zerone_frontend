@@ -171,7 +171,7 @@ export default {
       this.tags = tags
     },
     submitForm() {
-      if (this.title.length <= 5 || this.editor.getHTML().length <= 7) {
+      if (!this.title || this.editor.getHTML().length <= 7) {
         this.modalShow && this.closeModal()
         alert('Введите тему или текст')
         return
