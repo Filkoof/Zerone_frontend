@@ -34,16 +34,9 @@ export default {
     ...mapGetters('global/search', ['searchText', 'getLoadNews', 'tagForSearch']),
     formattedTags() {
       return this.tags.join('_');
-    }
-  },
-  methods: {
-    ...mapActions('global/search', ['searchNews', 'clearSearchNews']),
-    ...mapMutations('global/search', ['setOffsetNews']),
-    onChangeTags(tags) {
-      this.tags = tags
     },
-    onSearchNews() {
-      this.searchNews({
+    searchData() {
+      return {
         text: this.searchText,
         date_from: moment()
           .subtract(1, this.date_from)
@@ -53,7 +46,17 @@ export default {
         offset: this.offset,
         itemPerPage: this.itemPerPage,
         tag: this.formattedTags,
-      })
+      }
+    }
+  },
+  methods: {
+    ...mapActions('global/search', ['searchNews', 'clearSearchNews']),
+    ...mapMutations('global/search', ['setOffsetNews']),
+    onChangeTags(tags) {
+      this.tags = tags
+    },
+    onSearchNews() {
+      this.searchNews(this.searchData)
         .then(() => {
           this.offset += this.itemPerPage
         })
@@ -62,7 +65,7 @@ export default {
         })
     },
     clearAndSerchNews() {
-      this.clearSearchNews(), (this.offset = 0)
+      this.offset = 0
       this.setOffsetNews(this.offset)
       setTimeout(() => {
         this.onSearchNews()
@@ -70,7 +73,7 @@ export default {
     }
   },
   watch: {
-    getLoadNews: function(val) {
+    getLoadNews(val) {
       if (val) {
         this.onSearchNews()
       }
@@ -87,6 +90,10 @@ export default {
   },
   mounted() {
     this.date_to = moment().valueOf()
+  },
+  beforeDestroy() {
+    this.clearSearchNews()
+    this.clearAndSerchNews()
   }
 }
 </script>

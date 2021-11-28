@@ -38,7 +38,7 @@ export default {
     ...mapActions('global/search', ['searchUsers']),
     ...mapActions('profile/notifications', ['socketNotifications']),
     onSearch() {
-      if (this.searchText === '') this.$router.push({ name: 'Search' })
+      if (!this.searchText) this.$router.push({ name: 'Search' })
       this.searchUsers(this.searchText).then(() => {
         this.$router.push({ name: 'Search', query: { text: this.searchText } })
       })

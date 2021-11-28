@@ -61,8 +61,6 @@ export default {
       const country = this.countries.find(
         (item) => item.title.toUpperCase() === this.country.toUpperCase()
       )
-
-      console.log('country: ', country);
       return country ? country.id : 0;
     },
     getCityFilter() {
@@ -77,6 +75,10 @@ export default {
   created() {
     this.apiCountries()
     this.apiCities({ countryId: 1 })
+  },
+  beforeDestroy() {
+    this.clearSearchUsers()
+    this.clearAndSerchUser()
   },
   watch: {
     country(newVal) {
@@ -106,7 +108,6 @@ export default {
         })
     },
     clerAndSearchUser() {
-      this.clearSearchUsers()
       this.offset = 0
       this.setOffsetUsers(this.offset)
       setTimeout(() => {

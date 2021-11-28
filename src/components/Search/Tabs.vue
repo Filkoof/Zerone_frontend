@@ -10,6 +10,9 @@ export default {
   computed: {
     ...mapGetters('global/search', ['tabs', 'tabSelect'])
   },
+  mounted() {
+    this.changeTab(this.tabSelect)
+  },
   methods: {
     ...mapActions('global/search', ['changeTab'])
   }

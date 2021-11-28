@@ -50,7 +50,7 @@ export default {
     routePushWithQuery(state, id) {
       let query = {}
       query.tab = id
-      if (state.searchText.length > 0) query.text = state.searchText
+      if (state.searchText) query.text = state.searchText
       router.push({
         name: 'Search',
         query
@@ -108,6 +108,7 @@ export default {
         Object.keys(payload).map(el => {
           payload[el] && query.push(`${el}=${payload[el]}`)
         })
+      console.log('query: ', query);
       await axios({
         url: `post?${query.join('&')}`,
         method: 'GET'
@@ -117,11 +118,11 @@ export default {
           const previousNews = getters.getResult['news']
           const news = response.data.data
           const newsResp = [...previousNews, ...news]
-          const chechcDobleNews = newsResp.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
+          const uniqueNews = new Set(newsResp)
 
           commit('setResult', {
             id: 'news',
-            value: chechcDobleNews
+            value: [...uniqueNews]
           }),
             commit('setTotalNews', response.data.total),
             commit('setloadNews', false)
