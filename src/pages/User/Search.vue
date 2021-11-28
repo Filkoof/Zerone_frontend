@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     ...mapMutations('global/search', ['setTabSelect', 'routePushWithQuery', 'setLoadUsers', 'setloadNews']),
-    ...mapActions('global/search', ['clearSearch']),
+    ...mapActions('global/search', ['clearSearch', 'clearSearchUsers', 'clearSearchNews']),
     loadData() {
       if (this.tabSelect == 'users') {
         this.setLoadUsers(true)
@@ -86,6 +86,10 @@ export default {
     },
     getSearchTabHeight() {
       this.searchTabHeigth = this.$refs.searchTabs.offsetHeight;
+    },
+    clearSearch() {
+      this.clearSearchUsers()
+      this.clearSearchNews()
     }
   },
   beforeDestroy() {

@@ -62,18 +62,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions('global/search', ['searchUsers', 'clearSearch']),
-    ...mapActions('profile/country_city', ['apiCountries', 'apiAllCities']),
+    ...mapActions('global/search', ['searchUsers', 'clearSearchUsers', 'clearSearchNews']),
+    ...mapActions('profile/country_city', ['apiCountries']),
     onSearchUsers() {
       let { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage } = this
       this.searchUsers({ first_name, last_name, age_from, age_to, country, city, offset, itemPerPage }).then(() => {
         this.offset += this.itemPerPage
       })
+    },
+    clearSearch() {
+      this.clearSearchUsers()
+      this.clearSearchNews()
     }
   },
   created() {
     this.apiCountries()
-    this.apiAllCities()
   },
   watch: {
     getLoadUsers: function(val) {

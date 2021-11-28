@@ -134,6 +134,8 @@ export default {
         id: 'news',
         value: []
       })
+      commit('setTagForSearch', '')
+      commit('setTabSelect', 'users')
     }
   }
 }
