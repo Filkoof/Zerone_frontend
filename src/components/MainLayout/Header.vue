@@ -35,12 +35,12 @@ export default {
   methods: {
     ...mapMutations('global/search', ['setSearchText']),
     ...mapActions('profile/info', ['apiInfo']),
-    ...mapActions('global/search', ['searchUsers']),
+    ...mapActions('global/search', ['changeTab', 'searchNews']),
     ...mapActions('profile/notifications', ['socketNotifications']),
     onSearch() {
       if (!this.searchText) this.$router.push({ name: 'Search' })
-      this.searchUsers(this.searchText).then(() => {
-        this.$router.push({ name: 'Search', query: { text: this.searchText } })
+      this.searchNews({ text: this.searchText }).then(() => {
+        this.changeTab('news')
       })
     },
     togglePush() {

@@ -1,7 +1,7 @@
 <template lang="pug">
 .search-news
     search-block#news(title='Новости')
-        news-block(v-for='n in news', :key='news.id', :info='n')
+        news-block(v-for='(item, idx) in news', :key='`news-item-${idx}`', :info='item')
 </template>
 
 <script>

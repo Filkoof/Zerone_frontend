@@ -70,25 +70,31 @@ export default {
       commit('setTabSelect', id)
       commit('routePushWithQuery', id)
     },
-    async searchUsers({ commit, getters }, payload) {
+    async searchUsers({ commit, state }, payload) {
+      const { totalUsers, offsetUsers } = state;
+
+      if (totalUsers > 0 && offsetUsers >= totalUsers) {
+        return
+      }
+
       let query = []
       payload &&
         Object.keys(payload).map(el => {
           payload[el] && query.push(`${el}=${payload[el]}`)
         })
+
       await axios({
         url: `users/search?${query.join('&')}`,
         method: 'GET'
       })
         .then(response => {
-          const previousUsers = getters.getResult['news']
-          const users = response.data.data
-          const newsUsers = [...previousUsers, ...users]
-          const chechcDobleUsers = newsUsers.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
+          const { result } = state;
+          const users = totalUsers !== response.data.total ? response.data.data : [...result.users, ...response.data.data];
+          const uniqUsers = users.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
 
           commit('setResult', {
             id: 'users',
-            value: chechcDobleUsers
+            value: uniqUsers
           }),
             commit('setTotalUsers', response.data.total),
             commit('setLoadUsers', false)
@@ -102,27 +108,30 @@ export default {
         value: []
       })
     },
-    async searchNews({ commit, getters }, payload) {
+    async searchNews({ commit, state }, payload) {
+      const { totalNews, offsetNews } = state;
+
+      if (totalNews > 0 && offsetNews >= totalNews) {
+        return
+      }
+
       let query = []
       payload &&
         Object.keys(payload).map(el => {
           payload[el] && query.push(`${el}=${payload[el]}`)
         })
-      console.log('query: ', query);
       await axios({
         url: `post?${query.join('&')}`,
         method: 'GET'
       })
         .then(response => {
-          console.log(response.data.data)
-          const previousNews = getters.getResult['news']
-          const news = response.data.data
-          const newsResp = [...previousNews, ...news]
-          const uniqueNews = new Set(newsResp)
+          const { result } = state;
+          const news = totalNews !== response.data.total ? response.data.data : [...result.news, ...response.data.data];
+          const uniqNews = news.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
 
           commit('setResult', {
             id: 'news',
-            value: [...uniqueNews]
+            value: uniqNews
           }),
             commit('setTotalNews', response.data.total),
             commit('setloadNews', false)

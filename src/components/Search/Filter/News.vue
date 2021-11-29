@@ -93,7 +93,8 @@ export default {
   },
   beforeDestroy() {
     this.clearSearchNews()
-    this.clearAndSerchNews()
+    this.offset = 0
+    this.setOffsetNews(this.offset)
   }
 }
 </script>

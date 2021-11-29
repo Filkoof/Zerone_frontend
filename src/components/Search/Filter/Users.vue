@@ -51,6 +51,7 @@ export default {
   }),
   computed: {
     ...mapGetters('profile/country_city', ['getCountries', 'getCities']),
+    ...mapGetters('global/search', ['getLoadUsers']),
     countries() {
       return this.getCountries.data || [];
     },
@@ -69,6 +70,10 @@ export default {
       } else {
         return this.getCities.filter(el => el.city === this.country)
       }
+    },
+    searchData() {
+      const { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage } = this
+      return { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage }
     }
   },
 
@@ -78,7 +83,8 @@ export default {
   },
   beforeDestroy() {
     this.clearSearchUsers()
-    this.clearAndSerchUser()
+    this.offset = 0
+    this.setOffsetUsers(this.offset)
   },
   watch: {
     country(newVal) {
@@ -90,16 +96,19 @@ export default {
         countryId: this.selectedCountryId,
         city: newVal,
       });
-    }
+    },
+    getLoadUsers(val) {
+      if (val) {
+        this.onSearchUsers()
+      }
+    },
   },
   methods: {
-    ...mapActions('global/search', ['searchUsers']),
+    ...mapActions('global/search', ['searchUsers', 'clearSearchUsers']),
     ...mapMutations('global/search', ['setOffsetUsers']),
-    ...mapActions('profile/country_city', ['apiCountries', 'apiCities', 'clearSearchUsers']),
+    ...mapActions('profile/country_city', ['apiCountries', 'apiCities']),
     onSearchUsers() {
-      let { first_name, last_name, age_from, age_to, country, city } = this
-
-      this.searchUsers({ first_name, last_name, age_from, age_to, country, city })
+      this.searchUsers(this.searchData)
         .then(() => {
           this.offset += this.itemPerPage
         })
