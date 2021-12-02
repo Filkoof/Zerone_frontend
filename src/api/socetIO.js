@@ -79,3 +79,6 @@ export function responseNotification(callback){
   ask('comment-notification-response', callback)
 }
 
+export function responseNotificationAddFriends(callback){
+  ask('friend-notification-response', callback)
+}

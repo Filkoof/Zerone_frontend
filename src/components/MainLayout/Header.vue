@@ -36,7 +36,7 @@ export default {
     ...mapMutations('global/search', ['setSearchText']),
     ...mapActions('profile/info', ['apiInfo']),
     ...mapActions('global/search', ['changeTab', 'searchNews']),
-    ...mapActions('profile/notifications', ['socketNotifications']),
+    ...mapActions('profile/notifications', ['socketNotifications', 'socketNotificationsAddFriends']),
     onSearch() {
       if (!this.searchText) this.$router.push({ name: 'Search' })
       this.searchNews({ text: this.searchText }).then(() => {
@@ -50,6 +50,7 @@ export default {
   mounted() {
     if (!this.getInfo) this.apiInfo()
     this.socketNotifications()
+    this.socketNotificationsAddFriends()
   },
   i18n: {
     messages: {

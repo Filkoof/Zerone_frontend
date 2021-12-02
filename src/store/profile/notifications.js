@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { responseNotification } from '../../api/socetIO'
+import { responseNotification, responseNotificationAddFriends } from '../../api/socetIO'
 
 export default {
   namespaced: true,
@@ -127,6 +127,21 @@ export default {
         commit('setOncNotifications', result)
       }
       responseNotification(callback)
+    },
+    socketNotificationsAddFriends({commit}){
+      function callback(response){
+        const res = [response]
+        const result = res.map(el => {
+          if (!el.entity_author) el.entity_author = {}
+          if (!el.entity_author.photo) el.entity_author.photo = '../static/img/user/default_avatar.svg'
+          if (!el.entity_author.first_name) el.entity_author.first_name = `Имя автора с ID: ${el.id}`
+          if (!el.entity_author.last_name) el.entity_author.last_name = `Фамилия автора с ID: ${el.id}`
+          if (!el.event_type) el.event_type = 'POST'
+          return el;
+        });
+        commit('setOncNotifications', result)
+      }
+      responseNotificationAddFriends(callback)
     },
     async addPostById({commit, dispatch}, id){
       await axios({
