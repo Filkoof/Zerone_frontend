@@ -23,18 +23,18 @@ export default {
           type: 'FRIEND_REQUEST',
           enable: false
         },
-        {
-          icon: 'messages',
-          name: 'О новых личных сообщениях',
-          type: 'MESSAGE',
-          enable: false
-        },
-        {
-          icon: 'birthdays',
-          name: 'О дне рождения друга',
-          type: 'FRIEND_BIRTHDAY',
-          enable: false
-        }
+        // {
+        //   icon: 'messages',
+        //   name: 'О новых личных сообщениях',
+        //   type: 'MESSAGE',
+        //   enable: false
+        // },
+        // {
+        //   icon: 'birthdays',
+        //   name: 'О дне рождения друга',
+        //   type: 'FRIEND_BIRTHDAY',
+        //   enable: false
+        // }
       ],
       en: [
         {
@@ -55,18 +55,18 @@ export default {
           type: 'FRIEND_REQUEST',
           enable: false
         },
-        {
-          icon: 'messages',
-          name: 'About new private messages',
-          type: 'MESSAGE',
-          enable: false
-        },
-        {
-          icon: 'birthdays',
-          name: 'Birthday friend',
-          type: 'FRIEND_BIRTHDAY',
-          enable: false
-        }
+        // {
+        //   icon: 'messages',
+        //   name: 'About new private messages',
+        //   type: 'MESSAGE',
+        //   enable: false
+        // },
+        // {
+        //   icon: 'birthdays',
+        //   name: 'Birthday friend',
+        //   type: 'FRIEND_BIRTHDAY',
+        //   enable: false
+        // }
       ]
     },
     email: ''
