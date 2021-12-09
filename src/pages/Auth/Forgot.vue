@@ -43,11 +43,11 @@ export default {
   i18n: {
     messages: {
       en: {
-        title: 'Write your code',
+        title: 'Write your e-mail',
         send: 'Send'
       },
       ru: {
-        title: 'Напишите ваш code',
+        title: 'Напишите ваш e-mail',
         send: 'Отправить'
       }
     }

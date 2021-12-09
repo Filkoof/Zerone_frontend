@@ -49,10 +49,8 @@ export default {
                 password: this.passwordTwo,
                 token: this.$store.state.auth.api.token,
             }).then(() => {
-                this.deleteInfo().then(() => {
-                    this.logout().then(() => {
-                        this.$router.push({ name: 'Login' })
-                    })
+                this.logout().then(() => {
+                    this.$router.push({ name: 'Login' })
                 })
             })
         },

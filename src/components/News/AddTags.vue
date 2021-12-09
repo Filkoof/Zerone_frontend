@@ -114,8 +114,6 @@ export default {
           this.$emit('change-tags', this.tagsComponent)
         })
     },
-
-
     eventInput() {
       this.offset = 0;
       clearTimeout(this.inputTimerId)
