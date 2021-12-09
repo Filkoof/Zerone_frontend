@@ -38,7 +38,10 @@ export default {
     ...mapActions('global/search', ['changeTab', 'searchNews']),
     ...mapActions('profile/notifications', ['socketNotifications', 'socketNotificationsAddFriends']),
     onSearch() {
-      if (!this.searchText) this.$router.push({ name: 'Search' })
+      if (!this.searchText) {
+        this.$router.push({ name: 'Search' })
+        return
+      }
       this.searchNews({ text: this.searchText }).then(() => {
         this.changeTab('news')
       })
