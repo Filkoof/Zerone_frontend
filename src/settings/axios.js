@@ -6,7 +6,7 @@ import { url, urlLocal } from '@/utils/url.js'
 const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development'
 
 axios.defaults.headers['content-type'] = 'application/json'
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = false
 switch (NODE_ENV) {
   case 'development':
     axios.defaults.baseURL = url + 'api/v1/'
