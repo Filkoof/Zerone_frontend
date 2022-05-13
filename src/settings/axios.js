@@ -29,7 +29,7 @@ let timeLastStart = null
 axios.interceptors.response.use(null, error => {
   // добавить проверку на законченный токен и сделать выход из приложения
   // store.dispatch('auth/api/logout')
-  if (error.response.status == 401) {
+  if (error.response.status === 401) {
     store.dispatch('auth/api/logout')
     localStorage.removeItem('user-token')
   }

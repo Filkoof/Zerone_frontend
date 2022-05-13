@@ -27,7 +27,7 @@
             name-field#register-firstName(v-model='firstName', :v='$v.firstName', :label='$t("name")')
             name-field#register-lastName(v-model='lastName', :v='$v.lastName', :label='$t("lastname")')
         .form__block.captcha
-            vue-hcaptcha(sitekey='6cb436a2-4748-4d38-8404-113bf4e2069f', :language='getLang', @verify='onVerify')
+            vue-hcaptcha(sitekey='20000000-ffff-ffff-ffff-000000000002', :language='getLang', @verify='onVerify')
         .form__block
             confirm-field#register-confirm(v-model='confirm', :v='$v.confirm')
         .registration__action
@@ -82,10 +82,10 @@ export default {
                 return
             }
             // проверка прохождения hCaptcha
-            if (!this.verified) {
-                document.querySelector('.captcha').classList.add('error')
-                return
-            }
+            // if (!this.verified) {
+            //     document.querySelector('.captcha').classList.add('error')
+            //     return
+            // }
 
             const { email, passwd1, firstName, lastName, token } = this
             this.register({ email, passwd1, firstName, lastName, token })
