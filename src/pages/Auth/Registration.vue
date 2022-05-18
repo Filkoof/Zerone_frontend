@@ -27,7 +27,7 @@
             name-field#register-firstName(v-model='firstName', :v='$v.firstName', :label='$t("name")')
             name-field#register-lastName(v-model='lastName', :v='$v.lastName', :label='$t("lastname")')
         .form__block.captcha
-            vue-hcaptcha(sitekey='20000000-ffff-ffff-ffff-000000000002', :language='getLang', @verify='onVerify')
+            vue-hcaptcha(sitekey='f9aa335c-f77d-455b-aef2-97a151181df7', :language='getLang', @verify='onVerify')
         .form__block
             confirm-field#register-confirm(v-model='confirm', :v='$v.confirm')
         .registration__action
