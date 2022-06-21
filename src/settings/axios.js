@@ -6,7 +6,7 @@ import { url, urlLocal } from '@/utils/url.js'
 const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development'
 
 axios.defaults.headers['content-type'] = 'application/json'
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = false
 switch (NODE_ENV) {
   case 'development':
     axios.defaults.baseURL = url + 'api/v1/'
@@ -29,7 +29,7 @@ let timeLastStart = null
 axios.interceptors.response.use(null, error => {
   // добавить проверку на законченный токен и сделать выход из приложения
   // store.dispatch('auth/api/logout')
-  if (error.response.status == 401) {
+  if (error.response.status === 401) {
     store.dispatch('auth/api/logout')
     localStorage.removeItem('user-token')
   }
