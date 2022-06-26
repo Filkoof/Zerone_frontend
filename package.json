@@ -9,6 +9,7 @@
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "test": "node ",
+    "serve": "vue-cli-service serve",
     "build": "node build/build.js",
     "deploy": "node build/deploy.js"
   },
