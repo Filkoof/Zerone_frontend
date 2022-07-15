@@ -266,13 +266,14 @@ export default {
 
     loadMessages({state, commit, rootState, dispatch }){
       function callback(response){
-        if(response.data.author_id == rootState.profile.info.info.id) return
-        dispatch('apiLoadAllDialogs').then(()=>{
+      console.log(response.data.author_id + " ___ " +  rootState.profile.info.info.id);
+        if(response.data.author_id == rootState.profile.info.info.id)
+        console.log(0);
+        return dispatch('apiLoadAllDialogs').then(()=>{
           const data = new Object(response.data);
           data.sendByMe = !data.sendByMe;
           data.time = new Date(data.time * 1000);
           data.sid = '' + data.id;
-
           const messages = [];
           messages.push(data);
 
@@ -284,7 +285,6 @@ export default {
             messages,
             total,
           }
-
           const newMessage = [];
           data.recipient = recipient['recipient_id'];
           newMessage.push(data);
@@ -298,20 +298,23 @@ export default {
 
     checkTypingMessage({commit, state}){
       function callback (response){
-        const dialogId = response.dialog;
-        if(state.dialogs[dialogId]){
-          commit('setTypeMessage', response)
-        }
+        //const dialogId = response.dialog;
+        commit('setTypeMessage', response);
+        //if(state.dialogs[dialogId]){
+         //commit('setTypeMessage', response)
+        //}
       };
       checkTypingMessage(callback)
     },
 
     checkFinishTypingMessage({commit, state}){
       function callback (response){
-        const dialogId = response.dialog;
-        if(state.dialogs[dialogId]){
-          commit('removeTypeMessage', response)
-        }
+        //const dialogId = response.dialog;
+        commit('removeTypeMessage', response);
+
+       // if(state.dialogs[dialogId]){
+       //   commit('removeTypeMessage', response)
+        //}
       };
       checkFinishTypingMessage(callback)
     },
