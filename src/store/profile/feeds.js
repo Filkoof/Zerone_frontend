@@ -175,6 +175,7 @@ export default {
         method: 'DELETE'
       })
         .then(response => {
+
           payload.route === 'News'
             ? dispatch('apiFeeds')
             : dispatch(

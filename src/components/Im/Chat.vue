@@ -30,6 +30,7 @@
           .finished(v-show="isHistoryEndReached()") {{ $t('nomore') }}
     form.im-chat__enter(action="#" @submit.prevent="onSubmitMessage")
       input.im-chat__enter-input(type="text" @input='typingMessage' @blur='finishedTypingMessage' :placeholder="$t('placeholder')" v-model="mes")
+      button-hover(@click.native="onSubmitMessage") {{ $t("Отправить") }}
 </template>
 
 <script>
@@ -297,7 +298,7 @@ export default {
 }
 
 .im-chat__enter {
-  display: block;
+  display: flex;
   width: 100%;
 }
 

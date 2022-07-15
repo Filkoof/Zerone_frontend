@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import Vuelidate from 'vuelidate'
 import moment from 'moment'
 import App from './App'
 import router from './router'
@@ -10,7 +11,7 @@ import './settings'
 import Vload from '@/directives/Vload'
 
 Vue.directive('load', Vload)
-Vue.use(VueI18n)
+Vue.use(VueI18n, Vuelidate)
 
 if (!localStorage.getItem('lang')) {
   localStorage.setItem('lang', 'ru')

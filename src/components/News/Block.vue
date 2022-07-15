@@ -68,6 +68,16 @@
                 )
             .news-block__actions-block
                 like-comment(:quantity='commentsLength', width='16px', height='16px', font-size='15px', comment)
+            .news-block__actions-block
+                like-comment(
+                    width='16px',
+                    height='16px',
+                    font-size='15px',
+                    @reported='reportAction',
+                    :active='info.my_like',
+                    :id='info.id',
+                    :isPost='true'
+                )
         .news-block__comments(v-if='!deffered')
             comments(:admin='admin', :info='info.comments', :id='info.id', :edit='edit', :deleted='deleted' :commentOpen='commentOpen')
 </template>
@@ -125,10 +135,10 @@ export default {
         return this.isOpenTags ? 'hide' : 'show'
       }
       return this.isOpenTags ? 'Cкрыть' : 'Показать'
-    }
+    },
   },
   methods: {
-    ...mapActions('global/likes', ['putLike', 'deleteLike']),
+    ...mapActions('global/likes', ['putLike', 'deleteLike', 'reportPost']),
     ...mapActions('profile/feeds', ['deleteFeeds', 'recoverFeeds']),
     ...mapMutations('global/search', ['setTagForSearch']),
     ...mapActions('global/search', ['changeTab']),
@@ -146,6 +156,11 @@ export default {
       active
         ? this.deleteLike({ item_id: this.info.id, type: 'Post' })
         : this.putLike({ item_id: this.info.id, type: 'Post' })
+    },
+    reportAction(active) {
+      active
+        ? this.deleteReport({ item_id: this.info.id, type: 'Post' })
+        : this.reportPost({ item_id: this.info.id, type: 'Post' })
     },
     toggleEditNews() {
       this.isEditNews = !this.isEditNews
@@ -340,6 +355,19 @@ export default {
     &.open {
         max-height: 100%;
         padding-right: 0;
+    }
+
+    & a{
+      color:#21a45d;
+      text-decoration: underline #21a45d;
+    }
+
+    & strong{
+      font-weight:bold !important;
+    }
+
+    & em{
+      font-style: italic !important;
     }
 }
 

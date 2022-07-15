@@ -39,6 +39,17 @@ export default {
         dispatch('likeAction', data)
       }).catch(error => {})
     },
+    async reportPost({
+      dispatch
+    }, data) {
+      await axios({
+        url: 'reports',
+        method: 'PUT',
+        data
+      }).then(response => {
+        dispatch('likeAction', data)
+      }).catch(error => {})
+    },
     async likeAction({
       dispatch
     }, data) {

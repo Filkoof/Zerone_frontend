@@ -1,14 +1,14 @@
 <template lang="pug">
 .settings-main
-    user-info-form-block(:label='$t("name")', :placeholder='$t("entName")', v-model='name')
-    user-info-form-block(:label='$t("lastName")', :placeholder='$t("entLastName")', v-model='lastName')
-    user-info-form-block(:label='$t("tel")', :placeholder='$t("entTel")', v-model='phone', phone)
+    user-info-form-block(:label='$t("name")', :placeholder='$t("entName")', v-model.trim='name', :class="{invalid: ($v.name.$dirty && !$v.name.required)}" )
+    user-info-form-block(:label='$t("lastName")', :placeholder='$t("entLastName")', v-model.trim='lastName')
+    user-info-form-block(:label='$t("tel")', :placeholder='$t("entTel")', v-model.trim='phone', phone)
 
     .user-info-form__block
         span.user-info-form__label {{ $t("country") }}
 
         select-location.user-info-form__wrap.countries(
-          v-model="country",
+          v-model.trim="country",
           :placeholder='$t("entCountry")',
           :options-list="countries"
           @selectOoption="setCountry"
@@ -18,7 +18,7 @@
         span.user-info-form__label {{ $t("city") }}
 
         select-location.user-info-form__wrap.countries(
-          v-model="city",
+          v-model.trim="city",
           :placeholder='$t("entCity")',
           :options-list="cities"
           @selectOoption="setCity"
@@ -61,10 +61,19 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import {required, minLength} from 'vuelidate/lib/validators'
 import moment from 'moment'
 import ClickOutside from 'vue-click-outside'
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue'
 import SelectLocation from '@/components/FormElements/SelectLocation.vue'
+
+const checkphone = (phone) => {
+  if (phone.trim()[0]!='+') {
+    phone = '+7' + phone.trim();
+  }
+  let regex = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/;
+  return regex.test(phone.trim());
+}
 
 export default {
   name: 'SettingsMain',
@@ -129,6 +138,11 @@ export default {
       city: ''
     }
   }),
+  validations: {
+    name: {required, minLength: minLength(3)},
+    lastName: {required,  minLength: minLength(3)},
+    phone: {required, checkphone},
+  },
   computed: {
     ...mapGetters('global/storage', ['getStorage']),
     ...mapGetters('profile/info', ['getInfo']),
@@ -148,6 +162,7 @@ export default {
       console.log('country: ', country);
       return country ? country.id : 0;
     },
+
     phoneNumber() {
       return this.phone.replace(/\D+/g, '')
     },
@@ -187,6 +202,11 @@ export default {
         { val: 11, text: 'Декабря' }
       ]
     },
+    /*namesError() {
+      const errors = [];
+      if( !$v.name.required) errors.push('обязательно для заполнения');
+      return errors;
+    },*/
     days() {
       switch (this.month.val) {
         case 0:
@@ -212,6 +232,8 @@ export default {
         case 10:
           return 30
         case 11:
+          return 31
+        default:
           return 31
       }
     }
@@ -240,6 +262,11 @@ export default {
     ...mapActions('profile/country_city', ['apiCountries', 'apiCities']),
 
     submitHandler() {
+      if( this.$v.$invalid) {
+        console.log('не верно заведены данные');
+        this.$v.$touch()
+        return
+      }
       if (this.src !== this.getInfo.photo && this.src !== '') {
         this.apiStorage({ file: this.photo }).then(() => {
           this.apiChangeInfo({
@@ -247,10 +274,10 @@ export default {
             first_name: this.name,
             last_name: this.lastName,
             birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
-            phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
+            phone: this.phoneNumber === '' ? null : this.phoneNumber,
             about: this.about,
-            country: this.country.trim() === '' ? null : this.country,
-            city: this.city.trim() === '' ? null : this.city
+            country: this.country === '' ? null : this.country,
+            city: this.city === '' ? null : this.city
           })
         })
       } else {
@@ -258,11 +285,11 @@ export default {
           first_name: this.name,
           last_name: this.lastName,
           birth_date: new Date(Date.UTC(this.year, this.month.val, this.day, 0, 0, 0)),
-          phone: this.phoneNumber.trim() === '' ? null : this.phoneNumber,
+          phone: this.phoneNumber === '' ? null : this.phoneNumber,
           photo: this.getInfo.photo,
           about: this.about,
-          country: this.country.trim() === '' ? null : this.country,
-          city: this.city.trim() === '' ? null : this.city
+          country: this.country === '' ? null : this.country,
+          city: this.city === '' ? null : this.city
         })
       }
     },
@@ -356,5 +383,9 @@ export default {
             cursor: pointer;
         }
     }
+}
+
+.invali{
+  border: 1px solid red !important;
 }
 </style>

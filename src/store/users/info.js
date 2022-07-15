@@ -141,7 +141,7 @@ export default {
     async apiWall({ getters, commit }, data) {
       let query = []
 
-      console.log()
+      console.log('apiWall');
 
       data.payload &&
         Object.keys(data.payload).map(el => {
@@ -153,9 +153,11 @@ export default {
       })
         .then(response => {
           const previousWall = getters.getWall
+          console.log(previousWall)
           const wall = response.data.data
+          console.log(wall)
           const newsWall = [...previousWall, ...wall]
-          const chechcDobleWall = newsWall.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
+          const chechcDobleWall = wall.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
           console.log(chechcDobleWall)
 
           commit('setWall', chechcDobleWall)
@@ -166,11 +168,13 @@ export default {
     },
 
     async apiWallById({ commit }, id) {
+      console.log('apiWallById');
       await axios({
         url: `post/${id}`,
         method: 'GET'
       })
         .then(response => {
+          console.log(response.data.data);
           commit('setWall', {
             id,
             value: response.data.data
