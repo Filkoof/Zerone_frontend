@@ -159,8 +159,7 @@ export default {
     },
     reportAction(active) {
       active
-        ? this.deleteReport({ item_id: this.info.id, type: 'Post' })
-        : this.reportPost({ item_id: this.info.id, type: 'Post' })
+        this.reportPost({ item_id: this.info.id, type: 'Post' })
     },
     toggleEditNews() {
       this.isEditNews = !this.isEditNews

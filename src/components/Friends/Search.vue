@@ -39,6 +39,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import SelectLocation from '@/components/FormElements/SelectLocation.vue'
 export default {
   name: 'FriendsSearch',
   data: () => ({
@@ -67,7 +68,7 @@ export default {
     onSearchUsers() {
       let { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage } = this
       this.searchUsers({ first_name, last_name, age_from, age_to, country, city, offset, itemPerPage }).then(() => {
-        this.offset += this.itemPerPage
+        //this.offset += this.itemPerPage
       })
     },
     clearSearch() {
