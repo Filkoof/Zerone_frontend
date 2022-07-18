@@ -1,8 +1,19 @@
 <template lang="pug">
 .settings-main
     user-info-form-block(:label='$t("name")', :placeholder='$t("entName")', v-model.trim='name', :class="{invalid: ($v.name.$dirty && !$v.name.required)}" )
-    user-info-form-block(:label='$t("lastName")', :placeholder='$t("entLastName")', v-model.trim='lastName')
-    user-info-form-block(:label='$t("tel")', :placeholder='$t("entTel")', v-model.trim='phone', phone)
+
+    .user-error-form__block
+      span.form__error(v-if="$v.name.$dirty && !$v.name.required") {{ $t('entName') }}
+
+    user-info-form-block(:label='$t("lastName")', :placeholder='$t("entLastName")', v-model.trim='lastName', :class="{invalid: ($v.lastName.$dirty && !$v.lastName.required)}")
+
+    .user-error-form__block
+      span.form__error(v-if="$v.lastName.$dirty && !$v.lastName.required") {{ $t('entLastName') }}
+
+    user-info-form-block(:label='$t("tel")', :placeholder='$t("entTel")', v-model.trim='phone', phone, :class="{invalid: ($v.phone.$dirty && !$v.phone.required) || ($v.phone.$dirty && !$v.phone.checkphone)}")
+
+    .user-error-form__block
+      span.form__error(v-if="($v.phone.$dirty && !$v.phone.required) || ($v.phone.$dirty && !$v.phone.checkphone)") {{ $t('entTel') }}
 
     .user-info-form__block
         span.user-info-form__label {{ $t("country") }}
@@ -71,7 +82,7 @@ const checkphone = (phone) => {
   if (phone.trim()[0]!='+') {
     phone = '+7' + phone.trim();
   }
-  let regex = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/;
+  let regex = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){11,14}(\s*)?$/;
   return regex.test(phone.trim());
 }
 
@@ -102,11 +113,11 @@ export default {
         save: 'Save'
       },
       ru: {
-        tel: 'Телефон:',
+        tel: '*Телефон:',
         entTel: 'Введите телефон',
-        lastName: 'Фамилия:',
+        lastName: '*Фамилия:',
         entLastName: 'Введите фамилию',
-        name: 'Имя:',
+        name: '*Имя:',
         entName: 'Введите имя',
         country: 'Страна:',
         entCountry: 'Введите страну',
@@ -385,7 +396,21 @@ export default {
     }
 }
 
-.invali{
+.invalid{
   border: 1px solid red !important;
+}
+
+.form__error{
+ color:red;
+ right:0;
+ bottom:15px;
+}
+
+.user-error-form__block{
+    display: flex;
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+    margin-top:30px;
 }
 </style>

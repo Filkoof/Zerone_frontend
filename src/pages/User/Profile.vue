@@ -27,12 +27,12 @@
                     edit,
                     deleted,
                     :deffered='activeTab === "QUEUED"',
-                    v-for='news in getWall',
+                    v-for='news in activeWall',
                     :key='news.id',
                     :info='news'
                 )
             is-loading(v-if="total > offset" :isLoad='isLoad', v-load="loadWall")
-              
+
     .inner-page__aside
         friends-request
         br
@@ -67,7 +67,6 @@ export default {
           result.push(this.getWall[key])
         }
       }
-
       return result //this.getWall.filter(el => el.type === this.activeTab)
     }
   },
