@@ -1,5 +1,5 @@
 <template lang="pug">
-  form.friends-possible(@submit.prevent="onSearchUsers" action="#")
+  form.friends-possible(@submit.prevent="clerAndSearchUser" action="#")
     h4.friends-possible__title Параметры поиска
     .friends-search
       .friends-search__row
@@ -9,39 +9,41 @@
         .friends-search__block
           label.search__label(for="friends-search-lastname") Фамилия:
           input.search__input(type="text" id="friends-search-lastname" v-model="last_name")
-      .friends-search__block
+
+      .friends-search__block.age
         label.search__label Возраст:
         .search__row
-          select.select.friends-search__select(v-model.number="age_from")
-            option(value="null" disabled) От
-            option(value="31") От 31
-            option(value="32") От 32
-            option(value="33") От 33
-          span.search__age-defis —
-          select.select.friends-search__select(v-model.number="age_to")
-            option(value="null" disabled) До
-            option(value="34") До 34
-            option(value="35") До 35
-            option(value="36") До 36
-      .friends-search__block
+            input#search-age-from.search__input.search__input_age(type='number', placeholder="От" v-model.number='age_from')
+            span.search__age-defis —
+            input#search-age-to.search__input.search__input_age(type='number', placeholder="До" v-model.number='age_to')
+
+      .friends-search__block.region
         label.search__label Регион:
         .search__row
-          select.select.friends-search__select(v-model="country")
-            option(value="null") Страна
-            option(v-for="country in getCountries" :key="country.id") {{ country.title }}
-          select.select.friends-search__select(v-model="city")
-            option(value="null") Город
-            option(v-for="city in getCityFilter" :key="city.countryId") {{ city.country }}
+            select-location.search-filter__select(
+              v-model="country",
+              placeholder='Страна',
+              :options-list="countries"
+              @selectOoption="setCountry"
+            )
+
+            select-location.search-filter__select.city(
+              v-model="city",
+              placeholder='Город',
+              :options-list="cities"
+              @selectOoption="setCity"
+            )
     button.friends-possible__btn(type="submit")
       simple-svg(:filepath="'/static/img/search.svg'")
       span.friends-possible__link Искать друзей
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectLocation from '@/components/FormElements/SelectLocation.vue'
 export default {
   name: 'FriendsSearch',
+  components: { SelectLocation },
   data: () => ({
     first_name: null,
     last_name: null,
@@ -54,46 +56,86 @@ export default {
   }),
   computed: {
     ...mapGetters('profile/country_city', ['getCountries', 'getCities', 'getLoadUsers']),
+    ...mapGetters('global/search', ['getLoadUsers']),
+    countries() {
+      return this.getCountries.data || [];
+    },
+    cities() {
+      return this.getCities.data || [];
+    },
+    selectedCountryId() {
+      const country = this.countries.find(
+        (item) => item.title.toUpperCase() === this.country.toUpperCase()
+      )
+      return country ? country.id : 0;
+    },
     getCityFilter() {
       if (!this.country || this.country === 'null') {
         return this.getCities
       } else {
         return this.getCities.filter(el => el.city === this.country)
       }
-    }
-  },
-  methods: {
-    ...mapActions('global/search', ['searchUsers', 'clearSearchUsers', 'clearSearchNews']),
-    ...mapActions('profile/country_city', ['apiCountries']),
-    onSearchUsers() {
-      let { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage } = this
-      this.searchUsers({ first_name, last_name, age_from, age_to, country, city, offset, itemPerPage }).then(() => {
-        //this.offset += this.itemPerPage
-      })
     },
-    clearSearch() {
-      this.clearSearchUsers()
-      this.clearSearchNews()
+    searchData() {
+      const { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage } = this
+      console.log(offset);
+      return { first_name, last_name, age_from, age_to, country, city, offset, itemPerPage }
     }
   },
+
   created() {
     this.apiCountries()
+    this.apiCities({ countryId: 1 })
+  },
+  beforeDestroy() {
+    this.clearSearchUsers()
+    this.offset = 0
+    this.setOffsetUsers(this.offset)
   },
   watch: {
-    getLoadUsers: function(val) {
+    country(newVal) {
+      this.apiCountries({ country: newVal });
+      this.apiCities({ countryId: this.selectedCountryId });
+    },
+    city(newVal) {
+      this.apiCities({
+        countryId: this.selectedCountryId,
+        city: newVal,
+      });
+    },
+    getLoadUsers(val) {
       if (val) {
         this.onSearchUsers()
       }
     },
-    city(value) {
-      if (!value || value === 'null') return
-      const countryId = this.getCities.find(el => el.country === value).cityId
-      this.country = this.getCountries.find(el => el.id === countryId).title
+  },
+  methods: {
+    ...mapActions('global/search', ['searchUsers', 'clearSearchUsers']),
+    ...mapMutations('global/search', ['setOffsetUsers']),
+    ...mapActions('profile/country_city', ['apiCountries', 'apiCities']),
+    onSearchUsers() {
+      this.searchUsers(this.searchData)
+        .then(() => {
+          this.offset += this.itemPerPage
+        })
+        .then(() => {
+          this.setOffsetUsers(this.offset)
+        })
+    },
+    clerAndSearchUser() {
+      this.offset = 0
+      this.setOffsetUsers(this.offset)
+      setTimeout(() => {
+        this.onSearchUsers()
+      }, 0)
+    },
+    setCountry(countryData) {
+      this.country = countryData.title;
+    },
+    setCity(value) {
+      this.city = value.title
     }
   },
-  beforeDestroy() {
-    this.clearSearch()
-  }
 }
 </script>
 
@@ -107,9 +149,18 @@ export default {
   border-top: 1px solid #E6E6E6;
 }
 
+.search__row{
+  justify-content: space-between;
+}
+
+.city{
+  max-width: 200px;
+}
+
 .friends-search__row {
   @media (max-width: breakpoint-xl) {
     display: flex;
+
 
     .friends-search__block {
       flex: auto;

@@ -22,7 +22,7 @@
             .friends-block__actions-block(v-tooltip.bottom='\'Заблокировать\'', v-else)
                 simple-svg(:filepath='"/static/img/blocked.svg"')
         template(v-else)
-            .friends-block__actions-block.message(v-tooltip.bottom='$t(\'sendMassage\')', @click='sendMessage(info.id)')
+            .friends-block__actions-block.message(v-tooltip.bottom='$t(\'sendMessage\')', @click='sendMessage(info.id)')
                 simple-svg(:filepath='"/static/img/sidebar/im.svg"')
             .friends-block__actions-block.delete(
                 v-tooltip.bottom='$t(\'del\')',
@@ -114,7 +114,7 @@ export default {
   i18n: {
     messages: {
       en: {
-        sendMassage: 'Send message',
+        sendMessage: 'Send message',
         del: 'Remove from friends',
         info: 'profile is not completed',
         add: 'Add as Friend',
