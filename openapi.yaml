@@ -161,7 +161,7 @@ components:
       properties:
         notification_type:
           type: string
-          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, FRIEND_BIRTHDAY , MESSAGE]
         enable: {type: boolean}
     TagDto:
       description: Список городов
@@ -209,7 +209,7 @@ components:
         sent_time: {format: date-time, type: string}
         event_type:
           type: string
-          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, FRIEND_BIRTHDAY ,MESSAGE]
         entity_author: {$ref: '#/components/schemas/AuthData'}
         current_entity_id: {format: int32, type: integer}
         id: {format: int32, type: integer}
@@ -220,7 +220,7 @@ components:
       properties:
         notification_type:
           type: string
-          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, MESSAGE]
+          enum: [POST, POST_COMMENT, COMMENT_COMMENT, FRIEND_REQUEST, FRIEND_BIRTHDAY , MESSAGE]
         enable: {type: boolean}
     PlaceDto:
       description: Список городов
