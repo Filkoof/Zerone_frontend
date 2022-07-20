@@ -28,6 +28,8 @@ export default {
           )
         case 'Друзья':
           return this.getNotifications.filter(el => el.event_type === 'FRIEND_REQUEST')
+        case 'День Рождения':
+          return this.getNotifications.filter(el => el.event_type === 'FRIEND_BIRTHDAY')
       }
     }
   },

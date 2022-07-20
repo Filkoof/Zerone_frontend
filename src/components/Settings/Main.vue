@@ -403,6 +403,7 @@ export default {
 .form__error{
  color:red;
  right:0;
+ left:unset;
  bottom:15px;
 }
 

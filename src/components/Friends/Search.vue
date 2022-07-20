@@ -183,6 +183,10 @@ export default {
   }
 }
 
+.friends-search__block input{
+    border: 1px solid #cbcbcb !important;
+}
+
 .friends-search__select {
   display: block;
   width: 100%;

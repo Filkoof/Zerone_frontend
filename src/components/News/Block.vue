@@ -68,16 +68,7 @@
                 )
             .news-block__actions-block
                 like-comment(:quantity='commentsLength', width='16px', height='16px', font-size='15px', comment)
-            .news-block__actions-block
-                like-comment(
-                    width='16px',
-                    height='16px',
-                    font-size='15px',
-                    @reported='reportAction',
-                    :active='info.my_like',
-                    :id='info.id',
-                    :isPost='true'
-                )
+
         .news-block__comments(v-if='!deffered')
             comments(:admin='admin', :info='info.comments', :id='info.id', :edit='edit', :deleted='deleted' :commentOpen='commentOpen')
 </template>
@@ -88,9 +79,10 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import moment from 'moment'
 import Comments from '@/components/Comments/Index'
 import LikeComment from '@/components/LikeComment'
+import reportComment from '@/components/reportComment'
 export default {
   name: 'NewsBlock',
-  components: { Comments, LikeComment, AddForm },
+  components: { Comments, LikeComment, AddForm, reportComment },
   props: {
     info: {
       type: Object,
@@ -157,9 +149,10 @@ export default {
         ? this.deleteLike({ item_id: this.info.id, type: 'Post' })
         : this.putLike({ item_id: this.info.id, type: 'Post' })
     },
-    reportAction(active) {
-      active
-        this.reportPost({ item_id: this.info.id, type: 'Post' })
+    reportAction() {
+      console.log('report');
+      //active
+        //this.reportPost({ item_id: this.info.id, type: 'Post' })
     },
     toggleEditNews() {
       this.isEditNews = !this.isEditNews
