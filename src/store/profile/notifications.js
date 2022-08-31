@@ -24,7 +24,7 @@ export default {
           case 'FRIEND_REQUEST':
             return 'добавил в друзья нового пользователя'
           case 'FRIEND_BIRTHDAY':
-            return 'день рождение'
+            return 'день рождения'
           case 'MESSAGE':
             return 'прислал сообщение'
         }

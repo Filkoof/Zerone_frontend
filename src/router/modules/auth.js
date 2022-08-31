@@ -76,7 +76,7 @@ export default [
     meta: {
       layout: 'form',
       notRequiresAuth: true,
-      title: 'Востановление'
+      title: 'Восстановление'
     },
     component: () => import('@/pages/Auth/Forgot.vue')
   },
@@ -86,7 +86,7 @@ export default [
     meta: {
       layout: 'form',
       notRequiresAuth: true,
-      title: 'Подтверждение востановление'
+      title: 'Подтверждение восстановления'
     },
     component: () => import('@/pages/Auth/ForgotSuccessConfirmation.vue')
   },
@@ -96,7 +96,7 @@ export default [
     meta: {
       layout: 'form',
       notRequiresAuth: true,
-      title: 'Успешное востановление'
+      title: 'Успешное восстановление'
     },
     component: () => import('@/pages/Auth/ForgotSuccess.vue')
   },

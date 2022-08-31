@@ -7,19 +7,19 @@ export default {
       ru: [
         {
           icon: 'comments',
-          name: 'О новых комментариях к моим публикациям',
+          name: 'О новых комментариев к моим публикациям',
           type: 'POST_COMMENT',
           enable: false
         },
         {
           icon: 'reviews',
-          name: 'О ответах на мои комментарии',
+          name: 'О ответов на мои комментарии',
           type: 'COMMENT_COMMENT',
           enable: false
         },
         {
           icon: 'friends',
-          name: 'О заявках в дузья',
+          name: 'О заявок в друзья',
           type: 'FRIEND_REQUEST',
           enable: false
         },
@@ -31,7 +31,7 @@ export default {
          //},
          {
            icon: 'birthdays',
-           name: 'О дне рождения друга',
+           name: 'О дней рождения друга',
            type: 'FRIEND_BIRTHDAY',
            enable: false
          }
