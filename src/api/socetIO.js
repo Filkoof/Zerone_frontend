@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 
-const url = 'https://zerone-network.ru:1111';
+const url = 'http://zerone-network.ru:1111';
 
 export const socket = io(url, {
   transports: ['websocket'],
